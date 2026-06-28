@@ -1,0 +1,47 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  min-height: 112px;
+  padding: 22px 28px 18px 126px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(105deg, rgba(250, 232, 255, 0.62), rgba(255, 253, 248, 0.72));
+  box-shadow: var(--shadow-small);
+}
+
+.krishna {
+  position: absolute;
+  left: 28px;
+  top: 18px;
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(94, 59, 67, 0.15);
+}
+
+.card p {
+  margin: 0;
+  max-width: 720px;
+  color: #3d3347;
+  font-size: 13.5px;
+  line-height: 1.42;
+}
+
+.card cite {
+  display: block;
+  margin-top: 10px;
+  color: #5d5366;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.lotus {
+  position: absolute;
+  right: 52px;
+  bottom: -28px;
+  width: 160px;
+  height: 130px;
+  opacity: 0.22;
+  color: var(--violet);
+}

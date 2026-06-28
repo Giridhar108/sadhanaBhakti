@@ -1,0 +1,151 @@
+.card {
+  padding: 16px 18px 14px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-small);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.title svg {
+  width: 24px;
+  height: 24px;
+}
+
+.title.green svg {
+  color: var(--green-dark);
+}
+
+.title.purple svg {
+  color: var(--violet);
+}
+
+.title.gold svg {
+  color: var(--gold-dark);
+}
+
+.more {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #211a27;
+}
+
+.more svg {
+  width: 20px;
+  height: 20px;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.metricTitle {
+  color: #2e2834;
+  font-size: 11px;
+}
+
+.metricTitle strong {
+  display: block;
+  margin-top: 3px;
+  color: #151019;
+  font-size: 15px;
+}
+
+.miniBar {
+  height: 6px;
+  border-radius: 99px;
+  background: #eaddec;
+  margin: 12px 0 8px;
+  overflow: hidden;
+}
+
+.miniBar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.miniBar.green i {
+  background: var(--green);
+}
+
+.miniBar.purple i {
+  background: var(--violet);
+}
+
+.miniBar.gold i {
+  background: var(--gold);
+}
+
+.percent {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.statsRow {
+  margin-top: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: center;
+}
+
+.statsRow span {
+  display: block;
+  color: #3f3745;
+  font-size: 10px;
+}
+
+.statsRow strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+  letter-spacing: -0.04em;
+}
+
+.cta {
+  width: 100%;
+  height: 34px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 760;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.07);
+}
+
+.cta.green {
+  background: linear-gradient(180deg, #75ba82, #58a56b);
+}
+
+.cta.purple {
+  background: linear-gradient(180deg, #ae72d2, #9560c4);
+}
+
+.cta.gold {
+  background: linear-gradient(180deg, #f0bd60, #e4a947);
+}

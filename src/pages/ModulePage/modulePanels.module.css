@@ -1,0 +1,90 @@
+.panel {
+  padding: 18px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.panel h2,
+.panel h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.stack {
+  display: grid;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-md);
+  background: var(--surface-warm);
+}
+
+.row strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.row small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: #fff;
+  background: var(--green);
+  font-weight: 900;
+  box-shadow: var(--shadow-soft);
+}
+
+.buttonSecondary {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.field input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}

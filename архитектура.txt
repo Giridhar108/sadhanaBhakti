@@ -1,0 +1,564 @@
+Да, для 20 000 пользователей я бы не начинал с микросервисов. Лучший путь: React/Vite на фронте + модульный монолит на бэкенде, но сразу сделать так, чтобы потом можно было масштабировать без переписывания всего проекта.
+
+Важно: 20 000 зарегистрированных пользователей и 20 000 одновременных онлайн-пользователей — это два разных зверя. Для первого хватит довольно простой архитектуры. Для второго уже нужны балансировка, кэширование, очереди, мониторинг и аккуратная работа с БД.
+
+Рекомендованная архитектура
+
+Пользователь
+   ↓
+CDN / Cloudflare
+   ↓
+React + Vite SPA
+   ↓
+API Gateway / Nginx / Load Balancer
+   ↓
+Backend: NestJS / Node.js
+   ↓
+PostgreSQL
+Redis
+Очереди
+Object Storage
+
+1. Фронтенд
+
+Стек
+
+Я бы взял:
+
+React
+Vite
+TypeScript
+React Router
+TanStack Query
+Zustand
+Zod
+React Hook Form
+Axios или fetch-wrapper
+CSS Modules / Tailwind / SCSS
+
+Vite хорошо подходит для такой SPA: production-сборка создаётся через vite build, а результат можно отдавать как обычную статику через CDN или static hosting. ()
+
+Структура фронтенда
+
+Я бы делал не “components/utils/pages в одну кучу”, а архитектуру по смысловым модулям:
+
+src/
+  app/
+    providers/
+    router/
+    store/
+    styles/
+    App.tsx
+
+  pages/
+    dashboard/
+    login/
+    profile/
+    settings/
+    japa/
+    books/
+
+  widgets/
+    sidebar/
+    header/
+    progress-card/
+    timer-panel/
+
+  features/
+    auth/
+    start-japa-session/
+    stop-japa-session/
+    update-profile/
+    upload-image/
+
+  entities/
+    user/
+    session/
+    book/
+    chant/
+    progress/
+
+  shared/
+    api/
+    config/
+    ui/
+    lib/
+    hooks/
+    types/
+
+То есть:
+
+pages     — полноценные страницы
+widgets   — крупные блоки интерфейса
+features  — действия пользователя
+entities  — бизнес-сущности
+shared    — переиспользуемые вещи
+
+Например, для твоего приложения это может быть так:
+
+entities/user
+entities/japa-session
+entities/book-reading
+entities/verse
+entities/progress
+
+features/start-japa
+features/finish-japa
+features/change-daily-goal
+features/upload-krishna-background
+
+pages/dashboard
+pages/my-japa
+pages/books
+pages/statistics
+pages/settings
+
+Работа с API
+
+Я бы сделал единый слой API:
+
+shared/api/
+  httpClient.ts
+  endpoints.ts
+  types.ts
+
+Примерно так:
+
+export const httpClient = fetch или axios instance
+
+А внутри фич:
+
+features/start-japa/api/startJapaSession.ts
+features/start-japa/model/useStartJapaSession.ts
+
+Для серверного состояния лучше использовать TanStack Query: он решает кэширование, повторные запросы, loading/error-состояния и инвалидирование данных. Zustand оставить для локального состояния интерфейса: открытое меню, тема, модалки, временные UI-настройки.
+
+Оптимизация фронтенда
+
+На уровне роутов нужно делать lazy-loading:
+
+const DashboardPage = lazy(() => import('@/pages/dashboard'));
+
+React официально поддерживает lazy вместе с Suspense, чтобы загружать части интерфейса по мере необходимости. ()
+
+Для 20 000 пользователей важно:
+
+разделение bundle по страницам
+кэширование статики через CDN
+ленивая загрузка тяжёлых экранов
+оптимизация изображений
+WebP/AVIF
+не хранить лишнее в global store
+не делать огромные таблицы без виртуализации
+
+2. Бэкенд
+
+Лучший вариант для старта
+
+Я бы выбрал:
+
+Node.js
+NestJS
+TypeScript
+PostgreSQL
+Prisma или Drizzle
+Redis
+BullMQ
+Docker
+Nginx
+
+Почему NestJS: он хорошо подходит для модульного серверного приложения на TypeScript, а сама документация позиционирует его как фреймворк для масштабируемых серверных приложений. ()
+
+Структура бэкенда
+
+src/
+  main.ts
+  app.module.ts
+
+  modules/
+    auth/
+      auth.controller.ts
+      auth.service.ts
+      auth.module.ts
+      dto/
+      guards/
+
+    users/
+      users.controller.ts
+      users.service.ts
+      users.repository.ts
+      dto/
+
+    japa/
+      japa.controller.ts
+      japa.service.ts
+      japa.repository.ts
+      dto/
+
+    books/
+    progress/
+    uploads/
+    notifications/
+    payments/
+
+  common/
+    guards/
+    decorators/
+    filters/
+    interceptors/
+    pipes/
+
+  config/
+    env.ts
+    database.ts
+    redis.ts
+
+  infrastructure/
+    prisma/
+    redis/
+    storage/
+    queue/
+
+Главная идея
+
+Сначала делаем модульный монолит:
+
+один backend-проект
+одна база данных
+чёткое разделение по модулям
+чистые границы между доменами
+
+Не надо сразу делать 10 микросервисов. Это преждевременная боль: деплой сложнее, отладка сложнее, DevOps сложнее, а пользы на старте мало.
+
+3. База данных
+
+Основная БД
+
+Я бы взял PostgreSQL.
+
+Примерные таблицы:
+
+users
+profiles
+japa_sessions
+japa_goals
+book_reading_sessions
+verses
+user_progress
+uploaded_images
+notifications
+refresh_tokens
+audit_logs
+
+Для приложения с прогрессом и ежедневной статистикой PostgreSQL отлично подойдёт.
+
+Индексы
+
+Сразу нужны индексы на поля, по которым часто ищешь:
+
+users.email
+japa_sessions.user_id
+japa_sessions.created_at
+book_reading_sessions.user_id
+user_progress.user_id
+refresh_tokens.user_id
+
+Подключения к БД
+
+Когда backend начнёт масштабироваться в несколько инстансов, важно не убить PostgreSQL количеством соединений. Для этого используют connection pooling. Например, PgBouncer сидит между приложением и PostgreSQL и уменьшает число реальных соединений к базе. ()
+
+4. Redis
+
+Redis я бы использовал для:
+
+кэша
+rate limit
+refresh/session storage, если нужно
+очередей
+временных данных
+блокировок
+
+Redis официально поддерживается для Node.js через node-redis клиент. ()
+
+Примеры:
+
+кэш профиля пользователя на 5 минут
+кэш настроек приложения
+rate limit на login endpoint
+хранение одноразовых кодов подтверждения
+
+5. Очереди
+
+Для фоновых задач:
+
+отправка email
+обработка загруженных картинок
+генерация отчётов
+уведомления
+пересчёт статистики
+
+Я бы использовал:
+
+BullMQ + Redis
+
+Например, пользователь загрузил картинку Кришны для фона. Не надо обрабатывать её прямо в HTTP-запросе. Лучше:
+
+POST /uploads
+  ↓
+сохранили файл
+  ↓
+положили job в очередь
+  ↓
+worker сделал resize/webp/preview
+
+6. Хранение файлов
+
+Не храни пользовательские картинки на самом сервере.
+
+Используй:
+
+S3
+Cloudflare R2
+Backblaze B2
+DigitalOcean Spaces
+
+Схема:
+
+Frontend → Backend → signed upload URL → Object Storage
+
+И потом отдавать картинки через CDN.
+
+7. Авторизация
+
+Для обычного веб-приложения:
+
+access token — короткий срок жизни
+refresh token — дольше
+refresh token хранить в httpOnly cookie
+пароли хэшировать через argon2 или bcrypt
+
+На backend:
+
+JWT Guard
+Role Guard
+Rate Limit на login
+2FA позже, если нужно
+
+Особенно важно проверять права доступа на каждый объект. OWASP называет broken object level authorization одним из главных API-рисков: нельзя просто доверять userId или id, пришедшему с фронта. ()
+
+8. API
+
+Я бы начал с REST:
+
+POST   /auth/login
+POST   /auth/logout
+POST   /auth/refresh
+
+GET    /users/me
+PATCH  /users/me
+
+GET    /japa/sessions
+POST   /japa/sessions
+PATCH  /japa/sessions/:id
+DELETE /japa/sessions/:id
+
+GET    /progress/summary
+GET    /progress/calendar
+
+POST   /uploads
+GET    /settings
+PATCH  /settings
+
+GraphQL пока не нужен. Его стоит брать, если будет много сложных экранов с гибкими выборками данных. Для старта REST проще, быстрее и понятнее.
+
+9. Масштабирование
+
+Для 20 000 зарегистрированных пользователей можно начать так:
+
+1 frontend hosting
+1 backend instance
+1 PostgreSQL
+1 Redis
+1 worker
+
+Потом масштабировать:
+
+CDN
+2–4 backend instances
+Load Balancer
+PostgreSQL managed instance
+Redis managed instance
+separate workers
+monitoring
+
+Express в своих production-рекомендациях тоже указывает на важность restart-механизма, кластеризации, кэширования, load balancer и reverse proxy для production-приложений. Даже если использовать NestJS, принципы те же, потому что это всё равно Node.js backend. ()
+
+10. Деплой
+
+Простой хороший вариант
+
+Frontend:
+  Vercel / Netlify / Cloudflare Pages
+
+Backend:
+  Render / Railway / Fly.io / DigitalOcean / VPS + Docker
+
+Database:
+  Supabase / Neon / Railway PostgreSQL / managed PostgreSQL
+
+Redis:
+  Upstash / Railway Redis / managed Redis
+
+Files:
+  Cloudflare R2 / S3
+
+Более серьёзный вариант
+
+Frontend:
+  Cloudflare Pages + CDN
+
+Backend:
+  Docker containers
+  Nginx
+  Load Balancer
+  2+ API instances
+
+Database:
+  Managed PostgreSQL
+  backups
+  read replica позже
+
+Redis:
+  Managed Redis
+
+Monitoring:
+  Sentry
+  Grafana/Prometheus
+  logs
+
+11. CI/CD
+
+Минимально:
+
+GitHub Actions
+  ↓
+lint
+typecheck
+test
+build
+deploy
+
+Для фронта:
+
+npm run lint
+npm run typecheck
+npm run build
+
+Для бэкенда:
+
+npm run lint
+npm run test
+npm run build
+npx prisma migrate deploy
+
+12. Мониторинг
+
+Сразу добавить:
+
+Sentry — ошибки фронта и бэка
+логирование запросов
+метрики API
+метрики БД
+healthcheck endpoint
+alerting
+
+Backend endpoint:
+
+GET /health
+
+Он проверяет:
+
+API alive
+PostgreSQL connected
+Redis connected
+storage available
+
+13. Что я бы выбрал конкретно
+
+Мой вариант для твоего проекта:
+
+Frontend:
+  React + Vite + TypeScript
+  React Router
+  TanStack Query
+  Zustand
+  React Hook Form
+  Zod
+  CSS Modules или Tailwind
+
+Backend:
+  NestJS + TypeScript
+  PostgreSQL
+  Prisma
+  Redis
+  BullMQ
+  JWT auth
+  S3/R2 для картинок
+
+Deploy:
+  Frontend на Cloudflare Pages/Vercel
+  Backend в Docker
+  PostgreSQL managed
+  Redis managed
+  Sentry
+
+14. Простая схема проекта
+
+my-app/
+  apps/
+    web/
+      src/
+      vite.config.ts
+      package.json
+
+    api/
+      src/
+      prisma/
+      package.json
+
+    worker/
+      src/
+      package.json
+
+  packages/
+    shared/
+      types/
+      validation/
+      constants/
+
+  docker-compose.yml
+  package.json
+
+Для старта можно даже проще:
+
+my-app/
+  frontend/
+  backend/
+
+А worker вынести позже.
+
+15. Главный совет
+
+Для 20 000 пользователей тебе не нужна “архитектура как у Netflix”. Нужна нормальная, аккуратная база:
+
+чистый React/Vite фронт
+модульный backend
+PostgreSQL
+Redis
+очереди
+CDN
+логирование
+резервные копии
+безопасная авторизация
+
+Я бы начал именно с модульного монолита, потому что он проще, дешевле и быстрее. А когда появятся реальные нагрузки, отдельные части можно вынести: например, обработку картинок, уведомления, статистику или платежи.

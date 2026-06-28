@@ -1,0 +1,60 @@
+.ring {
+  position: relative;
+  width: 94px;
+  height: 94px;
+}
+
+.ring svg {
+  width: 94px;
+  height: 94px;
+  transform: rotate(-92deg);
+}
+
+.bg {
+  fill: none;
+  stroke: #e9e0dd;
+  stroke-width: 8;
+}
+
+.value {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.green .value {
+  stroke: var(--green);
+}
+
+.purple .value {
+  stroke: var(--violet);
+}
+
+.gold .value {
+  stroke: var(--gold);
+}
+
+.text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.text strong {
+  display: block;
+  font-size: 28px;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.text small {
+  display: block;
+  max-width: 56px;
+  margin-top: 4px;
+  color: #3c3542;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: pre-line;
+}

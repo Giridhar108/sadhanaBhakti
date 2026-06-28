@@ -1,0 +1,35 @@
+.app {
+  width: min(100%, var(--container));
+  max-width: var(--container);
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px minmax(960px, 1fr);
+}
+
+.dashboard {
+  padding: 16px 18px 24px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(700px, 1fr) 326px;
+  gap: 14px;
+  align-items: start;
+}
+
+.mainCol,
+.sideCol {
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 1280px) {
+  .app {
+    grid-template-columns: 220px minmax(960px, 1fr);
+  }
+
+  .contentGrid {
+    grid-template-columns: minmax(640px, 1fr) 314px;
+  }
+}
