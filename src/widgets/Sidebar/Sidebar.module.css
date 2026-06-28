@@ -77,10 +77,94 @@
 .goalNote {
   margin-top: auto;
   width: 100%;
+  padding: 8px 0 2px;
 }
 
-.goalNote img {
+.goalCard {
+  position: relative;
+  isolation: isolate;
+  min-height: 418px;
+  padding: 20px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(236, 189, 93, 0.64);
+  border-radius: 23px;
+  background: #fffaf6;
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 255, 255, 0.82),
+    inset 0 0 0 6px rgba(225, 199, 238, 0.42),
+    0 10px 24px rgba(169, 122, 217, 0.1);
+}
+
+.goalCard::after {
+  content: none;
+}
+
+.goalOrnament {
+  width: 74px;
+  height: 19px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goalOrnament img {
   width: 100%;
+  height: 100%;
   display: block;
-  border-radius: 20px;
+  object-fit: contain;
+}
+
+.goalVerse {
+  margin: 0;
+  color: rgba(111, 61, 150, 0.72);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.34;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.goalLotus {
+  width: min(244px, 116%);
+  max-width: none;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  display: block;
+  filter: drop-shadow(0 16px 24px rgba(151, 96, 209, 0.18));
+  transform: translateY(2px);
+}
+
+.goalBadgeOrnament {
+  width: 78px;
+  height: 20px;
+  margin-bottom: 3px;
+  display: block;
+  object-fit: contain;
+}
+
+.goalBadge {
+  position: relative;
+  width: 178px;
+  min-height: 40px;
+  padding: 5px 18px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(211, 180, 226, 0.78);
+  border-radius: 999px;
+  background: rgba(255, 250, 255, 0.86);
+  color: rgba(111, 61, 150, 0.78);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow:
+    0 5px 10px rgba(158, 105, 188, 0.2),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.78);
 }
