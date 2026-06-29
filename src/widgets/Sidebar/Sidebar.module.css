@@ -60,12 +60,12 @@
 }
 
 .navItem:hover {
-  background: rgba(156, 100, 200, 0.075);
+  background: rgba(159, 114, 215, 0.065);
   transform: translateX(1px);
 }
 
 .active {
-  background: linear-gradient(90deg, rgba(156, 100, 200, 0.18), rgba(156, 100, 200, 0.08));
+  background: linear-gradient(90deg, rgba(159, 114, 215, 0.16), rgba(159, 114, 215, 0.07));
   color: #2b143e;
   box-shadow: none;
 }

@@ -1,8 +1,10 @@
 .panel {
   padding: 18px 16px;
+  border: 1px solid rgba(239, 229, 231, 0.64);
   background:
-    radial-gradient(circle at 86% 4%, rgba(255, 255, 255, 0.78), transparent 30%),
-    linear-gradient(135deg, rgba(250, 239, 220, 0.94), rgba(255, 249, 239, 0.9));
+    radial-gradient(circle at 86% 4%, rgba(255, 255, 255, 0.82), transparent 30%),
+    linear-gradient(135deg, rgba(252, 243, 228, 0.9), rgba(255, 251, 243, 0.92));
+  box-shadow: var(--shadow-soft);
 }
 
 .title {
@@ -25,7 +27,7 @@
   height: 30px;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 254, 251, 0.84);
+  background: rgba(255, 254, 251, 0.9);
   display: grid;
   place-items: center;
   color: #2a2230;
@@ -75,13 +77,13 @@
 }
 
 .soft {
-  background: #e9f2e3;
+  background: #edf6e8;
 }
 
 .active {
   color: white;
-  background: #ad75c7;
-  box-shadow: none;
+  background: #a56bd0;
+  box-shadow: 0 8px 18px rgba(165, 107, 208, 0.18);
 }
 
 .streak {
@@ -90,9 +92,10 @@
   min-height: 68px;
   margin-top: 16px;
   padding: 15px 18px 12px 74px;
-  border: 0;
+  border: 1px solid rgba(232, 207, 176, 0.46);
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(249, 225, 188, 0.78), rgba(255, 245, 229, 0.9));
+  background: linear-gradient(135deg, rgba(251, 229, 196, 0.74), rgba(255, 247, 233, 0.92));
+  box-shadow: 0 10px 24px rgba(180, 124, 52, 0.055);
 }
 
 .left {

@@ -1,31 +1,31 @@
 :root {
   --font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --bg: #fbf9f1;
-  --bg-soft: #f1eff3;
-  --surface: #fbf9f1;
-  --surface-strong: #fbf9f1;
-  --surface-warm: #f4e6cf;
-  --surface-soft: #f1eff3;
+  --bg: #FCF7F4;
+  --bg-soft: #fbf8f6;
+  --surface: #fffefa;
+  --surface-strong: #ffffff;
+  --surface-warm: #fff3df;
+  --surface-soft: #fbf7fa;
 
-  --stroke: #e9e0eb;
-  --stroke-strong: #dfd2da;
+  --stroke: #eee4e6;
+  --stroke-strong: #e3d7dc;
 
-  --text: #2e2438;
-  --muted: #6e6277;
-  --muted-2: #958b9d;
+  --text: #241d37;
+  --muted: #746b83;
+  --muted-2: #9a91a3;
 
-  --violet: #a97ad9;
-  --violet-dark: #6f3d96;
-  --violet-soft: #e9d8f7;
+  --violet: #9f72d7;
+  --violet-dark: #5d3d9a;
+  --violet-soft: #f5edf9;
 
-  --green: #84b97a;
-  --green-dark: #6ea865;
-  --green-soft: #e3f0df;
+  --green: #78b56f;
+  --green-dark: #5f934f;
+  --green-soft: #f2faee;
 
-  --gold: #d9ae5f;
-  --gold-dark: #bd7d18;
-  --gold-soft: #f6ebc7;
+  --gold: #dea84f;
+  --gold-dark: #c47f18;
+  --gold-soft: #fff5e4;
 
   --warning: #ff8a3d;
   --danger: #ff8a3d;
@@ -37,7 +37,8 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
-  --shadow-soft: 0 4px 16px rgba(47, 36, 56, 0.08);
+  --shadow-soft: 0 3px 3px rgba(60, 49, 80, 0.06);
+  --shadow-card: 0 3px 3px rgba(60, 49, 80, 0.06);
   --shadow: var(--shadow-soft);
   --shadow-small: var(--shadow-soft);
 

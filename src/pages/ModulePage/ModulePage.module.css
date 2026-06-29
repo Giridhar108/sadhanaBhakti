@@ -23,7 +23,7 @@
   background:
     linear-gradient(135deg, rgba(169, 122, 217, 0.10), rgba(132, 185, 122, 0.08)),
     var(--surface);
-  box-shadow: none;
+  box-shadow: var(--shadow-soft);
 }
 
 .hero span {

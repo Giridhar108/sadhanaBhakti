@@ -1,4 +1,4 @@
-import verseImg from '../../shared/assets/images/verseImg.png';
+import verseImg from '../../shared/assets/images/verseImg2.png';
 import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './MemorizationSection.module.css';
 

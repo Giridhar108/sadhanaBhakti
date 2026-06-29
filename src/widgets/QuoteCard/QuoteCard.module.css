@@ -3,12 +3,12 @@
   overflow: hidden;
   min-height: 112px;
   padding: 22px 28px 18px 126px;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.64);
   border-radius: var(--radius-xl);
   background:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.7), transparent 34%),
-    linear-gradient(135deg, rgba(247, 239, 248, 0.96), rgba(244, 238, 246, 0.9));
-  box-shadow: none;
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.76), transparent 34%),
+    linear-gradient(135deg, rgba(251, 246, 252, 0.94), rgba(248, 243, 250, 0.88));
+  box-shadow: var(--shadow-soft);
 }
 
 .krishna {
@@ -44,6 +44,6 @@
   bottom: -28px;
   width: 160px;
   height: 130px;
-  opacity: 0.22;
+  opacity: 0.18;
   color: var(--violet);
 }

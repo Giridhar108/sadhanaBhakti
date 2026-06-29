@@ -1,9 +1,9 @@
 .section {
   padding: 18px 18px 12px;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.82);
   border-radius: 20px;
-  background: var(--surface-soft);
-  box-shadow: none;
+  background: #fffdf9;
+  box-shadow: var(--shadow-card);
 }
 
 .header {
@@ -25,13 +25,13 @@
   flex: 0 0 auto;
   width: 66px;
   height: 50px;
-  color: #a26dde;
+  color: #9b6ed6;
   stroke-width: 1.35;
 }
 
 .titleGroup h2 {
   margin: 0;
-  color: #27215f;
+  color: #221d4f;
   font-size: 22px;
   font-weight: 900;
   line-height: 1.05;
@@ -40,7 +40,7 @@
 
 .titleGroup p {
   margin: 6px 0 0;
-  color: #8580b1;
+  color: #7f78aa;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
@@ -49,10 +49,10 @@
 .pill {
   min-width: 170px;
   padding: 9px 20px;
-  border: 0;
+  border: 1px solid rgba(232, 218, 239, 0.72);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.62);
-  color: #8f5ad3;
+  background: rgba(247, 239, 252, 0.78);
+  color: #8d5bd2;
   font-size: 14px;
   font-weight: 800;
   line-height: 1;
@@ -74,10 +74,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.72);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.66);
-  color: #33276d;
+  background: rgba(255, 255, 255, 0.82);
+  color: #251f57;
   font-size: 15px;
   font-weight: 850;
 }
@@ -87,10 +87,10 @@
   height: 40px;
   display: grid;
   place-items: center;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.72);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.66);
-  color: #6d56a5;
+  background: rgba(255, 255, 255, 0.82);
+  color: #7a65ac;
   box-shadow: none;
 }
 
@@ -99,8 +99,8 @@
 }
 
 .navBtn:last-of-type {
-  background: rgba(233, 216, 247, 0.72);
-  color: #6540a8;
+  background: rgba(241, 231, 251, 0.86);
+  color: #7250b4;
 }
 
 .navBtn svg {
@@ -120,7 +120,7 @@
   min-height: 265px;
   overflow: hidden;
   border-radius: 15px;
-  background: #f7edf4;
+  background: #fbf1f2;
 }
 
 .heroCard img {
@@ -141,13 +141,13 @@
   align-items: center;
   justify-content: center;
   padding: 28px;
-  color: #26206a;
+  color: #211d58;
   text-align: center;
 }
 
 .heroOverlay p {
   margin: 0 0 26px;
-  color: #29236a;
+  color: #211d58;
   font-size: 17px;
   font-weight: 800;
   line-height: 1.48;
@@ -161,13 +161,13 @@
   align-items: center;
   justify-content: center;
   gap: 13px;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.64);
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #4f3eac;
+  background: rgba(255, 255, 255, 0.94);
+  color: #6544b6;
   font-size: 16px;
   font-weight: 900;
-  box-shadow: none;
+  box-shadow: 0 10px 24px rgba(54, 42, 58, 0.06);
 }
 
 .eyeIcon {
@@ -201,9 +201,9 @@
 
 .scoreCard {
   padding: 12px 20px 10px;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.7);
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.76);
 }
 
 .scoreHead {
@@ -212,7 +212,7 @@
 
 .scoreHead h3 {
   margin: 0;
-  color: #29236a;
+  color: #211d58;
   font-size: 16px;
   font-weight: 900;
   line-height: 1.15;
@@ -220,7 +220,7 @@
 
 .scoreHead p {
   margin: 5px 0 0;
-  color: #8580b1;
+  color: #7f78aa;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.3;
@@ -239,11 +239,11 @@
   grid-template-columns: 46px 1fr;
   gap: 12px;
   align-items: center;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.62);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.72);
   text-align: left;
-  box-shadow: none;
+  box-shadow: 0 8px 18px rgba(54, 42, 58, 0.035);
 }
 
 .face {
@@ -251,9 +251,9 @@
   height: 41px;
   display: grid;
   place-items: center;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.58);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.72);
   font-size: 25px;
   line-height: 1;
 }
@@ -266,23 +266,27 @@
 }
 
 .red {
-  background: rgba(255, 236, 234, 0.9);
-  color: #d54b4b;
+  background: rgba(255, 244, 242, 0.72);
+  border-color: rgba(240, 116, 108, 0.18);
+  color: #e15353;
 }
 
 .orange {
-  background: rgba(255, 244, 225, 0.92);
-  color: #c87920;
+  background: rgba(255, 247, 235, 0.76);
+  border-color: rgba(226, 151, 59, 0.18);
+  color: #cc7d1e;
 }
 
 .amber {
-  background: rgba(255, 247, 219, 0.92);
-  color: #bd7d18;
+  background: rgba(255, 250, 232, 0.76);
+  border-color: rgba(222, 168, 79, 0.18);
+  color: #d29422;
 }
 
 .green {
-  background: rgba(237, 248, 229, 0.92);
-  color: #4d803f;
+  background: rgba(245, 252, 240, 0.76);
+  border-color: rgba(120, 181, 111, 0.18);
+  color: #5c9b50;
 }
 
 .note {
@@ -293,10 +297,10 @@
   grid-template-columns: 26px 1fr;
   gap: 11px;
   align-items: center;
-  border: 0;
+  border: 1px solid rgba(239, 229, 231, 0.62);
   border-radius: 12px;
-  background: rgba(247, 240, 253, 0.68);
-  color: #6f69a8;
+  background: rgba(253, 249, 253, 0.82);
+  color: #746ca8;
 }
 
 .note span {
@@ -304,10 +308,10 @@
   height: 23px;
   display: grid;
   place-items: center;
-  border: 0;
+  border: 1px solid rgba(232, 218, 239, 0.64);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  color: #9583f0;
+  background: rgba(255, 255, 255, 0.76);
+  color: #927ff0;
   font-size: 14px;
   font-weight: 900;
   font-style: normal;
@@ -330,20 +334,20 @@
   gap: 13px;
   align-items: center;
   overflow: hidden;
-  border: 0;
+  border: 1px solid rgba(228, 222, 213, 0.62);
   border-radius: 13px;
-  background: rgba(244, 250, 239, 0.72);
+  background: rgba(252, 255, 249, 0.92);
 }
 
 .footerIcon {
   width: 25px;
   height: 25px;
-  color: #7caf58;
+  color: #7ab867;
   stroke-width: 1.7;
 }
 
 .footer strong {
-  color: #3d7236;
+  color: #4d873f;
   font-size: 14px;
   font-weight: 900;
   white-space: nowrap;
@@ -352,12 +356,12 @@
 .footer span {
   width: 1px;
   height: 22px;
-  background: rgba(214, 209, 198, 0.92);
+  background: rgba(225, 219, 209, 0.86);
 }
 
 .footer p {
   margin: 0;
-  color: #6a6872;
+  color: #6f6a75;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.35;
@@ -366,7 +370,7 @@
 .footerWatermark {
   width: 54px;
   height: 40px;
-  color: rgba(126, 175, 88, 0.14);
+  color: rgba(126, 184, 103, 0.14);
   stroke-width: 1.15;
 }
 
