@@ -33,9 +33,9 @@
   align-items: center;
   gap: 10px;
   padding: 0 14px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: 22px;
-  background: rgba(255, 255, 252, 0.72);
+  background: var(--bg);
 }
 
 .search svg {
@@ -99,7 +99,7 @@
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 8px 20px rgba(75, 43, 39, 0.16);
+  box-shadow: none;
 }
 
 .profile svg {

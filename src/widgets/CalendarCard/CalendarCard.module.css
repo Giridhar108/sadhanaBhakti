@@ -20,9 +20,9 @@
 .roundBtn {
   width: 30px;
   height: 30px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: 50%;
-  background: #fffefa;
+  background: var(--bg);
   display: grid;
   place-items: center;
   color: #2a2230;
@@ -71,13 +71,13 @@
 }
 
 .soft {
-  background: var(--green-soft);
+  background: #e9f2e3;
 }
 
 .active {
   color: white;
-  background: var(--violet);
-  box-shadow: 0 9px 18px rgba(156, 100, 200, 0.24);
+  background: #ad75c7;
+  box-shadow: none;
 }
 
 .streak {
@@ -88,7 +88,7 @@
   padding: 15px 18px 12px 74px;
   border: 1px solid #f1dfc4;
   border-radius: var(--radius-md);
-  background: linear-gradient(90deg, #fff5e5, #fffaf4);
+  background: var(--bg);
 }
 
 .left {

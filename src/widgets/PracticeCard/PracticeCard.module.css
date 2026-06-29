@@ -1,9 +1,21 @@
 .card {
   padding: 16px 18px 14px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: var(--radius-xl);
-  background: var(--surface);
-  box-shadow: var(--shadow-small);
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: none;
+}
+
+.card:has(.green) {
+  background: #fbfdf7;
+}
+
+.card:has(.purple) {
+  background: #fff8fb;
+}
+
+.card:has(.gold) {
+  background: #fffaf1;
 }
 
 .head {
@@ -76,7 +88,7 @@
 .miniBar {
   height: 6px;
   border-radius: 99px;
-  background: #eaddec;
+  background: #ecdce6;
   margin: 12px 0 8px;
   overflow: hidden;
 }
@@ -135,17 +147,17 @@
   color: #fff;
   font-size: 13px;
   font-weight: 760;
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.07);
+  box-shadow: none;
 }
 
 .cta.green {
-  background: linear-gradient(180deg, #75ba82, #58a56b);
+  background: #84b97a;
 }
 
 .cta.purple {
-  background: linear-gradient(180deg, #ae72d2, #9560c4);
+  background: #a97ad9;
 }
 
 .cta.gold {
-  background: linear-gradient(180deg, #f0bd60, #e4a947);
+  background: #d9ae5f;
 }

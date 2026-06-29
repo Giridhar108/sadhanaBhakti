@@ -4,7 +4,6 @@ import friend3 from '../../shared/assets/images/friend3.png';
 import friend4 from '../../shared/assets/images/friend4.png';
 import friend5 from '../../shared/assets/images/friend5.png';
 import { Card } from '../../shared/ui/Card/Card';
-import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './FriendsCard.module.css';
 
 type Friend = {
@@ -43,8 +42,6 @@ export function FriendsCard() {
           </div>
         ))}
       </div>
-
-      <button className={styles.findBtn} type="button"><Icon name="plus" /> Найти друзей</button>
     </Card>
   );
 }

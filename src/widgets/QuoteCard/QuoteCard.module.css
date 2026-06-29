@@ -3,10 +3,10 @@
   overflow: hidden;
   min-height: 112px;
   padding: 22px 28px 18px 126px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: var(--radius-xl);
-  background: linear-gradient(105deg, rgba(250, 232, 255, 0.62), rgba(255, 253, 248, 0.72));
-  box-shadow: var(--shadow-small);
+  background: #fff8f5;
+  box-shadow: none;
 }
 
 .krishna {
@@ -17,7 +17,7 @@
   height: 76px;
   object-fit: cover;
   border-radius: 50%;
-  box-shadow: 0 12px 28px rgba(94, 59, 67, 0.15);
+  box-shadow: none;
 }
 
 .card p {

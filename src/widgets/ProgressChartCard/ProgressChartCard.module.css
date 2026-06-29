@@ -23,9 +23,9 @@
   padding: 2px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: 99px;
-  background: rgba(255, 255, 252, 0.62);
+  background: var(--bg);
 }
 
 .tabs span {
@@ -39,16 +39,16 @@
 
 .tabs .active {
   color: #321b42;
-  background: var(--violet-soft);
+  background: #f2e6f2;
 }
 
 .select {
   min-width: 124px;
   height: 34px;
   padding: 0 12px;
-  border: 1px solid var(--stroke);
+  border: 1px solid #eadbd8;
   border-radius: 10px;
-  background: #fffefa;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -74,7 +74,7 @@
 }
 
 .axis {
-  stroke: #e8ddd8;
+  stroke: #eaded8;
   stroke-dasharray: 4 4;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .tooltip {
-  filter: drop-shadow(0 10px 22px rgba(70, 45, 75, 0.12));
+  filter: none;
 }
 
 .legend {

@@ -109,19 +109,6 @@ export function MemorizationSection() {
         ))}
       </div>
 
-      <div className={styles.dots} aria-label="Слайды стихов">
-        {Array.from({ length: slidesCount }, (_, index) => (
-          <button
-            aria-label={`Показать слайд ${index + 1}`}
-            aria-current={activeSlide === index}
-            className={activeSlide === index ? styles.activeDot : ''}
-            key={index}
-            onClick={() => setActiveSlide(index)}
-            type="button"
-          />
-        ))}
-      </div>
-
       <button className={`${styles.sliderBtn} ${styles.next}`} type="button" aria-label="Следующие стихи" onClick={showNextSlide}>
         <Icon name="chevron" />
       </button>
