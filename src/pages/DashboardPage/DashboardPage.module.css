@@ -10,6 +10,8 @@
 .dashboard {
   padding: 16px 18px 24px;
   display: grid;
+  grid-auto-rows: max-content;
+  align-content: start;
   gap: 12px;
 }
 

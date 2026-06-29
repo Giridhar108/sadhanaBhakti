@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import profile from '../../shared/assets/images/profile.png';
 import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './Header.module.css';
@@ -11,10 +12,9 @@ export function Header() {
       </div>
 
       <div className={styles.actions}>
-        <label className={styles.search}>
-          <Icon name="search" />
-          <input placeholder="Поиск практики" />
-        </label>
+        <Link className={styles.settingsBtn} to="/settings" aria-label="Настройки">
+          <Icon name="settings" />
+        </Link>
 
         <button className={styles.iconBtn} type="button" aria-label="Уведомления">
           <Icon name="bell" />

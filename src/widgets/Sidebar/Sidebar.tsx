@@ -22,7 +22,6 @@ const navItems: NavItem[] = [
   { label: 'Календарь', icon: 'calendar', href: '/calendar' },
   { label: 'Прогресс', icon: 'chart', href: '/statistics' },
   { label: 'Друзья', icon: 'users', href: '/profile' },
-  { label: 'Настройки', icon: 'settings', href: '/settings' },
 ];
 
 export function Sidebar({ isStatic = false }: SidebarProps) {
