@@ -9,6 +9,8 @@
 
 .dashboard {
   padding: 16px 18px 24px;
+  display: grid;
+  gap: 12px;
 }
 
 .contentGrid {

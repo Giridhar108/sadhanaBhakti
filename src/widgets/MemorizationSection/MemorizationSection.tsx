@@ -1,117 +1,87 @@
-import { useMemo, useState } from 'react';
-import { Card } from '../../shared/ui/Card/Card';
-import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
+import verseImg from '../../shared/assets/images/verseImg.png';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './MemorizationSection.module.css';
 
-type Verse = {
-  ref: string;
-  text: string;
-  description: string;
-  progress: number;
-  icon: IconName;
-};
-
-const verses: Verse[] = [
-  {
-    ref: 'Бхагавад-гита 2.47',
-    text: 'karmaṇy evādhikāras te\nmā phaleṣu kadācana\nmā karma-phala-hetur bhūr\nmā te saṅgo stv akarmaṇi',
-    description: 'Тебе дано право лишь на выполнение своих обязанностей, но не на плоды их.',
-    progress: 60,
-    icon: 'mala',
-  },
-  {
-    ref: 'Шримад-Бхагаватам 1.2.6',
-    text: 'sa vai puṁsāṁ paro dharmo\nyato bhaktir adhokṣaje\nahaituky apratihatā yayā\nātmā suprasīdati',
-    description: 'Высшая обязанность человека - развивать чистую преданность Верховному Господу.',
-    progress: 40,
-    icon: 'scroll',
-  },
-  {
-    ref: 'Шримад-Бхагаватам 11.29.34',
-    text: 'mat-karma-kṛn mat-paramo\nmad-bhaktaḥ saṅga-varjitaḥ\nnirvairaḥ sarva-bhūteṣu\nyaḥ sa mām eti pāṇḍava',
-    description: 'Держи ум в практике, избегая лишнего, и постепенно укрепляй преданность.',
-    progress: 75,
-    icon: 'target',
-  },
-  {
-    ref: 'Бхагавад-гита 4.9',
-    text: 'janma karma ca me divyam\nevaṁ yo vetti tattvataḥ\ntyaktvā dehaṁ punar janma\nnaiti mām eti so rjuna',
-    description: 'Понимание божественной природы Господа освобождает от повторного рождения.',
-    progress: 35,
-    icon: 'lotus',
-  },
-  {
-    ref: 'Бхагавад-гита 9.22',
-    text: 'ananyāś cintayanto māṁ\nye janāḥ paryupāsate\nteṣāṁ nityābhiyuktānāṁ\nyoga-kṣemaṁ vahāmy aham',
-    description: 'Господь Сам заботится о тех, кто с постоянством и любовью помнит о Нем.',
-    progress: 55,
-    icon: 'home',
-  },
-  {
-    ref: 'Шримад-Бхагаватам 1.2.17',
-    text: 'śṛṇvatāṁ sva-kathāḥ kṛṣṇaḥ\npuṇya-śravaṇa-kīrtanaḥ\nhṛdy antaḥ-stho hy abhadrāṇi\nvidhunoti suhṛt satām',
-    description: 'Слушание о Кришне очищает сердце и мягко возвращает внимание к духовной жизни.',
-    progress: 20,
-    icon: 'book',
-  },
-];
-
-const cardsPerSlide = 3;
+const grades = [
+  { emoji: '☹', title: 'Не помню', tone: 'red' },
+  { emoji: '😐', title: 'С ошибками', tone: 'orange' },
+  { emoji: '☺', title: 'Почти идеально', tone: 'amber' },
+  { emoji: '🙂', title: 'Легко вспомнил', tone: 'green' },
+] as const;
 
 export function MemorizationSection() {
-  const slidesCount = Math.ceil(verses.length / cardsPerSlide);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const visibleVerses = useMemo(
-    () => verses.slice(activeSlide * cardsPerSlide, activeSlide * cardsPerSlide + cardsPerSlide),
-    [activeSlide],
-  );
-
-  const showPrevSlide = () => {
-    setActiveSlide((slide) => (slide === 0 ? slidesCount - 1 : slide - 1));
-  };
-
-  const showNextSlide = () => {
-    setActiveSlide((slide) => (slide + 1) % slidesCount);
-  };
-
   return (
-    <Card className={styles.panel}>
-      <div className={styles.head}>
-        <h2>Стихи для запоминания</h2>
-        <a href="/verses">Смотреть все</a>
+    <section className={styles.section} aria-labelledby="memorization-title">
+      <header className={styles.header}>
+        <div className={styles.titleGroup}>
+          <Icon name="lotus" className={styles.lotusIcon} />
+          <div>
+            <h2 id="memorization-title">Проверь себя</h2>
+            <p>Вспомни стих полностью без подсказок</p>
+          </div>
+        </div>
+
+        <span className={styles.pill}>Бхагавад-гита 3.27</span>
+
+        <div className={styles.controls} aria-label="Навигация по стихам">
+          <span className={styles.counter}>1 / 3</span>
+          <button className={styles.navBtn} type="button" aria-label="Предыдущий стих">
+            <Icon name="chevron" />
+          </button>
+          <button className={styles.navBtn} type="button" aria-label="Следующий стих">
+            <Icon name="chevron" />
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.content}>
+        <article className={styles.heroCard}>
+          <img src={verseImg} alt="" aria-hidden="true" />
+          <div className={styles.heroOverlay}>
+            <p>
+              Попробуй вспомнить стих целиком.
+              <br />
+              Когда будешь готов — открой ответ.
+            </p>
+            <button className={styles.answerBtn} type="button">
+              <span className={styles.eyeIcon} aria-hidden="true" />
+              Показать ответ
+            </button>
+          </div>
+          <Icon name="lotus" className={styles.heroLotus} />
+        </article>
+
+        <aside className={styles.scoreCard}>
+          <div className={styles.scoreHead}>
+            <h3>Оцени, как получилось</h3>
+            <p>От этого зависит, когда стих появится снова</p>
+          </div>
+
+          <div className={styles.gradeGrid}>
+            {grades.map((grade) => (
+              <button className={`${styles.grade} ${styles[grade.tone]}`} type="button" key={grade.title}>
+                <span className={styles.face}>{grade.emoji}</span>
+                <span>
+                  <strong>{grade.title}</strong>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.note}>
+            <span aria-hidden="true">i</span>
+            <p>Система интервального повторения подберёт оптимальное время для следующего повторения.</p>
+          </div>
+        </aside>
       </div>
 
-      <button className={`${styles.sliderBtn} ${styles.prev}`} type="button" aria-label="Предыдущие стихи" onClick={showPrevSlide}>
-        <Icon name="chevron" />
-      </button>
-
-      <div className={styles.grid} aria-live="polite">
-        {visibleVerses.map((verse) => (
-          <article className={styles.verseCard} key={verse.ref}>
-            <div className={styles.verseTop}>
-              <div className={styles.verseIcon}>
-                <Icon name={verse.icon} />
-              </div>
-              <div>
-                <p className={styles.verseRef}>{verse.ref}</p>
-                <p className={styles.verseText}>{verse.text}</p>
-              </div>
-            </div>
-            <p className={styles.desc}>{verse.description}</p>
-            <div className={styles.progressLine}>
-              <span>Прогресс запоминания</span>
-              <b>{verse.progress}%</b>
-            </div>
-            <div className={styles.bar}>
-              <i style={{ width: `${verse.progress}%` }} />
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <button className={`${styles.sliderBtn} ${styles.next}`} type="button" aria-label="Следующие стихи" onClick={showNextSlide}>
-        <Icon name="chevron" />
-      </button>
-    </Card>
+      <footer className={styles.footer}>
+        <Icon name="lotus" className={styles.footerIcon} />
+        <strong>Качество &gt; Количество</strong>
+        <span />
+        <p>Лучше вспомнить один раз с усилием, чем читать десять раз подряд. Старайся вспоминать, а не просто перечитывать.</p>
+        <Icon name="lotus" className={styles.footerWatermark} />
+      </footer>
+    </section>
   );
 }

@@ -15,9 +15,9 @@ export function DashboardPage() {
       <Sidebar />
       <main className={styles.dashboard}>
         <Header />
+        <MemorizationSection />
         <div className={styles.contentGrid}>
           <section className={styles.mainCol}>
-            <MemorizationSection />
             <ProgressChartCard />
             <PracticeCardsGrid />
             <QuoteCard />

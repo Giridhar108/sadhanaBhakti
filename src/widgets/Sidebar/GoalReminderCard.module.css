@@ -30,7 +30,7 @@
 
 .card img {
   width: 128px;
-  margin-top: auto;
+  margin-top: 16px;
   display: block;
   object-fit: contain;
   opacity: 0.72;

@@ -14,6 +14,7 @@ export type PracticeCardData = {
   stats: Array<{
     label: string;
     value: string;
+    suffix?: string;
   }>;
   actionLabel: string;
 };
@@ -37,10 +38,12 @@ export function PracticeCard({ card }: PracticeCardProps) {
 
       <div className={styles.body}>
         <ProgressRing value={card.progress} current={card.current} label={card.ringLabel} tone={card.tone} />
-        <div>
+        <div className={styles.progressInfo}>
           <div className={styles.metricTitle}>{card.goalLabel}<strong>{card.goalValue}</strong></div>
-          <div className={`${styles.miniBar} ${styles[card.tone]}`}><i style={{ width: `${card.progress}%` }} /></div>
-          <div className={styles.percent}>{card.progress}%</div>
+          <div className={styles.progressLine}>
+            <div className={`${styles.miniBar} ${styles[card.tone]}`}><i style={{ width: `${card.progress}%` }} /></div>
+            <div className={styles.percent}>{card.progress}%</div>
+          </div>
         </div>
       </div>
 
@@ -48,7 +51,7 @@ export function PracticeCard({ card }: PracticeCardProps) {
         {card.stats.map((stat) => (
           <div key={stat.label}>
             <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
+            <strong>{stat.value}{stat.suffix ? <em>{stat.suffix}</em> : null}</strong>
           </div>
         ))}
       </div>
