@@ -1,21 +1,21 @@
 .card {
   padding: 16px 18px 14px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: var(--radius-xl);
   background: rgba(255, 253, 249, 0.9);
   box-shadow: none;
 }
 
 .card:has(.green) {
-  background: #fbfdf7;
+  background: linear-gradient(135deg, rgba(239, 248, 232, 0.92), rgba(255, 253, 246, 0.9));
 }
 
 .card:has(.purple) {
-  background: #fff8fb;
+  background: linear-gradient(135deg, rgba(248, 239, 250, 0.94), rgba(255, 250, 253, 0.9));
 }
 
 .card:has(.gold) {
-  background: #fffaf1;
+  background: linear-gradient(135deg, rgba(255, 242, 218, 0.95), rgba(255, 251, 242, 0.9));
 }
 
 .head {

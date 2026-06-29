@@ -1,6 +1,9 @@
 .panel {
   position: relative;
   padding: 16px 50px 18px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.82), transparent 34%),
+    linear-gradient(135deg, rgba(247, 239, 248, 0.96), rgba(251, 244, 250, 0.9));
 }
 
 .head {
@@ -33,9 +36,9 @@
 .verseCard {
   min-height: 242px;
   padding: 15px 16px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: var(--radius-lg);
-  background: var(--bg);
+  background: rgba(255, 254, 251, 0.82);
   box-shadow: none;
 }
 
@@ -121,9 +124,9 @@
   transform: translateY(-50%);
   width: 30px;
   height: 30px;
-  border: 1px solid var(--stroke);
+  border: 0;
   border-radius: 50%;
-  background: var(--bg);
+  background: rgba(255, 254, 251, 0.9);
   display: grid;
   place-items: center;
   color: #3e3546;

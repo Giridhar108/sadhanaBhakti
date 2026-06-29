@@ -1,5 +1,6 @@
 .panel {
   padding: 18px 16px;
+  background: linear-gradient(135deg, rgba(249, 241, 250, 0.95), rgba(255, 250, 253, 0.9));
 }
 
 .head {
