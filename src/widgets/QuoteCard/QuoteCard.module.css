@@ -3,9 +3,9 @@
   overflow: hidden;
   min-height: 112px;
   padding: 22px 28px 18px 126px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: var(--radius-xl);
-  background: #fff8f5;
+  background: #f1eff3;
   box-shadow: none;
 }
 
