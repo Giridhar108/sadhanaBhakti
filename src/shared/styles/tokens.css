@@ -1,12 +1,12 @@
 :root {
   --font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --bg: #FEFBFA;
-  --bg-soft: #f7f0fa;
-  --surface: #ffffff;
-  --surface-strong: #ffffff;
-  --surface-warm: #fcfaf8;
-  --surface-soft: #f7f0fa;
+  --bg: #fbf9f1;
+  --bg-soft: #f1eff3;
+  --surface: #fbf9f1;
+  --surface-strong: #fbf9f1;
+  --surface-warm: #f4e6cf;
+  --surface-soft: #f1eff3;
 
   --stroke: #e9e0eb;
   --stroke-strong: #dfd2da;
