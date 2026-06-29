@@ -3,9 +3,11 @@
   overflow: hidden;
   min-height: 112px;
   padding: 22px 28px 18px 126px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: var(--radius-xl);
-  background: #fff8f5;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.7), transparent 34%),
+    linear-gradient(135deg, rgba(247, 239, 248, 0.96), rgba(244, 238, 246, 0.9));
   box-shadow: none;
 }
 

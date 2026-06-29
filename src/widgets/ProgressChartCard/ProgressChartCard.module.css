@@ -1,5 +1,7 @@
 .panel {
   padding: 16px 18px 10px;
+  background: rgba(255, 253, 249, 0.7);
+  box-shadow: none;
 }
 
 .head {
@@ -23,9 +25,9 @@
   padding: 2px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: 99px;
-  background: var(--bg);
+  background: rgba(244, 235, 242, 0.74);
 }
 
 .tabs span {
@@ -39,22 +41,23 @@
 
 .tabs .active {
   color: #321b42;
-  background: #f2e6f2;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .select {
   min-width: 124px;
   height: 34px;
   padding: 0 12px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: 10px;
-  background: var(--bg);
+  background: rgba(255, 254, 251, 0.86);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   font-size: 12px;
   font-weight: 720;
+  box-shadow: none;
 }
 
 .select svg {

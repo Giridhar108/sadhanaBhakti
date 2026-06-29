@@ -1,6 +1,6 @@
 .card {
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: var(--radius-xl);
-  background: var(--bg);
+  background: rgba(255, 253, 249, 0.72);
   box-shadow: none;
 }

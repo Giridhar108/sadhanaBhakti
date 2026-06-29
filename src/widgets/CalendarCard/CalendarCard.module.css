@@ -1,5 +1,8 @@
 .panel {
   padding: 18px 16px;
+  background:
+    radial-gradient(circle at 86% 4%, rgba(255, 255, 255, 0.78), transparent 30%),
+    linear-gradient(135deg, rgba(250, 239, 220, 0.94), rgba(255, 249, 239, 0.9));
 }
 
 .title {
@@ -20,12 +23,13 @@
 .roundBtn {
   width: 30px;
   height: 30px;
-  border: 1px solid #eadbd8;
+  border: 0;
   border-radius: 50%;
-  background: var(--bg);
+  background: rgba(255, 254, 251, 0.84);
   display: grid;
   place-items: center;
   color: #2a2230;
+  box-shadow: none;
 }
 
 .roundBtn:first-child svg {
@@ -86,18 +90,19 @@
   min-height: 68px;
   margin-top: 16px;
   padding: 15px 18px 12px 74px;
-  border: 1px solid #f1dfc4;
+  border: 0;
   border-radius: var(--radius-md);
-  background: var(--bg);
+  background: linear-gradient(135deg, rgba(249, 225, 188, 0.78), rgba(255, 245, 229, 0.9));
 }
 
 .left {
   position: absolute;
   left: 12px;
-  top: 11px;
-  width: 50px;
-  height: 48px;
-  object-fit: contain;
+  top: 13px;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  object-position: left center;
   mix-blend-mode: multiply;
 }
 
