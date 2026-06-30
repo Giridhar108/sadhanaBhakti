@@ -13,11 +13,12 @@
   grid-auto-rows: max-content;
   align-content: start;
   gap: 12px;
+  --top-card-height: 338px;
 }
 
 .contentGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(700px, 1fr) 326px;
   gap: 14px;
   align-items: start;
 }
@@ -28,12 +29,17 @@
   gap: 12px;
 }
 
+.mainCol > :first-child,
+.sideCol > :first-child {
+  height: var(--top-card-height);
+}
+
 @media (max-width: 1280px) {
   .app {
     grid-template-columns: 220px minmax(960px, 1fr);
   }
 
   .contentGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(640px, 1fr) 314px;
   }
 }
