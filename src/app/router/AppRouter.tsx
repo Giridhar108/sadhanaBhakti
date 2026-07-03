@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { readAuthUser } from '../../entities/user/model/auth';
 import styles from './AppRouter.module.css';
 
 const DashboardPage = lazy(() =>
@@ -17,6 +18,7 @@ const CalendarPage = lazy(() => import('../../pages/CalendarPage/CalendarPage'))
 const StatisticsPage = lazy(() => import('../../pages/StatisticsPage/StatisticsPage'));
 const ProfilePage = lazy(() => import('../../pages/ProfilePage/ProfilePage'));
 const SettingsPage = lazy(() => import('../../pages/SettingsPage/SettingsPage'));
+const AuthPage = lazy(() => import('../../pages/AuthPage/AuthPage'));
 
 function RouteFallback() {
   return (
@@ -30,6 +32,16 @@ function RouteFallback() {
 function RoutedContent() {
   const location = useLocation();
   const legacyPreview = new URLSearchParams(location.search).get('preview') === 'components';
+  const authUser = readAuthUser();
+  const isAuthRoute = location.pathname.startsWith('/auth') || location.pathname === '/login' || location.pathname === '/register';
+
+  if (!authUser?.isOnboarded && !isAuthRoute) {
+    return <Navigate to="/auth/register" replace />;
+  }
+
+  if (authUser?.isOnboarded && isAuthRoute) {
+    return <Navigate to="/" replace />;
+  }
 
   if (legacyPreview) {
     return <ComponentsPreviewPage />;
@@ -46,6 +58,15 @@ function RoutedContent() {
       <Route path="/statistics" element={<StatisticsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/login" element={<AuthPage />} />
+      <Route path="/auth/register" element={<AuthPage />} />
+      <Route path="/auth/onboarding" element={<Navigate to="/auth/onboarding/name" replace />} />
+      <Route path="/auth/onboarding/name" element={<AuthPage />} />
+      <Route path="/auth/onboarding/practices" element={<AuthPage />} />
+      <Route path="/auth/onboarding/goals" element={<AuthPage />} />
+      <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+      <Route path="/register" element={<Navigate to="/auth/register" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

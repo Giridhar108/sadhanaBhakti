@@ -28,7 +28,7 @@ function formatEventDate(dateKey: string) {
 }
 
 export default function CalendarPage() {
-  useDocumentTitle('Календарь - Путь практики');
+  useDocumentTitle('Календарь - Садхана Бхакти');
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
 
   useEffect(() => {

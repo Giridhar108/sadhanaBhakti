@@ -5,7 +5,7 @@ import { ModulePage } from '../ModulePage/ModulePage';
 import panelStyles from '../ModulePage/modulePanels.module.css';
 
 export default function StatisticsPage() {
-  useDocumentTitle('Прогресс - Путь практики');
+  useDocumentTitle('Прогресс - Садхана Бхакти');
   const { data } = useProgressSummary();
   const summary = data ?? { japaPercent: 75, booksPercent: 60, versesPercent: 50, streakDays: 25 };
 

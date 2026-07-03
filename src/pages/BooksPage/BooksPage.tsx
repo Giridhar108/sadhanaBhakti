@@ -9,7 +9,7 @@ const books = [
 ];
 
 export default function BooksPage() {
-  useDocumentTitle('Книги и стихи - Путь практики');
+  useDocumentTitle('Книги и стихи - Садхана Бхакти');
 
   return (
     <ModulePage

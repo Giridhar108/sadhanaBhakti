@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom';
 import profile from '../../shared/assets/images/profile.png';
+import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
 import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './Header.module.css';
 
 export function Header() {
+  const authUser = readAuthUser();
+  const displayName = getUserDisplayName(authUser);
+
   return (
     <header className={styles.topbar}>
       <div>
-        <h1>Сегодняшняя практика</h1>
+        <h1>Харе Кришна, {displayName}</h1>
         <p>Продолжай спокойно — каждый день уже часть пути.</p>
       </div>
 
@@ -22,8 +26,8 @@ export function Header() {
         </button>
 
         <button className={styles.profile} type="button">
-          <img src={profile} alt="Ананда дас" />
-          <span>Ананда дас</span>
+          <img src={profile} alt={displayName} />
+          <span>{displayName}</span>
           <Icon name="chevron" />
         </button>
       </div>

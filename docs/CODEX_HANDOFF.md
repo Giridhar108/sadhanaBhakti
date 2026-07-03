@@ -2,45 +2,52 @@
 
 ## 1. Что уже сделано в проекте
 
-- Проект `hare-krishna` - React + Vite + TypeScript dashboard для практики: джапа, книги, стихи, календарь, прогресс.
+- Проект `hare-krishna` - React + Vite + TypeScript dashboard для духовной практики: джапа, книги, стихи, календарь, прогресс, профиль и настройки.
 - Текущая ветка: `design`.
-- Последний коммит: `1ad8de6 Add verse image dashboard block`.
-- Архитектура разложена по слоям `app`, `pages`, `widgets`, `features`, `entities`, `shared`.
-- Есть маршруты `/`, `/components`, `/japa`, `/books`, `/verses`, `/calendar`, `/statistics`, `/profile`, `/settings`.
+- Последний коммит: `10ae536 Enhance settings and practice calendar`.
+- Основные маршруты: `/`, `/components`, `/japa`, `/books`, `/verses`, `/calendar`, `/statistics`, `/profile`, `/settings`.
+- Главная страница показывает `Header`, слева `VerseImageBlock`, `PracticeCardsGrid`, `QuoteCard`, справа `CalendarCard`.
+- `CalendarCard` стал настоящим календарем: считает дни месяца, переключает месяцы, подсвечивает текущий день, выбранный день и дни с событиями.
+- В `/settings` добавлена карточная страница настроек в мягком devotional-стиле.
+- В настройках можно добавлять календарные события; они сохраняются в `localStorage`, отображаются в календаре и на странице `/calendar`.
+- В настройках можно добавлять любое количество стихов дня: картинка с круглым crop-попапом, текст стиха и источник.
+- `QuoteCard` на главной читает список стихов дня и плавно сменяет их каждые 2 минуты. Если список пустой, показывает стандартный стих.
+- Бренд-зона `Садхана Бхакти` в сайдбаре теперь кликабельна и ведет на `/`.
 - `Header`: поиск убран, настройки ведут на `/settings`.
-- `Sidebar`: пункт `Настройки` убран.
-- На главном dashboard сейчас показываются `Header`, затем основная сетка: слева `VerseImageBlock`, `PracticeCardsGrid`, `QuoteCard`; справа `CalendarCard`.
-- `MemorizationSection` с интерактивной проверкой стихов 3.27-3.30 сохранен в проекте, но сейчас закомментирован в `DashboardPage.tsx`.
-- Отдельный блок `VerseImageBlock` добавлен и использует `src/shared/assets/images/verseImg2.png`.
-- `VerseImageBlock` сделан одной высоты с календарем через `--top-card-height`; картинка использует `object-fit: cover`.
-- `ProgressChartCard`, `FriendsCard`, `RemindersCard` скрыты с главного dashboard.
-- В текущем рабочем дереве есть незакоммиченные изменения: из `CalendarCard` удален нижний streak-блок `25 дней подряд`.
+- `Sidebar`: отдельный пункт `Настройки` не возвращать без явной просьбы.
+- `MemorizationSection` сохранен в проекте, но сейчас не выводится на главной.
 
 ## 2. Какие файлы важны
 
 - `AGENTS.md` - правила работы в проекте.
 - `docs/design-system.md` - дизайн-система и визуальные правила.
-- `docs/CODEX_HANDOFF.md` - этот handoff.
-- `src/shared/styles/tokens.css` - глобальные цвета, радиусы, тени.
-- `src/pages/DashboardPage/DashboardPage.tsx` - состав главного dashboard.
-- `src/pages/DashboardPage/DashboardPage.module.css` - сетка dashboard и высота верхней пары блоков.
-- `src/widgets/VerseImageBlock/` - отдельная картинка `verseImg2.png`.
-- `src/widgets/MemorizationSection/` - интерактивный блок проверки стихов, сейчас не выводится.
-- `src/widgets/CalendarCard/` - календарь; streak-блок удален, но изменение пока не закоммичено.
-- `src/widgets/PracticeCardsGrid/`, `PracticeCard/`, `QuoteCard/` - видимые нижние блоки dashboard.
-- `src/shared/assets/images/verseImg2.png` - большая иллюстрация для `VerseImageBlock` и текущего `MemorizationSection`.
+- `docs/assets/design-system-reference.png` - визуальный референс дизайн-системы.
+- `src/shared/styles/tokens.css` - глобальные цвета, радиусы, тени, spacing.
+- `src/shared/styles/globals.css` - глобальные стили; там есть `scrollbar-gutter: stable`.
+- `src/pages/DashboardPage/DashboardPage.tsx` и `.module.css` - состав и сетка главной.
+- `src/pages/SettingsPage/SettingsPage.tsx` и `.module.css` - новая карточная страница настроек.
+- `src/pages/CalendarPage/CalendarPage.tsx` - отдельная страница календаря и список событий.
+- `src/widgets/CalendarCard/` - настоящий календарь на dashboard.
+- `src/widgets/QuoteCard/` - блок стиха дня с автосменой.
+- `src/widgets/Sidebar/` - навигация и кликабельный бренд.
+- `src/shared/lib/calendarEvents.ts` - localStorage-хранилище календарных событий.
+- `src/shared/lib/dailyVerse.ts` - localStorage-хранилище списка стихов дня.
+- `src/shared/assets/images/` - текущие изображения: `verseImg2.png`, `lotus-soft.png`, `lotus-logo.png`, `krishna.png` и другие.
 
 ## 3. Какие дизайн-решения приняты
 
-- Стиль: мягкий, devotional, пастельный, молочно-ivory, без ощущения корпоративной аналитики.
-- Main container остается `max-width: 1540px` и центрируется.
-- Блоки должны быть светлыми, с тонкими границами и мягкими тенями.
-- Акценты: lavender, green, gold.
-- Не использовать Tailwind и не добавлять зависимости без сильной причины.
-- CSS Modules остаются основным способом стилизации компонентов.
-- Точечные правки делать только в нужном компоненте, без случайного редизайна всего dashboard.
-- Для `VerseImageBlock` принято: картинка обрезается через `object-fit: cover` и визуально совпадает по высоте с календарем.
-- Для `CalendarCard` принято убрать нижнюю streak-карточку, оставив только календарную сетку.
+- Общий стиль: мягкий, спокойный, devotional, pastel, premium, без корпоративной аналитики.
+- Основной фон теплый молочный/ivory; карточки светлые, с тонкими границами и мягкими тенями.
+- Акценты: lavender, green, gold из токенов.
+- Main app container: `max-width: 1540px`, центрированный.
+- Используется Nunito как базовый UI-шрифт.
+- Компонентные стили делать через CSS Modules.
+- Страница настроек выбрана в варианте `Devotional Cards`: крупные мягкие карточки, иконки, лотосные watermark, понятные формы.
+- `CalendarCard` должен оставаться компактным и помещаться в верхнюю правую карточку dashboard.
+- Дни календаря с событиями отмечаются зеленым фоном и маленькой золотой точкой.
+- `QuoteCard` построен сеткой: слева круглая картинка, справа текст и источник, чтобы изображение не наезжало на текст.
+- Лотос в `QuoteCard` использует `lotus-soft.png`.
+- Скроллбар не должен быть видимым постоянно; для стабильности layout используется `scrollbar-gutter: stable`.
 
 ## 4. Какие команды запускать
 
@@ -66,20 +73,28 @@ http://localhost:5173/profile
 http://localhost:5173/settings
 ```
 
-Для скриншота:
+Скриншот через Chrome:
 
 ```bash
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --hide-scrollbars --screenshot="dashboard-current-screenshot.png" --window-size=1540,2200 http://localhost:5173/
 ```
 
+После любых изменений запускать:
+
+```bash
+npm run build
+git status --short
+```
+
 ## 5. Что нужно делать дальше
 
-- Если пользователь подтвердит текущее состояние календаря, закоммитить удаление streak-блока из `CalendarCard`.
-- Проверить визуально, устраивает ли высота `VerseImageBlock` относительно календаря.
-- Решить, нужен ли на главной странице `MemorizationSection`; сейчас он закомментирован, но сохранен.
-- Если `MemorizationSection` возвращать, не потерять логику 4 стихов, стрелки, показ/скрытие ответа и tooltip.
-- После любых изменений запускать `npm run build`.
-- Перед коммитом проверять `git status`, чтобы не зацепить временные скриншоты или лишние ассеты.
+- Визуально проверить `/settings` после добавления нескольких стихов дня: длинные тексты, несколько картинок, удаление, пустое состояние.
+- При необходимости уплотнить страницу настроек по высоте, если карточки покажутся слишком воздушными.
+- Проверить `QuoteCard` с 2-3 стихами: fade-переход, отсутствие наезда картинки на текст, длинные источники.
+- Проверить `/calendar`: добавление событий в настройках, подсветка дней, список событий.
+- Решить, нужен ли возврат `MemorizationSection` на главную. Если возвращать, не потерять логику 4 стихов, стрелки, показ/скрытие ответа и tooltip.
+- При каждом изменении сохранять точечность: менять только нужный компонент и его CSS.
+- Перед новым коммитом проверять `git status`, чтобы не добавить `dist`, screenshots или временные файлы.
 
 ## 6. Чего нельзя менять
 
@@ -88,7 +103,8 @@ http://localhost:5173/settings
 - Не возвращать пункт `Настройки` в `Sidebar` без явной просьбы.
 - Не удалять маршруты `/`, `/components`, `/japa`, `/books`, `/verses`, `/calendar`, `/statistics`, `/profile`, `/settings`.
 - Не удалять `static-preview.html`.
-- Не удалять ассеты из `src/shared/assets/images/`, пока не проверено, что они не используются.
+- Не удалять ассеты из `src/shared/assets/images/`, пока не проверено, что они нигде не используются.
 - Не добавлять Tailwind, backend или новые зависимости без отдельного согласования.
-- Не коммитить `node_modules`, `dist`, временные screenshot-файлы и env-файлы.
 - Не заменять CSS Modules глобальными стилями для компонентных правок.
+- Не коммитить `node_modules`, `dist`, временные screenshot-файлы и env-файлы.
+- Не менять глобальные токены без явной причины или просьбы изменить дизайн-систему.

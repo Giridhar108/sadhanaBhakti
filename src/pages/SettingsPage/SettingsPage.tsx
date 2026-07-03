@@ -145,7 +145,7 @@ function SettingsCardHeader({ icon, title, description, tone }: SettingsCardHead
 }
 
 export default function SettingsPage() {
-  useDocumentTitle('Настройки - Путь практики');
+  useDocumentTitle('Настройки - Садхана Бхакти');
   const theme = useUiStore((state) => state.theme);
   const setTheme = useUiStore((state) => state.setTheme);
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());

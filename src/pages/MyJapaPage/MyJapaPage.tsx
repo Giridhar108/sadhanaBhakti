@@ -5,7 +5,7 @@ import { ModulePage } from '../ModulePage/ModulePage';
 import panelStyles from '../ModulePage/modulePanels.module.css';
 
 export default function MyJapaPage() {
-  useDocumentTitle('Джапа - Путь практики');
+  useDocumentTitle('Джапа - Садхана Бхакти');
 
   return (
     <ModulePage
