@@ -29,10 +29,10 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
 
   return (
     <aside className={`${styles.sidebar} ${isStatic ? styles.static : ''}`}>
-      <div className={styles.brand}>
+      <Link className={styles.brand} to="/" aria-label="Перейти на главную">
         <img src={lotusLogo} alt="Лотос" />
         <span>Садхана Бхакти</span>
-      </div>
+      </Link>
 
       <nav className={styles.nav} aria-label="Основная навигация">
         {navItems.map((item) => (

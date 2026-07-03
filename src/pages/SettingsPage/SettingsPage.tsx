@@ -1,21 +1,161 @@
+import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUiStore } from '../../app/store/useUiStore';
+import lotusSoft from '../../shared/assets/images/lotus-soft.png';
+import {
+  readCalendarEvents,
+  writeCalendarEvents,
+  type CalendarEvent,
+  type CalendarEventType,
+} from '../../shared/lib/calendarEvents';
+import {
+  clearDailyVerse,
+  readDailyVerses,
+  writeDailyVerses,
+  type DailyVerse,
+} from '../../shared/lib/dailyVerse';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
+import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
 import { ModulePage } from '../ModulePage/ModulePage';
-import panelStyles from '../ModulePage/modulePanels.module.css';
+import styles from './SettingsPage.module.css';
+
+const cropFrameSize = 260;
+const cropOutputSize = 320;
+
+type CropOffset = {
+  x: number;
+  y: number;
+};
+
+type DragState = {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+type SettingsCardHeaderProps = {
+  icon: IconName;
+  title: string;
+  description: string;
+  tone: 'green' | 'violet' | 'gold';
+};
 
 const settingsSchema = z.object({
   dailyReminder: z.string().min(4),
   dailyGoal: z.coerce.number().min(1).max(64),
 });
 
+const eventSchema = z.object({
+  date: z.string().min(10),
+  title: z.string().trim().min(2),
+  type: z.enum(['japa', 'reading', 'verse', 'meeting', 'other']),
+});
+
+const verseSchema = z.object({
+  text: z.string().trim().min(2),
+  source: z.string().trim().min(2),
+});
+
 type SettingsForm = z.infer<typeof settingsSchema>;
+type EventForm = z.infer<typeof eventSchema>;
+type VerseForm = z.infer<typeof verseSchema>;
+
+const eventTypeLabels: Record<CalendarEventType, string> = {
+  japa: 'Джапа',
+  reading: 'Чтение',
+  verse: 'Стихи',
+  meeting: 'Встреча',
+  other: 'Другое',
+};
+
+function toDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function createCroppedCircle(imageSrc: string, zoom: number, offset: CropOffset) {
+  return new Promise<string>((resolve, reject) => {
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      if (!context) {
+        reject(new Error('Canvas is not available'));
+        return;
+      }
+
+      canvas.width = cropOutputSize;
+      canvas.height = cropOutputSize;
+      context.clearRect(0, 0, cropOutputSize, cropOutputSize);
+      context.save();
+      context.beginPath();
+      context.arc(cropOutputSize / 2, cropOutputSize / 2, cropOutputSize / 2, 0, Math.PI * 2);
+      context.clip();
+
+      const baseScale = Math.min(cropOutputSize / image.naturalWidth, cropOutputSize / image.naturalHeight);
+      const scale = baseScale * zoom;
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const offsetScale = cropOutputSize / cropFrameSize;
+      const x = (cropOutputSize - width) / 2 + offset.x * offsetScale;
+      const y = (cropOutputSize - height) / 2 + offset.y * offsetScale;
+
+      context.fillStyle = '#fffefa';
+      context.fillRect(0, 0, cropOutputSize, cropOutputSize);
+      context.drawImage(image, x, y, width, height);
+      context.restore();
+      resolve(canvas.toDataURL('image/png'));
+    };
+
+    image.onerror = () => reject(new Error('Image could not be loaded'));
+    image.src = imageSrc;
+  });
+}
+
+function SettingsCardHeader({ icon, title, description, tone }: SettingsCardHeaderProps) {
+  return (
+    <header className={styles.cardHeader}>
+      <span className={`${styles.cardIcon} ${styles[tone]}`}>
+        <Icon name={icon} />
+      </span>
+      <div>
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
+    </header>
+  );
+}
 
 export default function SettingsPage() {
   useDocumentTitle('Настройки - Путь практики');
   const theme = useUiStore((state) => state.theme);
   const setTheme = useUiStore((state) => state.setTheme);
+  const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
+  const [dailyVerses, setDailyVerses] = useState<DailyVerse[]>(() => readDailyVerses());
+  const [verseImage, setVerseImage] = useState<string | undefined>();
+  const [cropImage, setCropImage] = useState<string | null>(null);
+  const [cropZoom, setCropZoom] = useState(1);
+  const [cropOffset, setCropOffset] = useState<CropOffset>({ x: 0, y: 0 });
+  const dragState = useRef<DragState | null>(null);
+
   const { register, handleSubmit } = useForm<SettingsForm>({
     defaultValues: {
       dailyReminder: '05:30',
@@ -23,50 +163,387 @@ export default function SettingsPage() {
     },
   });
 
+  const {
+    register: registerEvent,
+    handleSubmit: handleEventSubmit,
+    reset: resetEvent,
+  } = useForm<EventForm>({
+    defaultValues: {
+      date: toDateKey(new Date()),
+      title: '',
+      type: 'japa',
+    },
+  });
+
+  const {
+    register: registerVerse,
+    handleSubmit: handleVerseSubmit,
+    reset: resetVerseForm,
+  } = useForm<VerseForm>({
+    defaultValues: {
+      text: '',
+      source: '',
+    },
+  });
+
+  useEffect(() => {
+    setEvents(readCalendarEvents());
+    setDailyVerses(readDailyVerses());
+  }, []);
+
   const onSubmit = (data: SettingsForm) => {
     settingsSchema.parse(data);
   };
 
+  const onEventSubmit = (data: EventForm) => {
+    const eventData = eventSchema.parse(data);
+    const nextEvents = [
+      ...events,
+      {
+        id: `${eventData.date}-${Date.now()}`,
+        ...eventData,
+      },
+    ].sort((firstEvent, secondEvent) => firstEvent.date.localeCompare(secondEvent.date));
+
+    setEvents(nextEvents);
+    writeCalendarEvents(nextEvents);
+    resetEvent({ date: eventData.date, title: '', type: eventData.type });
+  };
+
+  const deleteEvent = (eventId: string) => {
+    const nextEvents = events.filter((event) => event.id !== eventId);
+
+    setEvents(nextEvents);
+    writeCalendarEvents(nextEvents);
+  };
+
+  const onVerseImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const image = await readFileAsDataUrl(file);
+    setCropImage(image);
+    setCropZoom(1);
+    setCropOffset({ x: 0, y: 0 });
+    event.target.value = '';
+  };
+
+  const onCropPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragState.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: cropOffset.x,
+      offsetY: cropOffset.y,
+    };
+  };
+
+  const onCropPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const currentDrag = dragState.current;
+
+    if (!currentDrag || currentDrag.pointerId !== event.pointerId) {
+      return;
+    }
+
+    setCropOffset({
+      x: currentDrag.offsetX + event.clientX - currentDrag.startX,
+      y: currentDrag.offsetY + event.clientY - currentDrag.startY,
+    });
+  };
+
+  const onCropPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (dragState.current?.pointerId === event.pointerId) {
+      dragState.current = null;
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const saveCroppedImage = async () => {
+    if (!cropImage) {
+      return;
+    }
+
+    const croppedImage = await createCroppedCircle(cropImage, cropZoom, cropOffset);
+
+    setVerseImage(croppedImage);
+    setCropImage(null);
+  };
+
+  const onVerseSubmit = (data: VerseForm) => {
+    const verseResult = verseSchema.safeParse(data);
+
+    if (!verseResult.success) {
+      return;
+    }
+
+    const verseData = verseResult.data;
+    const nextVerse: DailyVerse = {
+      id: `${Date.now()}`,
+      image: verseImage,
+      ...verseData,
+    };
+    const nextVerses = [...dailyVerses, nextVerse];
+
+    setDailyVerses(nextVerses);
+    writeDailyVerses(nextVerses);
+    setVerseImage(undefined);
+    resetVerseForm({ text: '', source: '' });
+  };
+
+  const resetDailyVerse = () => {
+    clearDailyVerse();
+    setDailyVerses([]);
+    setVerseImage(undefined);
+    resetVerseForm({ text: '', source: '' });
+  };
+
+  const deleteDailyVerse = (verseId: string) => {
+    const nextVerses = dailyVerses.filter((verse) => verse.id !== verseId);
+
+    setDailyVerses(nextVerses);
+    writeDailyVerses(nextVerses);
+  };
+
   return (
     <ModulePage
-      eyebrow="Система"
+      eyebrow="Личный ритм"
       title="Настройки"
-      description="Локальные настройки интерфейса и будущая точка подключения `/settings` на backend."
+      description="Тихое место для настройки практики, календаря, стиха дня и мягкого визуального режима."
       metrics={[
         { label: 'тема', value: theme === 'soft' ? 'soft' : 'light', tone: 'violet' },
-        { label: 'цель', value: '16', tone: 'green' },
-        { label: 'напоминания', value: '2', tone: 'gold' },
+        { label: 'цель кругов', value: '16', tone: 'green' },
+        { label: 'стихи', value: String(dailyVerses.length), tone: 'gold' },
       ]}
       aside={
-        <article className={panelStyles.panel}>
-          <h3>Валидация</h3>
-          <p>Форма уже использует React Hook Form и Zod, как заложено в архитектуре.</p>
-        </article>
+        <aside className={styles.asideStack}>
+          <article className={`${styles.devotionalNote} ${styles.goldNote}`}>
+            <img src={lotusSoft} alt="" aria-hidden="true" />
+            <span>Стих дня</span>
+            <p>Добавленный стих сразу появится в нижнем блоке главной страницы.</p>
+          </article>
+          <article className={`${styles.devotionalNote} ${styles.violetNote}`}>
+            <Icon name="calendar" />
+            <span>Календарь</span>
+            <p>События сохраняются локально и подсвечиваются в календаре практики.</p>
+          </article>
+        </aside>
       }
     >
-      <form className={`${panelStyles.panel} ${panelStyles.stack}`} onSubmit={handleSubmit(onSubmit)}>
-        <h2>Практика</h2>
-        <label className={panelStyles.field}>
-          <span>Ежедневное напоминание</span>
-          <input {...register('dailyReminder')} />
-        </label>
-        <label className={panelStyles.field}>
-          <span>Цель кругов</span>
-          <input type="number" {...register('dailyGoal')} />
-        </label>
-        <button className={panelStyles.button} type="submit">Сохранить настройки</button>
-      </form>
-      <article className={panelStyles.panel}>
-        <h2>Тема</h2>
-        <div className={panelStyles.stack}>
-          <button className={theme === 'soft' ? panelStyles.button : panelStyles.buttonSecondary} type="button" onClick={() => setTheme('soft')}>
-            Мягкая
+      <section className={styles.settingsBoard}>
+        <form className={`${styles.settingsCard} ${styles.practiceCard}`} onSubmit={handleSubmit(onSubmit)}>
+          <SettingsCardHeader
+            icon="target"
+            title="Практика"
+            description="Ежедневный ритм, напоминание и цель кругов."
+            tone="green"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.formGrid}>
+            <label className={styles.field}>
+              <span>Ежедневное напоминание</span>
+              <input {...register('dailyReminder')} />
+            </label>
+            <label className={styles.field}>
+              <span>Цель кругов</span>
+              <input type="number" {...register('dailyGoal')} />
+            </label>
+          </div>
+          <button className={styles.primaryButton} type="submit">
+            Сохранить практику
           </button>
-          <button className={theme === 'light' ? panelStyles.button : panelStyles.buttonSecondary} type="button" onClick={() => setTheme('light')}>
-            Светлая
+        </form>
+
+        <form className={`${styles.settingsCard} ${styles.verseForm} ${styles.wideCard}`} onSubmit={handleVerseSubmit(onVerseSubmit)}>
+          <SettingsCardHeader
+            icon="lotus"
+            title="Стих дня"
+            description="Добавляй любое количество стихов: на главной они будут мягко сменяться каждые 2 минуты."
+            tone="violet"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.verseLayout}>
+            <div className={styles.imageColumn}>
+              <label className={styles.filePicker}>
+                <input type="file" accept="image/*" onChange={onVerseImageChange} />
+                {verseImage ? <img className={styles.versePreview} src={verseImage} alt="" /> : <Icon name="plus" />}
+                <span>{verseImage ? 'Изменить картинку' : 'Добавить картинку'}</span>
+              </label>
+            </div>
+            <div className={styles.verseFields}>
+              <label className={styles.field}>
+                <span>Стих</span>
+                <textarea className={styles.textarea} {...registerVerse('text')} />
+              </label>
+              <label className={styles.field}>
+                <span>Откуда стих</span>
+                <input placeholder="Например, Бхагавад-гита 2.47" {...registerVerse('source')} />
+              </label>
+            </div>
+          </div>
+          <div className={styles.actions}>
+            <button className={styles.primaryButton} type="submit">
+              Добавить стих
+            </button>
+            <button className={styles.secondaryButton} type="button" onClick={resetDailyVerse}>
+              Очистить список
+            </button>
+          </div>
+          <div className={styles.verseList}>
+            {dailyVerses.length > 0 ? (
+              dailyVerses.map((verse) => (
+                <div className={styles.verseItem} key={verse.id}>
+                  <img src={verse.image ?? lotusSoft} alt="" />
+                  <div>
+                    <strong>{verse.text}</strong>
+                    <small>{verse.source}</small>
+                  </div>
+                  <button type="button" onClick={() => deleteDailyVerse(verse.id)}>
+                    Удалить
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className={styles.emptyText}>Пока нет добавленных стихов. На главной будет показываться стандартный текст.</p>
+            )}
+          </div>
+        </form>
+
+        <form className={`${styles.settingsCard} ${styles.eventForm}`} onSubmit={handleEventSubmit(onEventSubmit)}>
+          <SettingsCardHeader
+            icon="calendar"
+            title="События календаря"
+            description="Добавь памятные даты, экадаши, встречи и личные отметки."
+            tone="gold"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <label className={styles.field}>
+            <span>Дата</span>
+            <input type="date" {...registerEvent('date')} />
+          </label>
+          <label className={styles.field}>
+            <span>Название события</span>
+            <input placeholder="Например, экадаши или встреча" {...registerEvent('title')} />
+          </label>
+          <label className={styles.field}>
+            <span>Тип</span>
+            <select className={styles.select} {...registerEvent('type')}>
+              {Object.entries(eventTypeLabels).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className={styles.primaryButton} type="submit">
+            Добавить событие
           </button>
+        </form>
+
+        <article className={styles.settingsCard}>
+          <SettingsCardHeader
+            icon="scroll"
+            title="Мои события"
+            description="Ближайшие сохраненные даты для практики."
+            tone="violet"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.eventsList}>
+            {events.length > 0 ? (
+              events.map((event) => (
+                <div className={styles.eventRow} key={event.id}>
+                  <div>
+                    <strong>{event.title}</strong>
+                    <small>
+                      {event.date} · {eventTypeLabels[event.type]}
+                    </small>
+                  </div>
+                  <button type="button" onClick={() => deleteEvent(event.id)}>
+                    Удалить
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className={styles.emptyText}>Пока нет событий. Добавь первое, и день появится в календаре.</p>
+            )}
+          </div>
+        </article>
+
+        <article className={`${styles.settingsCard} ${styles.themeCard} ${styles.wideCard}`}>
+          <SettingsCardHeader
+            icon="settings"
+            title="Внешний вид"
+            description="Выбери мягкий режим оформления интерфейса."
+            tone="green"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.themeOptions}>
+            <button
+              className={`${styles.themeOption} ${theme === 'soft' ? styles.themeActive : ''}`}
+              type="button"
+              onClick={() => setTheme('soft')}
+            >
+              <span>Мягкая</span>
+              <small>Теплее, спокойнее, больше devotional-настроения.</small>
+            </button>
+            <button
+              className={`${styles.themeOption} ${theme === 'light' ? styles.themeActive : ''}`}
+              type="button"
+              onClick={() => setTheme('light')}
+            >
+              <span>Светлая</span>
+              <small>Чище и нейтральнее для ежедневной работы.</small>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      {cropImage ? (
+        <div className={styles.modalOverlay} role="presentation">
+          <div className={styles.cropModal} role="dialog" aria-modal="true" aria-label="Выбор круглой картинки">
+            <h2>Выбери кружок</h2>
+            <div
+              className={styles.cropFrame}
+              onPointerDown={onCropPointerDown}
+              onPointerMove={onCropPointerMove}
+              onPointerUp={onCropPointerUp}
+              onPointerCancel={onCropPointerUp}
+            >
+              <img
+                className={styles.cropImage}
+                src={cropImage}
+                alt=""
+                draggable={false}
+                style={{
+                  transform: `translate(${cropOffset.x}px, ${cropOffset.y}px) scale(${cropZoom})`,
+                }}
+              />
+            </div>
+            <label className={styles.zoomField}>
+              <span>Масштаб</span>
+              <input
+                type="range"
+                min="1"
+                max="2.6"
+                step="0.05"
+                value={cropZoom}
+                onChange={(event) => setCropZoom(Number(event.target.value))}
+              />
+            </label>
+            <div className={styles.actions}>
+              <button className={styles.primaryButton} type="button" onClick={saveCroppedImage}>
+                Сохранить кружок
+              </button>
+              <button className={styles.secondaryButton} type="button" onClick={() => setCropImage(null)}>
+                Отмена
+              </button>
+            </div>
+          </div>
         </div>
-      </article>
+      ) : null}
     </ModulePage>
   );
 }

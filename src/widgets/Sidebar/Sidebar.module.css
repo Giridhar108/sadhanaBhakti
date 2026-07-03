@@ -23,9 +23,17 @@
   align-items: center;
   gap: 12px;
   padding: 2px 2px 24px;
+  color: var(--text);
   font-size: 19px;
   font-weight: 850;
   letter-spacing: -0.035em;
+  text-decoration: none;
+  transition: opacity 0.18s ease;
+}
+
+.brand:hover,
+.brand:focus-visible {
+  opacity: 0.82;
 }
 
 .brand img {

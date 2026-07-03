@@ -1,0 +1,522 @@
+.settingsBoard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.settingsCard {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(238, 228, 230, 0.86);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255, 255, 255, 0.84), transparent 28%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(255, 250, 245, 0.94));
+  box-shadow: var(--shadow-soft);
+}
+
+.wideCard {
+  grid-column: 1 / -1;
+}
+
+.practiceCard {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(242, 250, 238, 0.92), transparent 32%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(248, 253, 246, 0.94));
+}
+
+.themeCard {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(245, 237, 249, 0.9), transparent 32%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(252, 247, 252, 0.94));
+}
+
+.cardHeader {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.cardHeader h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.cardHeader p {
+  margin: 6px 0 0;
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.cardIcon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+}
+
+.cardIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.green {
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+
+.violet {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.gold {
+  color: var(--gold-dark);
+  background: var(--gold-soft);
+}
+
+.cardLotus {
+  position: absolute;
+  right: 18px;
+  bottom: -28px;
+  width: 148px;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.formGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 7px;
+}
+
+.field span,
+.zoomField span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.field input,
+.select,
+.textarea {
+  width: 100%;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  background: rgba(255, 254, 250, 0.92);
+  font: inherit;
+  font-weight: 800;
+  outline: none;
+}
+
+.field input,
+.select {
+  height: 46px;
+  padding: 0 14px;
+}
+
+.field input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: rgba(159, 114, 215, 0.48);
+  box-shadow: 0 0 0 3px rgba(159, 114, 215, 0.1);
+}
+
+.textarea {
+  min-height: 128px;
+  resize: vertical;
+  padding: 12px 14px;
+  line-height: 1.5;
+}
+
+.primaryButton,
+.secondaryButton {
+  position: relative;
+  z-index: 1;
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 11px 16px;
+  font-weight: 900;
+}
+
+.primaryButton {
+  color: #fff;
+  background: var(--green);
+}
+
+.secondaryButton {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.verseLayout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.imageColumn {
+  display: grid;
+}
+
+.filePicker {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 18px;
+  border: 1px dashed rgba(159, 114, 215, 0.38);
+  border-radius: var(--radius-lg);
+  color: var(--violet-dark);
+  background: rgba(245, 237, 249, 0.54);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.filePicker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.filePicker svg {
+  width: 28px;
+  height: 28px;
+}
+
+.versePreview {
+  width: 92px;
+  height: 92px;
+  border: 1px solid rgba(238, 228, 230, 0.86);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.verseFields {
+  display: grid;
+  gap: 12px;
+}
+
+.verseList {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.verseItem {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(238, 228, 230, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(245, 237, 249, 0.46);
+}
+
+.verseItem img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.verseItem strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 900;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.verseItem small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.verseItem button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
+}
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.eventsList {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(238, 228, 230, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(255, 243, 223, 0.66);
+}
+
+.eventRow strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventRow small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.eventRow button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
+}
+
+.emptyText {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.themeOptions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.themeOption {
+  display: grid;
+  gap: 6px;
+  min-height: 92px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  color: var(--text);
+  background: rgba(255, 254, 250, 0.82);
+  text-align: left;
+}
+
+.themeOption span {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.themeOption small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.themeActive {
+  border-color: rgba(120, 181, 111, 0.46);
+  background: var(--green-soft);
+}
+
+.asideStack {
+  display: grid;
+  gap: 12px;
+}
+
+.devotionalNote {
+  position: relative;
+  overflow: hidden;
+  min-height: 176px;
+  padding: 18px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.devotionalNote img {
+  position: absolute;
+  right: -18px;
+  bottom: -34px;
+  width: 170px;
+  opacity: 0.22;
+}
+
+.devotionalNote svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  color: var(--violet);
+}
+
+.devotionalNote span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.devotionalNote p {
+  position: relative;
+  z-index: 1;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.goldNote {
+  background: linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(255, 245, 228, 0.82));
+}
+
+.violetNote {
+  background: linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(245, 237, 249, 0.86));
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(36, 29, 55, 0.18);
+  backdrop-filter: blur(5px);
+}
+
+.cropModal {
+  width: min(100%, 430px);
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.cropModal h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.cropFrame {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  justify-self: center;
+  overflow: hidden;
+  border: 2px solid rgba(159, 114, 215, 0.28);
+  border-radius: 50%;
+  background: var(--surface-soft);
+  cursor: grab;
+  touch-action: none;
+}
+
+.cropFrame:active {
+  cursor: grabbing;
+}
+
+.cropFrame::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 254, 250, 0.9);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+}
+
+.cropImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+  user-select: none;
+}
+
+.zoomField {
+  display: grid;
+  gap: 8px;
+}
+
+.zoomField input {
+  width: 100%;
+  accent-color: var(--violet);
+}
+
+@media (max-width: 1280px) {
+  .settingsBoard {
+    gap: 12px;
+  }
+
+  .settingsCard {
+    padding: 18px;
+  }
+
+  .verseLayout {
+    grid-template-columns: 154px minmax(0, 1fr);
+  }
+}
