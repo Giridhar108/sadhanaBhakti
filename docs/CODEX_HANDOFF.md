@@ -2,109 +2,108 @@
 
 ## 1. Что уже сделано в проекте
 
-- Проект `hare-krishna` - React + Vite + TypeScript dashboard для духовной практики: джапа, книги, стихи, календарь, прогресс, профиль и настройки.
-- Текущая ветка: `design`.
-- Последний коммит: `10ae536 Enhance settings and practice calendar`.
-- Основные маршруты: `/`, `/components`, `/japa`, `/books`, `/verses`, `/calendar`, `/statistics`, `/profile`, `/settings`.
-- Главная страница показывает `Header`, слева `VerseImageBlock`, `PracticeCardsGrid`, `QuoteCard`, справа `CalendarCard`.
-- `CalendarCard` стал настоящим календарем: считает дни месяца, переключает месяцы, подсвечивает текущий день, выбранный день и дни с событиями.
-- В `/settings` добавлена карточная страница настроек в мягком devotional-стиле.
-- В настройках можно добавлять календарные события; они сохраняются в `localStorage`, отображаются в календаре и на странице `/calendar`.
-- В настройках можно добавлять любое количество стихов дня: картинка с круглым crop-попапом, текст стиха и источник.
-- `QuoteCard` на главной читает список стихов дня и плавно сменяет их каждые 2 минуты. Если список пустой, показывает стандартный стих.
-- Бренд-зона `Садхана Бхакти` в сайдбаре теперь кликабельна и ведет на `/`.
-- `Header`: поиск убран, настройки ведут на `/settings`.
-- `Sidebar`: отдельный пункт `Настройки` не возвращать без явной просьбы.
-- `MemorizationSection` сохранен в проекте, но сейчас не выводится на главной.
+- Проект `hare-krishna`: React + Vite + TypeScript dashboard для практики: джапа, чтение книг, изучение стихов, календарь, статистика, профиль, настройки.
+- Добавлена полноценная auth-зона: welcome, login, registration, onboarding из 3 шагов.
+- Если пользователь не авторизован, приложение сразу открывает авторизацию.
+- Регистрация работает через backend-сессию: email + пароль + повтор пароля.
+- Google-авторизация временно полностью удалена из UI и логики.
+- Добавлен backend на NestJS в `backend/`.
+- Backend использует Prisma, PostgreSQL и Redis через `docker-compose.yml`.
+- Реализованы backend endpoints: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/users/me`, `PATCH /api/users/me`.
+- Сессия хранится в httpOnly cookies `access_token` и `refresh_token`.
+- Frontend auth model переведен на backend-сессию.
+- Dashboard показывает имя пользователя: сначала духовное имя, если его нет - обычное.
+- Приветствие на главной: `Харе Кришна, <имя>`.
+- Добавлен запуск frontend + backend одной командой `npm run dev`.
 
 ## 2. Какие файлы важны
 
-- `AGENTS.md` - правила работы в проекте.
-- `docs/design-system.md` - дизайн-система и визуальные правила.
-- `docs/assets/design-system-reference.png` - визуальный референс дизайн-системы.
-- `src/shared/styles/tokens.css` - глобальные цвета, радиусы, тени, spacing.
-- `src/shared/styles/globals.css` - глобальные стили; там есть `scrollbar-gutter: stable`.
-- `src/pages/DashboardPage/DashboardPage.tsx` и `.module.css` - состав и сетка главной.
-- `src/pages/SettingsPage/SettingsPage.tsx` и `.module.css` - новая карточная страница настроек.
-- `src/pages/CalendarPage/CalendarPage.tsx` - отдельная страница календаря и список событий.
-- `src/widgets/CalendarCard/` - настоящий календарь на dashboard.
-- `src/widgets/QuoteCard/` - блок стиха дня с автосменой.
-- `src/widgets/Sidebar/` - навигация и кликабельный бренд.
-- `src/shared/lib/calendarEvents.ts` - localStorage-хранилище календарных событий.
-- `src/shared/lib/dailyVerse.ts` - localStorage-хранилище списка стихов дня.
-- `src/shared/assets/images/` - текущие изображения: `verseImg2.png`, `lotus-soft.png`, `lotus-logo.png`, `krishna.png` и другие.
+- `AGENTS.md` - главные правила проекта и стиль работы.
+- `docs/design-system.md` - дизайн-система.
+- `docs/CODEX_HANDOFF.md` - этот handoff.
+- `package.json` - root scripts, включая единый `npm run dev`.
+- `docker-compose.yml` - PostgreSQL и Redis для локального backend.
+- `scripts/ensure-backend-env.mjs` - создает `backend/.env` из примера.
+- `scripts/start-db.mjs` - поднимает Docker Compose и красиво сообщает, если Docker не установлен.
+- `backend/` - NestJS backend.
+- `backend/.env.example` - пример env для backend.
+- `backend/prisma/schema.prisma` - Prisma schema.
+- `src/app/router/AppRouter.tsx` - auth gate и роутинг.
+- `src/entities/user/model/auth.ts` - frontend auth/session logic.
+- `src/entities/user/model/types.ts` - типы пользователя.
+- `src/shared/api/endpoints.ts` - API endpoints.
+- `src/pages/AuthPage/` - все экраны авторизации и onboarding.
+- `src/pages/AuthPage/model/authPageModel.ts` - тексты, схемы и модели auth-страниц.
+- `src/shared/assets/images/` - auth и dashboard assets, включая `lotus-logo.png`, `authLotus.png`, teaser card images.
 
 ## 3. Какие дизайн-решения приняты
 
-- Общий стиль: мягкий, спокойный, devotional, pastel, premium, без корпоративной аналитики.
-- Основной фон теплый молочный/ivory; карточки светлые, с тонкими границами и мягкими тенями.
-- Акценты: lavender, green, gold из токенов.
-- Main app container: `max-width: 1540px`, центрированный.
-- Используется Nunito как базовый UI-шрифт.
-- Компонентные стили делать через CSS Modules.
-- Страница настроек выбрана в варианте `Devotional Cards`: крупные мягкие карточки, иконки, лотосные watermark, понятные формы.
-- `CalendarCard` должен оставаться компактным и помещаться в верхнюю правую карточку dashboard.
-- Дни календаря с событиями отмечаются зеленым фоном и маленькой золотой точкой.
-- `QuoteCard` построен сеткой: слева круглая картинка, справа текст и источник, чтобы изображение не наезжало на текст.
-- Лотос в `QuoteCard` использует `lotus-soft.png`.
-- Скроллбар не должен быть видимым постоянно; для стабильности layout используется `scrollbar-gutter: stable`.
+- Общий стиль: мягкий devotional, спокойный, pastel/premium, без корпоративной жесткости.
+- Основной шрифт: Nunito.
+- Фон: теплый milk/ivory.
+- Акценты: lavender, green, gold.
+- Карточки: soft white, тонкая граница, мягкая тень, округление.
+- Регистрация сделана по макетам из папки `C:\Users\Admin\Desktop\проектСадханы\начальный экран`.
+- В auth-зоне используется настоящий лотос `lotus-logo.png` вместо старой контурной иконки.
+- Большой декоративный лотос снизу слева заменен на `authLotus.png`.
+- Карточки преимуществ на auth-странице вставлены как PNG-картинки, а не сверстаны HTML/CSS.
+- Auth layout адаптирован до 360px: левый информационный блок не пропадает, а становится выше формы.
+- Onboarding step indicator кликабельный: можно вернуться на предыдущий шаг и исправить ввод.
+- Высота onboarding card зафиксирована, чтобы блок не прыгал при переходах между шагами.
+- Блоки выбора практик и целей в onboarding должны быть одинаковой высоты: 85px.
 
 ## 4. Какие команды запускать
 
+Первичная установка:
+
 ```bash
 npm install
+cd backend && npm install && cd ..
+```
+
+Обычный запуск всего проекта одной командой:
+
+```bash
 npm run dev
-npm run build
-npm run preview
 ```
 
-Локальные URL:
+Что делает `npm run dev`:
 
-```txt
-http://localhost:5173/
-http://localhost:5173/components
-http://localhost:5173/?preview=components
-http://localhost:5173/japa
-http://localhost:5173/books
-http://localhost:5173/verses
-http://localhost:5173/calendar
-http://localhost:5173/statistics
-http://localhost:5173/profile
-http://localhost:5173/settings
-```
+- создает `backend/.env`, если его нет;
+- поднимает PostgreSQL и Redis через Docker Compose;
+- применяет Prisma schema;
+- запускает Vite frontend и NestJS backend параллельно.
 
-Скриншот через Chrome:
-
-```bash
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --disable-gpu --hide-scrollbars --screenshot="dashboard-current-screenshot.png" --window-size=1540,2200 http://localhost:5173/
-```
-
-После любых изменений запускать:
+Проверки:
 
 ```bash
 npm run build
+npm --prefix backend run build
 git status --short
 ```
 
+Важно: для `npm run dev` нужен установленный и запущенный Docker Desktop.
+
 ## 5. Что нужно делать дальше
 
-- Визуально проверить `/settings` после добавления нескольких стихов дня: длинные тексты, несколько картинок, удаление, пустое состояние.
-- При необходимости уплотнить страницу настроек по высоте, если карточки покажутся слишком воздушными.
-- Проверить `QuoteCard` с 2-3 стихами: fade-переход, отсутствие наезда картинки на текст, длинные источники.
-- Проверить `/calendar`: добавление событий в настройках, подсветка дней, список событий.
-- Решить, нужен ли возврат `MemorizationSection` на главную. Если возвращать, не потерять логику 4 стихов, стрелки, показ/скрытие ответа и tooltip.
-- При каждом изменении сохранять точечность: менять только нужный компонент и его CSS.
-- Перед новым коммитом проверять `git status`, чтобы не добавить `dist`, screenshots или временные файлы.
+- Проверить полный auth-flow вручную: регистрация, повтор пароля, login, logout, refresh session, onboarding, переход в dashboard.
+- Если Docker установлен, запустить `npm run dev` и проверить реальные backend-сессии в браузере.
+- Подумать, какие данные onboarding должны сохраняться в backend окончательно: выбранные практики, цели, духовное имя.
+- Довести backend schema под будущие сущности: japa, books, verses, calendar, reminders, friends.
+- Перенести dashboard данные с mock/localStorage на backend постепенно, по одному домену.
+- Добавить нормальную обработку ошибок auth на frontend: неверный пароль, email занят, session expired.
+- После стабилизации backend можно вернуть Google OAuth, но только отдельной задачей и с реальными ключами.
 
 ## 6. Чего нельзя менять
 
-- Не редизайнить весь dashboard при задаче на один блок.
-- Не возвращать поиск в `Header` без явной просьбы.
-- Не возвращать пункт `Настройки` в `Sidebar` без явной просьбы.
-- Не удалять маршруты `/`, `/components`, `/japa`, `/books`, `/verses`, `/calendar`, `/statistics`, `/profile`, `/settings`.
-- Не удалять `static-preview.html`.
-- Не удалять ассеты из `src/shared/assets/images/`, пока не проверено, что они нигде не используются.
-- Не добавлять Tailwind, backend или новые зависимости без отдельного согласования.
+- Не возвращать Google auth без отдельной просьбы.
+- Не удалять backend-сессию и не возвращать чисто localStorage auth.
+- Не редизайнить весь dashboard или всю auth-зону при точечной задаче.
+- Не менять утвержденный мягкий devotional стиль на корпоративный dashboard.
+- Не добавлять Tailwind.
 - Не заменять CSS Modules глобальными стилями для компонентных правок.
-- Не коммитить `node_modules`, `dist`, временные screenshot-файлы и env-файлы.
-- Не менять глобальные токены без явной причины или просьбы изменить дизайн-систему.
+- Не менять глобальные design tokens без явной причины.
+- Не удалять auth assets из `src/shared/assets/images/`.
+- Не трогать чужие/несвязанные изменения в git status.
+- Не коммитить `node_modules`, `dist`, screenshots, `.env` файлы.
+- Не делать destructive git commands: `git reset --hard`, `git checkout --` без явной просьбы.

@@ -1,38 +1,53 @@
 # Hare Krishna Practice Dashboard
 
-React + Vite + TypeScript версия dashboard для трекинга духовной практики.
+React + Vite + TypeScript dashboard for tracking spiritual practice.
 
-## Запуск
+## Development
+
+First install dependencies:
 
 ```bash
 npm install
+cd backend && npm install && cd ..
+```
+
+Then start the frontend and backend with one command:
+
+```bash
 npm run dev
 ```
 
-Открыть dashboard:
+`npm run dev` will:
+
+- create `backend/.env` from `backend/.env.example` if it does not exist;
+- start PostgreSQL and Redis through Docker Compose;
+- apply the Prisma schema to the local database;
+- run the Vite frontend and NestJS backend together.
+
+Docker Desktop must be installed and running before `npm run dev`.
+
+Open the dashboard:
 
 ```txt
 http://localhost:5173/
 ```
 
-Открыть страницу отдельных компонентов:
+Open the component preview page:
 
 ```txt
 http://localhost:5173/?preview=components
 ```
 
-## Как дальше работать
+## Project Pointers
 
-- Для общего экрана: `src/pages/DashboardPage/`
-- Для отдельных компонентов: `src/widgets/` и `src/shared/ui/`
-- Проектные правила: `AGENTS.md`
-- Дизайн-система: `docs/design-system.md`
-- Карта компонентов: `docs/components-map.md`
+- Main dashboard screen: `src/pages/DashboardPage/`
+- Widgets and shared UI: `src/widgets/`, `src/shared/ui/`
+- Project rules: `AGENTS.md`
+- Design system: `docs/design-system.md`
+- Component map: `docs/components-map.md`
 
-Главное правило итераций: когда правим один компонент, не трогаем остальные блоки без явной просьбы.
+## UI Baseline
 
-## UI baseline
-
-- Шрифт: Nunito.
-- Главный источник дизайн-токенов: `docs/design-system.md`.
-- Визуальный референс дизайн-системы: `docs/assets/design-system-reference.png`.
+- Font: Nunito.
+- Main design tokens: `docs/design-system.md`.
+- Design-system reference image: `docs/assets/design-system-reference.png`.

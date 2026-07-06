@@ -4,7 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "npm run dev:full",
+    "dev:web": "vite --host 0.0.0.0",
+    "dev:api": "npm --prefix backend run dev",
+    "db:up": "node scripts/start-db.mjs",
+    "backend:env": "node scripts/ensure-backend-env.mjs",
+    "backend:push": "npm --prefix backend run prisma:push",
+    "dev:full": "npm run backend:env && npm run db:up && npm run backend:push && concurrently -n web,api -c cyan,magenta \"npm run dev:web\" \"npm run dev:api\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0"
   },
@@ -21,6 +27,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
+    "concurrently": "^9.2.1",
     "typescript": "latest",
     "vite": "latest"
   }

@@ -17,7 +17,7 @@ export type AuthUser = User & {
   spiritualName: string;
   practices: AuthPractice[];
   goals: AuthGoals;
-  provider: 'email' | 'google';
+  provider: 'email';
   createdAt: string;
   lastLoginAt: string;
   isOnboarded: boolean;

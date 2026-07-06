@@ -1,6 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { readAuthUser } from '../../entities/user/model/auth';
+import { loadAuthSession, readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
 import styles from './AppRouter.module.css';
 
 const DashboardPage = lazy(() =>
@@ -32,8 +32,35 @@ function RouteFallback() {
 function RoutedContent() {
   const location = useLocation();
   const legacyPreview = new URLSearchParams(location.search).get('preview') === 'components';
-  const authUser = readAuthUser();
+  const [authUser, setAuthUser] = useState(() => readAuthUser());
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const isAuthRoute = location.pathname.startsWith('/auth') || location.pathname === '/login' || location.pathname === '/register';
+
+  useEffect(() => {
+    let isActive = true;
+
+    void loadAuthSession()
+      .then((user) => {
+        if (isActive) {
+          setAuthUser(user);
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsCheckingSession(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => subscribeToAuthUserChange(() => setAuthUser(readAuthUser())), []);
+
+  if (isCheckingSession) {
+    return <RouteFallback />;
+  }
 
   if (!authUser?.isOnboarded && !isAuthRoute) {
     return <Navigate to="/auth/register" replace />;

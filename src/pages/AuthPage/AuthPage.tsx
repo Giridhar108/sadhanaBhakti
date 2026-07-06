@@ -4,6 +4,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import lotusLogo from '../../shared/assets/images/lotus-logo.png';
 import authLotus from '../../shared/assets/images/authLotus.png';
+import authTeaserBooks from '../../shared/assets/images/auth-teaser-books.png';
+import authTeaserJapa from '../../shared/assets/images/auth-teaser-japa.png';
+import authTeaserVerses from '../../shared/assets/images/auth-teaser-verses.png';
 import lotusSoft from '../../shared/assets/images/lotus-soft.png';
 import {
   completeOnboarding,
@@ -12,7 +15,6 @@ import {
   loginWithEmail,
   readAuthDraft,
   startEmailRegistration,
-  startGoogleRegistration,
   writeAuthDraft,
 } from '../../entities/user/model/auth';
 import type { AuthGoals, AuthPractice } from '../../entities/user/model/types';
@@ -114,6 +116,8 @@ function FeatureIcon({ tone, icon }: { tone: 'green' | 'violet' | 'gold'; icon: 
   );
 }
 
+const teaserImages = [authTeaserJapa, authTeaserBooks, authTeaserVerses];
+
 function LeftPanel() {
   return (
     <section className={styles.leftPanel} aria-label="О проекте">
@@ -143,13 +147,9 @@ function LeftPanel() {
       </figure>
 
       <div className={styles.teasers}>
-        {practiceCards.map((practice) => (
+        {practiceCards.map((practice, index) => (
           <article key={practice.id}>
-            <FeatureIcon icon={practice.icon} tone={practice.tone} />
-            <div>
-              <strong>{practice.title}</strong>
-              <p>{practice.description}</p>
-            </div>
+            <img className={styles.teaserImage} src={teaserImages[index]} alt={`${practice.title}. ${practice.description}`} />
           </article>
         ))}
       </div>
@@ -184,15 +184,6 @@ function Stepper({ activeStep }: { activeStep: 1 | 2 | 3 }) {
   );
 }
 
-function GoogleButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button className={styles.googleButton} type="button" onClick={onClick}>
-      <span className={styles.googleMark}>G</span>
-      Продолжить с Google
-    </button>
-  );
-}
-
 function FieldError({ message }: { message?: string }) {
   return message ? <small className={styles.errorText}>{message}</small> : null;
 }
@@ -207,7 +198,7 @@ function DividerLotus() {
   );
 }
 
-function WelcomeView({ onGoogle }: { onGoogle: () => void }) {
+function WelcomeView() {
   return (
     <>
       <LogoMark />
@@ -225,7 +216,6 @@ function WelcomeView({ onGoogle }: { onGoogle: () => void }) {
           <LineIcon name="login" />
           У меня уже есть аккаунт
         </Link>
-        <GoogleButton onClick={onGoogle} />
       </div>
 
       <DividerLotus />
@@ -250,7 +240,7 @@ function WelcomeView({ onGoogle }: { onGoogle: () => void }) {
   );
 }
 
-function LoginView({ onGoogle }: { onGoogle: () => void }) {
+function LoginView() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formMessage, setFormMessage] = useState('');
@@ -266,7 +256,7 @@ function LoginView({ onGoogle }: { onGoogle: () => void }) {
     },
   });
 
-  const onSubmit = (data: LoginForm) => {
+  const onSubmit = async (data: LoginForm) => {
     const result = loginSchema.safeParse(data);
 
     if (!result.success) {
@@ -280,7 +270,7 @@ function LoginView({ onGoogle }: { onGoogle: () => void }) {
       return;
     }
 
-    const loginResult = loginWithEmail(result.data);
+    const loginResult = await loginWithEmail(result.data);
 
     if (!loginResult.ok) {
       setFormMessage(loginResult.message);
@@ -329,7 +319,6 @@ function LoginView({ onGoogle }: { onGoogle: () => void }) {
         </button>
       </form>
 
-      <GoogleButton onClick={onGoogle} />
       <DividerLotus />
 
       <p className={styles.switchLine}>
@@ -339,9 +328,10 @@ function LoginView({ onGoogle }: { onGoogle: () => void }) {
   );
 }
 
-function RegisterView({ onGoogle }: { onGoogle: () => void }) {
+function RegisterView() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [formMessage, setFormMessage] = useState('');
   const {
     register,
     handleSubmit,
@@ -352,24 +342,31 @@ function RegisterView({ onGoogle }: { onGoogle: () => void }) {
       name: readAuthDraft().name ?? '',
       email: readAuthDraft().email ?? '',
       password: '',
+      confirmPassword: '',
     },
   });
 
-  const onSubmit = (data: RegisterForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     const result = registerSchema.safeParse(data);
 
     if (!result.success) {
       result.error.issues.forEach((issue) => {
         const field = issue.path[0];
 
-        if (field === 'name' || field === 'email' || field === 'password') {
+        if (field === 'name' || field === 'email' || field === 'password' || field === 'confirmPassword') {
           setError(field, { message: issue.message });
         }
       });
       return;
     }
 
-    startEmailRegistration(result.data);
+    const registerResult = await startEmailRegistration(result.data);
+
+    if (!registerResult.ok) {
+      setFormMessage(registerResult.message);
+      return;
+    }
+
     navigate('/auth/onboarding/name');
   };
 
@@ -407,13 +404,23 @@ function RegisterView({ onGoogle }: { onGoogle: () => void }) {
           <small className={styles.hintText}>Минимум 8 символов</small>
         )}
 
+        <label className={`${styles.field} ${errors.confirmPassword ? styles.invalid : ''}`}>
+          <LineIcon name="lock" />
+          <input type={showPassword ? 'text' : 'password'} placeholder="Повтори пароль" {...register('confirmPassword')} />
+          <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}>
+            <LineIcon name={showPassword ? 'eyeOff' : 'eye'} />
+          </button>
+        </label>
+        <FieldError message={errors.confirmPassword?.message} />
+
+        {formMessage ? <p className={styles.formMessage}>{formMessage}</p> : null}
+
         <button className={styles.primaryButton} type="submit">
           <Icon name="lotus" />
           Начать практику
         </button>
       </form>
 
-      <GoogleButton onClick={onGoogle} />
       <DividerLotus />
 
       <div className={styles.privacyNote}>
@@ -566,6 +573,7 @@ function PracticeStepView() {
 function GoalStepView() {
   const navigate = useNavigate();
   const [goals, setGoals] = useState<AuthGoals>(() => readAuthDraft().goals ?? defaultGoals);
+  const [formMessage, setFormMessage] = useState('');
 
   const changeGoal = (key: keyof AuthGoals, delta: number, min: number, max: number) => {
     setGoals((current) => {
@@ -580,8 +588,14 @@ function GoalStepView() {
 
   const finishOnboarding = (nextGoals: AuthGoals) => {
     writeAuthDraft({ goals: nextGoals });
-    completeOnboarding();
-    navigate('/');
+    void completeOnboarding().then((result) => {
+      if (!result.ok) {
+        setFormMessage(result.message);
+        return;
+      }
+
+      navigate('/');
+    });
   };
 
   return (
@@ -616,6 +630,8 @@ function GoalStepView() {
         ))}
       </div>
 
+      {formMessage ? <p className={styles.formMessage}>{formMessage}</p> : null}
+
       <div className={styles.finishActions}>
         <button className={styles.skipButton} type="button" onClick={() => finishOnboarding(defaultGoals)}>
           Настрою позже
@@ -636,19 +652,14 @@ export default function AuthPage() {
 
   useDocumentTitle(viewTitles[view]);
 
-  const onGoogle = () => {
-    startGoogleRegistration();
-    navigate('/auth/onboarding/name');
-  };
-
   return (
     <main className={`${styles.page} auth-page`}>
       <LeftPanel />
 
       <section className={`${styles.card} ${styles[view]}`} aria-label="Регистрация и вход">
-        {view === 'welcome' ? <WelcomeView onGoogle={onGoogle} /> : null}
-        {view === 'login' ? <LoginView onGoogle={onGoogle} /> : null}
-        {view === 'register' ? <RegisterView onGoogle={onGoogle} /> : null}
+        {view === 'welcome' ? <WelcomeView /> : null}
+        {view === 'login' ? <LoginView /> : null}
+        {view === 'register' ? <RegisterView /> : null}
         {view === 'name' ? <NameStepView /> : null}
         {view === 'practices' ? <PracticeStepView /> : null}
         {view === 'goals' ? <GoalStepView /> : null}
