@@ -32,6 +32,14 @@ const normalizeDailyRounds = (value: number) => {
 
 export const normalizeJapaDailyGoal = (value: number) => Math.min(normalizeDailyRounds(value), 192);
 
+export const normalizeJapaCompletedRounds = (value: number) => {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.min(Math.max(Math.round(value), 0), 192);
+};
+
 const parseDateKey = (dateKey: string) => {
   if (!dateKeyPattern.test(dateKey)) {
     return null;
@@ -149,6 +157,7 @@ export const calculateJapaMantraProgress = (
   today = new Date(),
   dailyRounds = JAPA_DAILY_ROUNDS,
   goalHistory: JapaGoalHistoryEntry[] = [],
+  todayCompletedRounds?: number,
 ): JapaMantraProgress => {
   const parsedStartDate = startDate ? parseDateKey(startDate) : null;
   const normalizedDailyRounds = normalizeJapaDailyGoal(dailyRounds);
@@ -194,6 +203,10 @@ export const calculateJapaMantraProgress = (
       currentDailyRounds = segmentRounds;
     }
   });
+
+  if (todayCompletedRounds !== undefined && parsedStartDate <= todayDate) {
+    totalMantras += normalizeJapaCompletedRounds(todayCompletedRounds) * JAPA_MANTRAS_PER_ROUND;
+  }
 
   const completedMantras = Math.min(totalMantras, JAPA_MANTRA_GOAL);
   const percent = Math.min((totalMantras / JAPA_MANTRA_GOAL) * 100, 100);

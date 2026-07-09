@@ -35,6 +35,7 @@ model User {
   lastLoginAt   DateTime      @default(now())
   refreshTokens RefreshToken[]
   audioTracks   AudioTrack[]
+  japaDailyProgress JapaDailyProgress[]
 }
 
 model RefreshToken {
@@ -65,4 +66,18 @@ model AudioTrack {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model JapaDailyProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  date      String
+  rounds    Int      @default(0)
+  goalRounds Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
 }

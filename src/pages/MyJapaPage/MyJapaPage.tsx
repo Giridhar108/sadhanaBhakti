@@ -1,6 +1,7 @@
 import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { audioApi } from '../../entities/audio/api/audioApi';
 import type { AudioTrack } from '../../entities/audio/model/types';
+import { japaApi } from '../../entities/japa-session/api/japaApi';
 import { defaultGoals, readAuthUser } from '../../entities/user/model/auth';
 import { env } from '../../shared/config/env';
 import japaAudioLotus from '../../shared/assets/images/japa-audio-lotus.png';
@@ -10,11 +11,14 @@ import playButtonIcon from '../../shared/assets/images/play.svg';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import {
   JAPA_MANTRA_GOAL,
+  JAPA_MANTRAS_PER_ROUND,
   calculateJapaMantraProgress,
   formatJapaDate,
   formatJapaNumber,
   formatJapaProgressPercent,
   formatJapaRoundsPhrase,
+  getTodayDateKey,
+  normalizeJapaCompletedRounds,
   normalizeJapaDailyGoal,
 } from '../../shared/lib/japaProgress';
 import { Icon } from '../../shared/ui/Icon/Icon';
@@ -63,8 +67,12 @@ const formatAudioTime = (totalSeconds: number) => {
 export default function MyJapaPage() {
   useDocumentTitle('Джапа - Садхана Бхакти');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const completedRoundsRef = useRef(0);
+  const lastSavedCompletedRoundsRef = useRef(0);
+  const saveCompletedRoundsRequestRef = useRef(0);
   const authUser = readAuthUser();
   const configuredDailyJapaGoal = useMemo(() => getInitialDailyJapaGoal(), []);
+  const todayDateKey = useMemo(() => getTodayDateKey(), []);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [isSessionRunning, setIsSessionRunning] = useState(false);
   const [completedRounds, setCompletedRounds] = useState(0);
@@ -102,12 +110,17 @@ export default function MyJapaPage() {
   const japaStartDate = authUser?.settings.japaStartDate ?? null;
   const japaGoalHistory = authUser?.settings.japaGoalHistory ?? [];
   const totalJapaProgress = useMemo(
-    () => calculateJapaMantraProgress(japaStartDate, new Date(), configuredDailyJapaGoal, japaGoalHistory),
-    [configuredDailyJapaGoal, japaGoalHistory, japaStartDate],
+    () => calculateJapaMantraProgress(japaStartDate, new Date(), configuredDailyJapaGoal, japaGoalHistory, completedRounds),
+    [completedRounds, configuredDailyJapaGoal, japaGoalHistory, japaStartDate],
   );
   const totalJapaProgressStyle = {
     width: `${totalJapaProgress.percent}%`,
   } as CSSProperties;
+  const totalCompletedRounds = Math.floor(totalJapaProgress.completedMantras / JAPA_MANTRAS_PER_ROUND);
+
+  useEffect(() => {
+    completedRoundsRef.current = completedRounds;
+  }, [completedRounds]);
 
   useEffect(() => {
     if (!isSessionRunning) {
@@ -120,6 +133,41 @@ export default function MyJapaPage() {
 
     return () => window.clearInterval(intervalId);
   }, [isSessionRunning]);
+
+  useEffect(() => {
+    if (!authUser) {
+      return undefined;
+    }
+
+    let shouldIgnore = false;
+
+    japaApi
+      .getToday(todayDateKey)
+      .then((progress) => {
+        if (shouldIgnore) {
+          return;
+        }
+
+        const savedRounds = normalizeJapaCompletedRounds(progress.rounds);
+        const savedGoal = progress.goalRounds ? normalizeJapaDailyGoal(progress.goalRounds) : configuredDailyJapaGoal;
+
+        completedRoundsRef.current = savedRounds;
+        lastSavedCompletedRoundsRef.current = savedRounds;
+        setCompletedRounds(savedRounds);
+        setDailyJapaGoalInput(String(savedGoal));
+      })
+      .catch(() => {
+        if (!shouldIgnore) {
+          completedRoundsRef.current = 0;
+          lastSavedCompletedRoundsRef.current = 0;
+          setCompletedRounds(0);
+        }
+      });
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, [authUser?.id, configuredDailyJapaGoal, todayDateKey]);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -181,12 +229,69 @@ export default function MyJapaPage() {
     setSessionSeconds(0);
   };
 
+  const saveCompletedRounds = (rounds: number) => {
+    if (!authUser) {
+      return;
+    }
+
+    const requestId = saveCompletedRoundsRequestRef.current + 1;
+
+    saveCompletedRoundsRequestRef.current = requestId;
+
+    japaApi
+      .updateToday({
+        date: todayDateKey,
+        rounds,
+        goalRounds: dailyJapaGoal,
+      })
+      .then((progress) => {
+        if (saveCompletedRoundsRequestRef.current !== requestId) {
+          return;
+        }
+
+        const savedRounds = normalizeJapaCompletedRounds(progress.rounds);
+
+        completedRoundsRef.current = savedRounds;
+        lastSavedCompletedRoundsRef.current = savedRounds;
+        setCompletedRounds(savedRounds);
+      })
+      .catch(() => {
+        if (saveCompletedRoundsRequestRef.current !== requestId) {
+          return;
+        }
+
+        const savedRounds = lastSavedCompletedRoundsRef.current;
+
+        completedRoundsRef.current = savedRounds;
+        setCompletedRounds(savedRounds);
+      });
+  };
+
+  const updateCompletedRounds = (rounds: number) => {
+    const nextRounds = Math.min(Math.max(rounds, 0), dailyJapaGoal);
+
+    completedRoundsRef.current = nextRounds;
+    setCompletedRounds(nextRounds);
+    saveCompletedRounds(nextRounds);
+  };
+
+  const saveDailyJapaGoal = (goalRounds: number) => {
+    if (!authUser) {
+      return;
+    }
+
+    void japaApi.updateToday({
+      date: todayDateKey,
+      goalRounds,
+    });
+  };
+
   const addCompletedRounds = (rounds: number) => {
-    setCompletedRounds((currentRounds) => Math.min(currentRounds + rounds, dailyJapaGoal));
+    updateCompletedRounds(completedRoundsRef.current + rounds);
   };
 
   const handleAddDailyGoal = () => {
-    setCompletedRounds((currentRounds) => Math.min(currentRounds + defaultGoals.japaRounds, dailyJapaGoal));
+    updateCompletedRounds(completedRoundsRef.current + defaultGoals.japaRounds);
   };
 
   const handleDailyGoalChange = (value: string) => {
@@ -196,7 +301,10 @@ export default function MyJapaPage() {
   };
 
   const handleDailyGoalBlur = () => {
-    setDailyJapaGoalInput(String(dailyJapaGoal));
+    const nextGoal = dailyJapaGoal;
+
+    setDailyJapaGoalInput(String(nextGoal));
+    saveDailyJapaGoal(nextGoal);
   };
 
   const handleAudioToggle = async () => {
@@ -502,6 +610,8 @@ export default function MyJapaPage() {
             </div>
             <div className={styles.overallInfo}>
               <p>
+                {formatJapaNumber(totalCompletedRounds)} кругов всего
+                <span>/</span>
                 <strong>{formatJapaNumber(totalJapaProgress.completedMantras)}</strong>
                 <span>/</span>
                 {formatJapaNumber(JAPA_MANTRA_GOAL)} мантр

@@ -10,6 +10,7 @@ export const endpoints = {
   },
   japa: {
     sessions: '/japa/sessions',
+    today: '/japa/today',
   },
   audio: {
     root: '/audio',

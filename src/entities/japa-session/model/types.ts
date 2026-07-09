@@ -5,3 +5,10 @@ export type JapaSession = {
   startedAt: string;
   finishedAt?: string;
 };
+
+export type JapaDailyProgress = {
+  date: string;
+  rounds: number;
+  goalRounds: number | null;
+  updatedAt: string | null;
+};
