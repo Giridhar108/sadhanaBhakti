@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { loadAuthSession, readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
+import { AppShell } from '../layout/AppShell';
 import styles from './AppRouter.module.css';
 
 const DashboardPage = lazy(() =>
@@ -71,20 +72,22 @@ function RoutedContent() {
   }
 
   if (legacyPreview) {
-    return <ComponentsPreviewPage />;
+    return <Navigate to="/components" replace />;
   }
 
   return (
     <Routes>
-      <Route path="/" element={<DashboardPage />} />
-      <Route path="/components" element={<ComponentsPreviewPage />} />
-      <Route path="/japa" element={<MyJapaPage />} />
-      <Route path="/books" element={<BooksPage />} />
-      <Route path="/verses" element={<VersesPage />} />
-      <Route path="/calendar" element={<CalendarPage />} />
-      <Route path="/statistics" element={<StatisticsPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/settings" element={<SettingsPage />} />
+      <Route element={<AppShell />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/components" element={<ComponentsPreviewPage />} />
+        <Route path="/japa" element={<MyJapaPage />} />
+        <Route path="/books" element={<BooksPage />} />
+        <Route path="/verses" element={<VersesPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/auth/login" element={<AuthPage />} />
       <Route path="/auth/register" element={<AuthPage />} />

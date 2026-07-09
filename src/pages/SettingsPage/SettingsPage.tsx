@@ -2,6 +2,12 @@ import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUiStore } from '../../app/store/useUiStore';
+import { audioApi } from '../../entities/audio/api/audioApi';
+import type { AudioTrack } from '../../entities/audio/model/types';
+import { defaultGoals, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
+import type { AuthUser } from '../../entities/user/model/types';
+import { endpoints } from '../../shared/api/endpoints';
+import { httpClient } from '../../shared/api/httpClient';
 import lotusSoft from '../../shared/assets/images/lotus-soft.png';
 import {
   readCalendarEvents,
@@ -34,6 +40,13 @@ type DragState = {
   startY: number;
   offsetX: number;
   offsetY: number;
+};
+
+type AudioUploadDraft = {
+  id: string;
+  file: File;
+  title: string;
+  subtitle: string;
 };
 
 type SettingsCardHeaderProps = {
@@ -87,6 +100,18 @@ function readFileAsDataUrl(file: File) {
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
   });
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024 * 1024) {
+    return `${Math.max(1, Math.round(size / 1024))} КБ`;
+  }
+
+  return `${(size / 1024 / 1024).toFixed(1)} МБ`;
+}
+
+function getTitleFromAudioFile(fileName: string) {
+  return fileName.replace(/\.[^/.]+$/, '').trim() || 'Аудио для практики';
 }
 
 function createCroppedCircle(imageSrc: string, zoom: number, offset: CropOffset) {
@@ -154,14 +179,22 @@ export default function SettingsPage() {
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [cropZoom, setCropZoom] = useState(1);
   const [cropOffset, setCropOffset] = useState<CropOffset>({ x: 0, y: 0 });
+  const [authUser, setAuthUser] = useState(() => readAuthUser());
+  const [practiceStatus, setPracticeStatus] = useState<string | null>(null);
+  const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
+  const [audioDrafts, setAudioDrafts] = useState<AudioUploadDraft[]>([]);
+  const [audioStatus, setAudioStatus] = useState<string | null>(null);
+  const [isAudioUploading, setIsAudioUploading] = useState(false);
   const dragState = useRef<DragState | null>(null);
+  const savedJapaGoal = authUser?.goals.japaRounds ?? defaultGoals.japaRounds;
 
-  const { register, handleSubmit } = useForm<SettingsForm>({
+  const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm<SettingsForm>({
     defaultValues: {
       dailyReminder: '05:30',
-      dailyGoal: 16,
+      dailyGoal: savedJapaGoal,
     },
   });
+  const currentDailyGoal = watch('dailyGoal', savedJapaGoal);
 
   const {
     register: registerEvent,
@@ -189,10 +222,40 @@ export default function SettingsPage() {
   useEffect(() => {
     setEvents(readCalendarEvents());
     setDailyVerses(readDailyVerses());
+    audioApi.list()
+      .then(setAudioTracks)
+      .catch(() => setAudioStatus('Не удалось загрузить список аудио.'));
   }, []);
 
-  const onSubmit = (data: SettingsForm) => {
-    settingsSchema.parse(data);
+  const onSubmit = async (data: SettingsForm) => {
+    const settings = settingsSchema.parse(data);
+    const currentUser = readAuthUser();
+
+    if (!currentUser) {
+      setPracticeStatus('Не удалось сохранить: пользователь не найден.');
+      return;
+    }
+
+    setPracticeStatus(null);
+
+    try {
+      const user = await httpClient.patch<AuthUser>(endpoints.users.me, {
+        goals: {
+          ...currentUser.goals,
+          japaRounds: settings.dailyGoal,
+        },
+      });
+
+      writeAuthUser(user);
+      setAuthUser(user);
+      reset({
+        dailyReminder: settings.dailyReminder,
+        dailyGoal: user.goals.japaRounds,
+      });
+      setPracticeStatus('Практика сохранена.');
+    } catch {
+      setPracticeStatus('Не удалось сохранить практику. Проверь backend-сессию.');
+    }
   };
 
   const onEventSubmit = (data: EventForm) => {
@@ -308,6 +371,85 @@ export default function SettingsPage() {
     writeDailyVerses(nextVerses);
   };
 
+  const onAudioFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    setAudioDrafts((currentDrafts) => [
+      ...currentDrafts,
+      ...files.map((file, index) => ({
+        id: `${file.name}-${file.lastModified}-${index}-${Date.now()}`,
+        file,
+        title: getTitleFromAudioFile(file.name),
+        subtitle: 'Мягкое повторение',
+      })),
+    ]);
+    setAudioStatus(null);
+    event.target.value = '';
+  };
+
+  const updateAudioDraft = (draftId: string, field: 'title' | 'subtitle', value: string) => {
+    setAudioDrafts((currentDrafts) =>
+      currentDrafts.map((draft) => (draft.id === draftId ? { ...draft, [field]: value } : draft)),
+    );
+  };
+
+  const removeAudioDraft = (draftId: string) => {
+    setAudioDrafts((currentDrafts) => currentDrafts.filter((draft) => draft.id !== draftId));
+  };
+
+  const uploadAudioDrafts = async () => {
+    if (audioDrafts.length === 0) {
+      setAudioStatus('Выбери один или несколько аудиофайлов.');
+      return;
+    }
+
+    const invalidDraft = audioDrafts.find((draft) => draft.title.trim().length < 2);
+
+    if (invalidDraft) {
+      setAudioStatus('У каждого аудио должно быть название.');
+      return;
+    }
+
+    setIsAudioUploading(true);
+    setAudioStatus(null);
+
+    try {
+      const uploadedTracks: AudioTrack[] = [];
+
+      for (const draft of audioDrafts) {
+        const track = await audioApi.upload({
+          title: draft.title.trim(),
+          subtitle: draft.subtitle.trim(),
+          file: draft.file,
+        });
+
+        uploadedTracks.push(track);
+      }
+
+      setAudioTracks((currentTracks) => [...uploadedTracks, ...currentTracks]);
+      setAudioDrafts([]);
+      setAudioStatus('Аудио загружено.');
+    } catch {
+      setAudioStatus('Не удалось загрузить аудио. Проверь backend-сессию и формат файла.');
+    } finally {
+      setIsAudioUploading(false);
+    }
+  };
+
+  const deleteAudioTrack = async (trackId: string) => {
+    try {
+      await audioApi.delete(trackId);
+      setAudioTracks((currentTracks) => currentTracks.filter((track) => track.id !== trackId));
+      setAudioStatus('Аудио удалено.');
+    } catch {
+      setAudioStatus('Не удалось удалить аудио.');
+    }
+  };
+
   return (
     <ModulePage
       eyebrow="Личный ритм"
@@ -315,7 +457,7 @@ export default function SettingsPage() {
       description="Тихое место для настройки практики, календаря, стиха дня и мягкого визуального режима."
       metrics={[
         { label: 'тема', value: theme === 'soft' ? 'soft' : 'light', tone: 'violet' },
-        { label: 'цель кругов', value: '16', tone: 'green' },
+        { label: 'цель кругов', value: String(currentDailyGoal || savedJapaGoal), tone: 'green' },
         { label: 'стихи', value: String(dailyVerses.length), tone: 'gold' },
       ]}
       aside={
@@ -353,9 +495,83 @@ export default function SettingsPage() {
             </label>
           </div>
           <button className={styles.primaryButton} type="submit">
-            Сохранить практику
+            {isSubmitting ? 'Сохраняем...' : 'Сохранить практику'}
           </button>
+          {practiceStatus ? <p className={styles.statusText}>{practiceStatus}</p> : null}
         </form>
+
+        <article className={`${styles.settingsCard} ${styles.audioSettingsCard} ${styles.wideCard}`}>
+          <SettingsCardHeader
+            icon="music"
+            title="Аудио для джапы"
+            description="Загружай мантры и лекции для плеера на странице джапы. У каждого аудио можно указать название и подпись."
+            tone="violet"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <label className={styles.audioDropzone}>
+            <input type="file" accept="audio/*" multiple onChange={onAudioFilesChange} />
+            <Icon name="plus" />
+            <span>Выбрать аудиофайлы</span>
+            <small>Можно загрузить несколько файлов сразу</small>
+          </label>
+
+          {audioDrafts.length > 0 ? (
+            <div className={styles.audioDraftList}>
+              {audioDrafts.map((draft) => (
+                <div className={styles.audioDraft} key={draft.id}>
+                  <div className={styles.audioFileMeta}>
+                    <strong>{draft.file.name}</strong>
+                    <small>{formatFileSize(draft.file.size)}</small>
+                  </div>
+                  <label className={styles.field}>
+                    <span>Название</span>
+                    <input value={draft.title} onChange={(event) => updateAudioDraft(draft.id, 'title', event.target.value)} />
+                  </label>
+                  <label className={styles.field}>
+                    <span>Подпись</span>
+                    <input value={draft.subtitle} onChange={(event) => updateAudioDraft(draft.id, 'subtitle', event.target.value)} />
+                  </label>
+                  <button className={styles.removeButton} type="button" onClick={() => removeAudioDraft(draft.id)}>
+                    Убрать
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <div className={styles.actions}>
+            <button className={styles.primaryButton} type="button" onClick={uploadAudioDrafts} disabled={isAudioUploading}>
+              {isAudioUploading ? 'Загружаем...' : 'Загрузить аудио'}
+            </button>
+            <button className={styles.secondaryButton} type="button" onClick={() => setAudioDrafts([])}>
+              Очистить выбор
+            </button>
+          </div>
+          {audioStatus ? <p className={styles.statusText}>{audioStatus}</p> : null}
+
+          <div className={styles.audioTrackList}>
+            {audioTracks.length > 0 ? (
+              audioTracks.map((track) => (
+                <div className={styles.audioTrackRow} key={track.id}>
+                  <span>
+                    <Icon name="music" />
+                  </span>
+                  <div>
+                    <strong>{track.title}</strong>
+                    <small>
+                      {track.subtitle || track.originalName} · {formatFileSize(track.size)}
+                    </small>
+                  </div>
+                  <button type="button" onClick={() => deleteAudioTrack(track.id)}>
+                    Удалить
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className={styles.emptyText}>Пока нет загруженного аудио. После загрузки треки появятся в плеере на странице джапы.</p>
+            )}
+          </div>
+        </article>
 
         <form className={`${styles.settingsCard} ${styles.verseForm} ${styles.wideCard}`} onSubmit={handleVerseSubmit(onVerseSubmit)}>
           <SettingsCardHeader

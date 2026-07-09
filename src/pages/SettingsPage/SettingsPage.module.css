@@ -168,9 +168,172 @@
   background: var(--green);
 }
 
+.primaryButton:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
 .secondaryButton {
   color: var(--violet-dark);
   background: var(--violet-soft);
+}
+
+.statusText {
+  position: relative;
+  z-index: 1;
+  margin: -4px 0 0;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.audioSettingsCard {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(245, 237, 249, 0.9), transparent 32%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(252, 247, 252, 0.94));
+}
+
+.audioDropzone {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 132px;
+  border: 1px dashed rgba(159, 114, 215, 0.42);
+  border-radius: var(--radius-lg);
+  color: var(--violet-dark);
+  background: rgba(245, 237, 249, 0.5);
+  text-align: center;
+  cursor: pointer;
+}
+
+.audioDropzone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.audioDropzone svg {
+  width: 28px;
+  height: 28px;
+}
+
+.audioDropzone span {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.audioDropzone small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.audioDraftList,
+.audioTrackList {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.audioDraft {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(160px, 1fr) minmax(160px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid rgba(238, 228, 230, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(255, 254, 250, 0.76);
+}
+
+.audioFileMeta {
+  display: grid;
+  gap: 5px;
+  align-self: center;
+  min-width: 0;
+}
+
+.audioFileMeta strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audioFileMeta small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.removeButton {
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 0 14px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
+}
+
+.audioTrackRow {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(238, 228, 230, 0.82);
+  border-radius: var(--radius-md);
+  background: rgba(245, 237, 249, 0.38);
+}
+
+.audioTrackRow > span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.audioTrackRow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.audioTrackRow strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audioTrackRow small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.audioTrackRow button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
 }
 
 .verseLayout {
@@ -518,5 +681,33 @@
 
   .verseLayout {
     grid-template-columns: 154px minmax(0, 1fr);
+  }
+
+  .audioDraft {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .audioFileMeta,
+  .removeButton {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .settingsBoard,
+  .formGrid,
+  .themeOptions,
+  .actions,
+  .verseLayout,
+  .audioDraft {
+    grid-template-columns: 1fr;
+  }
+
+  .audioTrackRow {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .audioTrackRow button {
+    grid-column: 1 / -1;
   }
 }

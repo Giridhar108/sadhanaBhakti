@@ -11,6 +11,11 @@ export const endpoints = {
   japa: {
     sessions: '/japa/sessions',
   },
+  audio: {
+    root: '/audio',
+    file: (trackId: string) => `/audio/${trackId}/file`,
+    item: (trackId: string) => `/audio/${trackId}`,
+  },
   progress: {
     summary: '/progress/summary',
     calendar: '/progress/calendar',

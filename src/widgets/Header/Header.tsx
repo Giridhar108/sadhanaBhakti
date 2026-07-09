@@ -12,7 +12,7 @@ export function Header() {
     <header className={styles.topbar}>
       <div>
         <h1>Харе Кришна, {displayName}</h1>
-        <p>Продолжай спокойно — каждый день уже часть пути.</p>
+        <p>Вся слава Шриле Прабхупаде</p>
       </div>
 
       <div className={styles.actions}>
