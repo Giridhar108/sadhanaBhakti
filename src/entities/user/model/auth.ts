@@ -21,6 +21,15 @@ export const defaultGoals: AuthGoals = {
   versesPerWeek: 1,
 };
 
+export const defaultSettings: AuthUser['settings'] = {
+  dailyReminder: '05:30',
+  japaStartDate: null,
+  theme: 'soft',
+  calendarEvents: [],
+  dailyVerses: [],
+  japaGoalHistory: [],
+};
+
 function canUseStorage() {
   return typeof window !== 'undefined' && Boolean(window.localStorage);
 }
@@ -83,8 +92,22 @@ export function getUserDisplayName(user: Pick<AuthUser, 'name' | 'spiritualName'
   return user?.spiritualName || user?.name || 'Практикующий';
 }
 
+function normalizeAuthUser(user: AuthUser | null) {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    ...user,
+    settings: {
+      ...defaultSettings,
+      ...user.settings,
+    },
+  };
+}
+
 export function readAuthUser() {
-  return readJson<AuthUser | null>(authUserKey, null);
+  return normalizeAuthUser(readJson<AuthUser | null>(authUserKey, null));
 }
 
 export function writeAuthUser(user: AuthUser) {

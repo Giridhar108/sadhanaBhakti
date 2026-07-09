@@ -105,6 +105,23 @@
   gap: 12px;
 }
 
+.practiceCard .formGrid .field span {
+  min-height: 30px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.japaStartBlock {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(132, 185, 122, 0.2);
+  border-radius: var(--radius-lg);
+  background: rgba(227, 240, 223, 0.42);
+}
+
 .field {
   position: relative;
   z-index: 1;
@@ -696,6 +713,7 @@
 @media (max-width: 760px) {
   .settingsBoard,
   .formGrid,
+  .japaStartBlock,
   .themeOptions,
   .actions,
   .verseLayout,

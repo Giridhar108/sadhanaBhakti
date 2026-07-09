@@ -13,10 +13,39 @@ export type AuthGoals = {
   versesPerWeek: number;
 };
 
+export type CalendarEventType = 'japa' | 'reading' | 'verse' | 'meeting' | 'other';
+
+export type CalendarEventSetting = {
+  id: string;
+  date: string;
+  title: string;
+  type: CalendarEventType;
+};
+
+export type DailyVerseSetting = {
+  id: string;
+  image?: string;
+  text: string;
+  source: string;
+};
+
+export type JapaGoalHistoryEntry = {
+  date: string;
+  rounds: number;
+};
+
 export type AuthUser = User & {
   spiritualName: string;
   practices: AuthPractice[];
   goals: AuthGoals;
+  settings: {
+    dailyReminder: string;
+    japaStartDate: string | null;
+    theme: 'light' | 'soft';
+    calendarEvents: CalendarEventSetting[];
+    dailyVerses: DailyVerseSetting[];
+    japaGoalHistory: JapaGoalHistoryEntry[];
+  };
   provider: 'email';
   createdAt: string;
   lastLoginAt: string;

@@ -8,6 +8,15 @@ import lotusLogo from '../../shared/assets/images/lotus-logo.png';
 import pauseButtonIcon from '../../shared/assets/images/pause.svg';
 import playButtonIcon from '../../shared/assets/images/play.svg';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
+import {
+  JAPA_MANTRA_GOAL,
+  calculateJapaMantraProgress,
+  formatJapaDate,
+  formatJapaNumber,
+  formatJapaProgressPercent,
+  formatJapaRoundsPhrase,
+  normalizeJapaDailyGoal,
+} from '../../shared/lib/japaProgress';
 import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './MyJapaPage.module.css';
 
@@ -29,15 +38,8 @@ const waveformBars = [
 ] as const;
 const waveformBarsCount = waveformBars.length;
 
-const normalizeDailyJapaGoal = (value: number) => {
-  if (!Number.isFinite(value)) {
-    return defaultGoals.japaRounds;
-  }
-
-  return Math.max(1, Math.min(Math.round(value), 192));
-};
-
-const getInitialDailyJapaGoal = () => normalizeDailyJapaGoal(readAuthUser()?.goals.japaRounds ?? defaultGoals.japaRounds);
+const getInitialDailyJapaGoal = () =>
+  normalizeJapaDailyGoal(readAuthUser()?.goals.japaRounds ?? defaultGoals.japaRounds);
 
 const formatSessionTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -61,10 +63,12 @@ const formatAudioTime = (totalSeconds: number) => {
 export default function MyJapaPage() {
   useDocumentTitle('Джапа - Садхана Бхакти');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const authUser = readAuthUser();
+  const configuredDailyJapaGoal = useMemo(() => getInitialDailyJapaGoal(), []);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [isSessionRunning, setIsSessionRunning] = useState(false);
   const [completedRounds, setCompletedRounds] = useState(0);
-  const [dailyJapaGoalInput, setDailyJapaGoalInput] = useState(() => String(getInitialDailyJapaGoal()));
+  const [dailyJapaGoalInput, setDailyJapaGoalInput] = useState(() => String(configuredDailyJapaGoal));
   const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
   const [selectedAudioId, setSelectedAudioId] = useState('');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -72,7 +76,7 @@ export default function MyJapaPage() {
   const [audioDuration, setAudioDuration] = useState(0);
   const [audioVolume, setAudioVolume] = useState(0.72);
   const [audioStatus, setAudioStatus] = useState('');
-  const dailyJapaGoal = normalizeDailyJapaGoal(Number(dailyJapaGoalInput));
+  const dailyJapaGoal = normalizeJapaDailyGoal(Number(dailyJapaGoalInput));
   const sessionTime = useMemo(() => formatSessionTime(sessionSeconds), [sessionSeconds]);
   const sessionActionLabel = isSessionRunning ? 'Пауза' : sessionSeconds > 0 ? 'Продолжить' : 'Начать';
   const sessionActionIcon = isSessionRunning ? 'Ⅱ' : '▶';
@@ -95,6 +99,15 @@ export default function MyJapaPage() {
   const activeWaveformBars = Math.round(waveformProgress * waveformBarsCount);
   const audioTitle = selectedAudioTrack?.title ?? 'Аудио не выбрано';
   const audioSubtitle = selectedAudioTrack?.subtitle || 'Загрузи аудио в настройках';
+  const japaStartDate = authUser?.settings.japaStartDate ?? null;
+  const japaGoalHistory = authUser?.settings.japaGoalHistory ?? [];
+  const totalJapaProgress = useMemo(
+    () => calculateJapaMantraProgress(japaStartDate, new Date(), configuredDailyJapaGoal, japaGoalHistory),
+    [configuredDailyJapaGoal, japaGoalHistory, japaStartDate],
+  );
+  const totalJapaProgressStyle = {
+    width: `${totalJapaProgress.percent}%`,
+  } as CSSProperties;
 
   useEffect(() => {
     if (!isSessionRunning) {
@@ -267,12 +280,6 @@ export default function MyJapaPage() {
               <div className={styles.progressRing}>
                 <svg className={styles.progressSvg} viewBox="0 0 320 320" aria-hidden="true">
                   <defs>
-                    <linearGradient id="japaProgressGradient" x1="78" x2="242" y1="44" y2="276" gradientUnits="userSpaceOnUse">
-                      <stop offset="0" stopColor="#7f55d4" />
-                      <stop offset="0.58" stopColor="#9a63dc" />
-                      <stop offset="0.78" stopColor="#f18a9d" />
-                      <stop offset="1" stopColor="#ffbd48" />
-                    </linearGradient>
                     <path id="japaGoalArc" d="M 34 48 Q 160 -44 286 48" />
                     <path id="japaRemainingArc" d="M 72 234 Q 160 296 248 234" />
                   </defs>
@@ -488,21 +495,25 @@ export default function MyJapaPage() {
           <article className={`${styles.card} ${styles.overallCard}`}>
             <div className={styles.overallHeader}>
               <h2>Общий прогресс</h2>
-              <strong>21,6%</strong>
+              <strong>{formatJapaProgressPercent(totalJapaProgress.percent)}</strong>
             </div>
             <div className={styles.overallTrack}>
-              <span />
+              <span style={totalJapaProgressStyle} />
             </div>
             <div className={styles.overallInfo}>
               <p>
-                <strong>7 568 640</strong>
+                <strong>{formatJapaNumber(totalJapaProgress.completedMantras)}</strong>
                 <span>/</span>
-                35 000 000 мантр
+                {formatJapaNumber(JAPA_MANTRA_GOAL)} мантр
               </p>
-              <small>При ритме 16 кругов в день за 12 лет: 70 080 кругов • 7 568 640 мантр</small>
+              <small>
+                {totalJapaProgress.startDate && totalJapaProgress.targetDate
+                  ? `При чтении ${formatJapaRoundsPhrase(totalJapaProgress.dailyRounds)} в день цель будет достигнута ${formatJapaDate(totalJapaProgress.targetDate)}.`
+                  : 'Укажи дату начала ежедневной практики в настройках, чтобы увидеть прогресс.'}
+              </small>
               <div className={styles.goalStatus}>
-                <Icon name="target" />
                 Цель 35 млн мантр
+                <Icon name="target" />
               </div>
               <button className={styles.linkButton} type="button">
                 <Icon name="chevron" />

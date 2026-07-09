@@ -1,3 +1,5 @@
+import { readAuthUser } from '../../entities/user/model/auth';
+
 export type CalendarEventType = 'japa' | 'reading' | 'verse' | 'meeting' | 'other';
 
 export type CalendarEvent = {
@@ -30,6 +32,12 @@ const isCalendarEvent = (value: unknown): value is CalendarEvent => {
 export const calendarEventsChanged = 'calendar-events-changed';
 
 export function readCalendarEvents(): CalendarEvent[] {
+  const authEvents = readAuthUser()?.settings.calendarEvents;
+
+  if (authEvents) {
+    return authEvents.filter(isCalendarEvent);
+  }
+
   if (typeof window === 'undefined') {
     return [];
   }
@@ -48,4 +56,3 @@ export function writeCalendarEvents(events: CalendarEvent[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   window.dispatchEvent(new Event(calendarEventsChanged));
 }
-

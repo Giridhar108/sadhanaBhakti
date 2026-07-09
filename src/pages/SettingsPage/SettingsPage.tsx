@@ -4,23 +4,23 @@ import { z } from 'zod';
 import { useUiStore } from '../../app/store/useUiStore';
 import { audioApi } from '../../entities/audio/api/audioApi';
 import type { AudioTrack } from '../../entities/audio/model/types';
-import { defaultGoals, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
+import { defaultGoals, defaultSettings, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
 import type { AuthUser } from '../../entities/user/model/types';
 import { endpoints } from '../../shared/api/endpoints';
 import { httpClient } from '../../shared/api/httpClient';
 import lotusSoft from '../../shared/assets/images/lotus-soft.png';
 import {
   readCalendarEvents,
-  writeCalendarEvents,
   type CalendarEvent,
   type CalendarEventType,
+  calendarEventsChanged,
 } from '../../shared/lib/calendarEvents';
 import {
-  clearDailyVerse,
   readDailyVerses,
-  writeDailyVerses,
   type DailyVerse,
+  dailyVerseChanged,
 } from '../../shared/lib/dailyVerse';
+import { getTodayDateKey } from '../../shared/lib/japaProgress';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
 import { ModulePage } from '../ModulePage/ModulePage';
@@ -59,6 +59,7 @@ type SettingsCardHeaderProps = {
 const settingsSchema = z.object({
   dailyReminder: z.string().min(4),
   dailyGoal: z.coerce.number().min(1).max(64),
+  japaStartDate: z.string(),
 });
 
 const eventSchema = z.object({
@@ -90,6 +91,23 @@ function toDateKey(date: Date) {
   const day = String(date.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+}
+
+function getNextJapaGoalHistory(
+  currentHistory: AuthUser['settings']['japaGoalHistory'],
+  currentGoal: number,
+  nextGoal: number,
+) {
+  if (currentGoal === nextGoal && (currentHistory.length > 0 || nextGoal === defaultGoals.japaRounds)) {
+    return currentHistory;
+  }
+
+  const today = getTodayDateKey();
+  const historyWithoutToday = currentHistory.filter((entry) => entry.date !== today);
+
+  return [...historyWithoutToday, { date: today, rounds: nextGoal }].sort((firstEntry, secondEntry) =>
+    firstEntry.date.localeCompare(secondEntry.date),
+  );
 }
 
 function readFileAsDataUrl(file: File) {
@@ -187,11 +205,14 @@ export default function SettingsPage() {
   const [isAudioUploading, setIsAudioUploading] = useState(false);
   const dragState = useRef<DragState | null>(null);
   const savedJapaGoal = authUser?.goals.japaRounds ?? defaultGoals.japaRounds;
+  const savedDailyReminder = authUser?.settings.dailyReminder ?? defaultSettings.dailyReminder;
+  const savedJapaStartDate = authUser?.settings.japaStartDate ?? '';
 
   const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm<SettingsForm>({
     defaultValues: {
-      dailyReminder: '05:30',
+      dailyReminder: savedDailyReminder,
       dailyGoal: savedJapaGoal,
+      japaStartDate: savedJapaStartDate,
     },
   });
   const currentDailyGoal = watch('dailyGoal', savedJapaGoal);
@@ -220,6 +241,12 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
+    if (authUser?.settings.theme) {
+      setTheme(authUser.settings.theme);
+    }
+  }, [authUser?.settings.theme, setTheme]);
+
+  useEffect(() => {
     setEvents(readCalendarEvents());
     setDailyVerses(readDailyVerses());
     audioApi.list()
@@ -239,10 +266,22 @@ export default function SettingsPage() {
     setPracticeStatus(null);
 
     try {
+      const nextJapaGoalHistory = getNextJapaGoalHistory(
+        currentUser.settings.japaGoalHistory,
+        currentUser.goals.japaRounds,
+        settings.dailyGoal,
+      );
       const user = await httpClient.patch<AuthUser>(endpoints.users.me, {
         goals: {
           ...currentUser.goals,
           japaRounds: settings.dailyGoal,
+        },
+        settings: {
+          ...currentUser.settings,
+          dailyReminder: settings.dailyReminder,
+          japaStartDate: settings.japaStartDate || null,
+          theme,
+          japaGoalHistory: nextJapaGoalHistory,
         },
       });
 
@@ -251,11 +290,42 @@ export default function SettingsPage() {
       reset({
         dailyReminder: settings.dailyReminder,
         dailyGoal: user.goals.japaRounds,
+        japaStartDate: user.settings.japaStartDate ?? '',
       });
       setPracticeStatus('Практика сохранена.');
     } catch {
       setPracticeStatus('Не удалось сохранить практику. Проверь backend-сессию.');
     }
+  };
+
+  const saveSettingsPatch = async (settingsPatch: Partial<AuthUser['settings']>) => {
+    const currentUser = readAuthUser();
+
+    if (!currentUser) {
+      setPracticeStatus('Не удалось сохранить: пользователь не найден.');
+      return false;
+    }
+
+    try {
+      const user = await httpClient.patch<AuthUser>(endpoints.users.me, {
+        settings: {
+          ...currentUser.settings,
+          ...settingsPatch,
+        },
+      });
+
+      writeAuthUser(user);
+      setAuthUser(user);
+      return true;
+    } catch {
+      setPracticeStatus('Не удалось сохранить настройки. Проверь backend-сессию.');
+      return false;
+    }
+  };
+
+  const saveTheme = async (nextTheme: 'light' | 'soft') => {
+    setTheme(nextTheme);
+    await saveSettingsPatch({ theme: nextTheme });
   };
 
   const onEventSubmit = (data: EventForm) => {
@@ -269,7 +339,11 @@ export default function SettingsPage() {
     ].sort((firstEvent, secondEvent) => firstEvent.date.localeCompare(secondEvent.date));
 
     setEvents(nextEvents);
-    writeCalendarEvents(nextEvents);
+    void saveSettingsPatch({ calendarEvents: nextEvents }).then((isSaved) => {
+      if (isSaved) {
+        window.dispatchEvent(new Event(calendarEventsChanged));
+      }
+    });
     resetEvent({ date: eventData.date, title: '', type: eventData.type });
   };
 
@@ -277,7 +351,11 @@ export default function SettingsPage() {
     const nextEvents = events.filter((event) => event.id !== eventId);
 
     setEvents(nextEvents);
-    writeCalendarEvents(nextEvents);
+    void saveSettingsPatch({ calendarEvents: nextEvents }).then((isSaved) => {
+      if (isSaved) {
+        window.dispatchEvent(new Event(calendarEventsChanged));
+      }
+    });
   };
 
   const onVerseImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -352,14 +430,22 @@ export default function SettingsPage() {
     const nextVerses = [...dailyVerses, nextVerse];
 
     setDailyVerses(nextVerses);
-    writeDailyVerses(nextVerses);
+    void saveSettingsPatch({ dailyVerses: nextVerses }).then((isSaved) => {
+      if (isSaved) {
+        window.dispatchEvent(new Event(dailyVerseChanged));
+      }
+    });
     setVerseImage(undefined);
     resetVerseForm({ text: '', source: '' });
   };
 
   const resetDailyVerse = () => {
-    clearDailyVerse();
     setDailyVerses([]);
+    void saveSettingsPatch({ dailyVerses: [] }).then((isSaved) => {
+      if (isSaved) {
+        window.dispatchEvent(new Event(dailyVerseChanged));
+      }
+    });
     setVerseImage(undefined);
     resetVerseForm({ text: '', source: '' });
   };
@@ -368,7 +454,11 @@ export default function SettingsPage() {
     const nextVerses = dailyVerses.filter((verse) => verse.id !== verseId);
 
     setDailyVerses(nextVerses);
-    writeDailyVerses(nextVerses);
+    void saveSettingsPatch({ dailyVerses: nextVerses }).then((isSaved) => {
+      if (isSaved) {
+        window.dispatchEvent(new Event(dailyVerseChanged));
+      }
+    });
   };
 
   const onAudioFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -492,6 +582,12 @@ export default function SettingsPage() {
             <label className={styles.field}>
               <span>Цель кругов</span>
               <input type="number" {...register('dailyGoal')} />
+            </label>
+          </div>
+          <div className={styles.japaStartBlock}>
+            <label className={styles.field}>
+              <span>Дата начала ежедневной практики</span>
+              <input type="date" {...register('japaStartDate')} />
             </label>
           </div>
           <button className={styles.primaryButton} type="submit">
@@ -700,7 +796,7 @@ export default function SettingsPage() {
             <button
               className={`${styles.themeOption} ${theme === 'soft' ? styles.themeActive : ''}`}
               type="button"
-              onClick={() => setTheme('soft')}
+              onClick={() => void saveTheme('soft')}
             >
               <span>Мягкая</span>
               <small>Теплее, спокойнее, больше devotional-настроения.</small>
@@ -708,7 +804,7 @@ export default function SettingsPage() {
             <button
               className={`${styles.themeOption} ${theme === 'light' ? styles.themeActive : ''}`}
               type="button"
-              onClick={() => setTheme('light')}
+              onClick={() => void saveTheme('light')}
             >
               <span>Светлая</span>
               <small>Чище и нейтральнее для ежедневной работы.</small>

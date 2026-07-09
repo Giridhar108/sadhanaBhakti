@@ -1,3 +1,5 @@
+import { readAuthUser } from '../../entities/user/model/auth';
+
 export type DailyVerse = {
   id: string;
   image?: string;
@@ -39,6 +41,12 @@ const isLegacyDailyVerse = (value: unknown): value is Omit<DailyVerse, 'id'> => 
 export const dailyVerseChanged = 'daily-verse-changed';
 
 export function readDailyVerses(): DailyVerse[] {
+  const authVerses = readAuthUser()?.settings.dailyVerses;
+
+  if (authVerses) {
+    return authVerses.filter(isDailyVerse);
+  }
+
   if (typeof window === 'undefined') {
     return [];
   }
@@ -80,4 +88,3 @@ export function clearDailyVerse() {
   window.localStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new Event(dailyVerseChanged));
 }
-

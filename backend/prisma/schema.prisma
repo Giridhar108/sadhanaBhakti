@@ -23,6 +23,12 @@ model User {
   japaRounds    Int           @default(16)
   readingPages  Int           @default(10)
   versesPerWeek Int           @default(1)
+  dailyReminder String        @default("05:30")
+  japaStartDate String?
+  theme         String        @default("soft")
+  calendarEvents Json         @default("[]")
+  dailyVerses   Json          @default("[]")
+  japaGoalHistory Json        @default("[]")
   isOnboarded   Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

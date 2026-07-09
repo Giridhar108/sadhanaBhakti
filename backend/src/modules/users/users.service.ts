@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import type { UpdateMeDto } from './dto/update-me.dto';
 
@@ -32,6 +33,12 @@ export class UsersService {
         japaRounds: input.goals?.japaRounds,
         readingPages: input.goals?.readingPages,
         versesPerWeek: input.goals?.versesPerWeek,
+        dailyReminder: input.settings?.dailyReminder,
+        japaStartDate: input.settings?.japaStartDate,
+        theme: input.settings?.theme,
+        calendarEvents: input.settings?.calendarEvents as Prisma.InputJsonValue | undefined,
+        dailyVerses: input.settings?.dailyVerses as Prisma.InputJsonValue | undefined,
+        japaGoalHistory: input.settings?.japaGoalHistory as Prisma.InputJsonValue | undefined,
         isOnboarded: input.isOnboarded,
       },
     });
