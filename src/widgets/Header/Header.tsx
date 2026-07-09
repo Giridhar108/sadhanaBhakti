@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom';
-import profile from '../../shared/assets/images/profile.png';
+import profile from '../../shared/assets/images/09_profile.png';
+import notifications from '../../shared/assets/images/08_notifications.png';
 import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
-import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './Header.module.css';
 
 export function Header() {
@@ -16,19 +15,13 @@ export function Header() {
       </div>
 
       <div className={styles.actions}>
-        <Link className={styles.settingsBtn} to="/settings" aria-label="Настройки">
-          <Icon name="settings" />
-        </Link>
-
         <button className={styles.iconBtn} type="button" aria-label="Уведомления">
-          <Icon name="bell" />
+          <img src={notifications} alt={displayName} />
           <span className={styles.dot} />
         </button>
 
         <button className={styles.profile} type="button">
           <img src={profile} alt={displayName} />
-          <span>{displayName}</span>
-          <Icon name="chevron" />
         </button>
       </div>
     </header>

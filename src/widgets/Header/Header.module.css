@@ -1,5 +1,5 @@
 .topbar {
-  min-height: 54px;
+  min-height: 64px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -26,11 +26,10 @@
   gap: 16px;
 }
 
-.settingsBtn,
 .iconBtn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 58px;
+  height: 58px;
   border: 0;
   background: transparent;
   display: grid;
@@ -38,24 +37,22 @@
   color: #201927;
 }
 
-.settingsBtn {
-  background: transparent;
-}
-
-.settingsBtn svg {
-  width: 22px;
-  height: 22px;
-}
-
 .iconBtn svg {
   width: 24px;
   height: 24px;
 }
 
+.iconBtn img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
 .dot {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 10px;
+  right: 12px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -74,8 +71,8 @@
 }
 
 .profile img {
-  width: 42px;
-  height: 42px;
+  width: 63px;
+  height: 63px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: none;
