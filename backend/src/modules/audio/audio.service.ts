@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createReadStream } from 'node:fs';
 import { mkdir, stat, unlink, writeFile } from 'node:fs/promises';
 import { extname, join, resolve } from 'node:path';
@@ -7,7 +8,6 @@ import type { Response } from 'express';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import type { UploadedAudioFile } from './types';
 
-const uploadDirectory = resolve(process.cwd(), 'uploads', 'audio');
 const maxTitleLength = 80;
 const maxSubtitleLength = 120;
 
@@ -18,7 +18,16 @@ type CreateAudioTrackInput = {
 
 @Injectable()
 export class AudioService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly uploadDirectory: string;
+
+  constructor(
+    private readonly config: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
+    this.uploadDirectory = resolve(
+      this.config.get<string>('AUDIO_UPLOAD_DIR') ?? join(process.cwd(), 'uploads', 'audio'),
+    );
+  }
 
   list(userId: string) {
     return this.prisma.audioTrack.findMany({
@@ -41,8 +50,8 @@ export class AudioService {
     const extension = extname(file.originalname).toLowerCase() || '.mp3';
     const fileName = `${randomUUID()}${extension}`;
 
-    await mkdir(uploadDirectory, { recursive: true });
-    await writeFile(join(uploadDirectory, fileName), file.buffer);
+    await mkdir(this.uploadDirectory, { recursive: true });
+    await writeFile(join(this.uploadDirectory, fileName), file.buffer);
 
     return this.prisma.audioTrack.create({
       data: {
@@ -64,14 +73,14 @@ export class AudioService {
       where: { id: track.id },
     });
 
-    await unlink(join(uploadDirectory, track.fileName)).catch(() => undefined);
+    await unlink(join(this.uploadDirectory, track.fileName)).catch(() => undefined);
 
     return { ok: true };
   }
 
   async stream(userId: string, trackId: string, rangeHeader: string | undefined, response: Response) {
     const track = await this.findForUser(userId, trackId);
-    const filePath = join(uploadDirectory, track.fileName);
+    const filePath = join(this.uploadDirectory, track.fileName);
     const fileStats = await stat(filePath).catch(() => {
       throw new NotFoundException('Audio file not found');
     });

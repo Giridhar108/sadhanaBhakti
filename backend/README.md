@@ -34,6 +34,22 @@ npm run dev
 
 The frontend dev server proxies `/api` to `http://localhost:4000`.
 
+## Database migrations
+
+Production uses committed Prisma migrations:
+
+```bash
+npm run prisma:deploy
+```
+
+When changing `prisma/schema.prisma`, create and commit a migration locally:
+
+```bash
+npm run prisma:migrate -- --name describe_the_change
+```
+
+Do not use `prisma db push` against the production database.
+
 ## Auth Endpoints
 
 ```txt

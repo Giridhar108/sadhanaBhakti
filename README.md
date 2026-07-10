@@ -46,6 +46,15 @@ http://localhost:5173/?preview=components
 - Design system: `docs/design-system.md`
 - Component map: `docs/components-map.md`
 
+## Production
+
+The production stack uses Docker Compose for PostgreSQL, the NestJS API and the
+Nginx frontend container. A host-level Nginx instance terminates HTTPS and
+forwards traffic to the stack on `127.0.0.1:8080`.
+
+See `docs/deployment.md` for the first deployment, updates, backups and restore
+instructions.
+
 ## UI Baseline
 
 - Font: Nunito.

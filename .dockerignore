@@ -1,0 +1,14 @@
+.git
+.gitignore
+.vscode
+.env
+.env.*
+backend
+dist
+docs
+node_modules
+*.log
+*.png
+*.md
+static-preview.html
+tsconfig.tsbuildinfo
