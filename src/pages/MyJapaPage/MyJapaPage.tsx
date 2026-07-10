@@ -2,10 +2,11 @@ import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useSta
 import { audioApi } from '../../entities/audio/api/audioApi';
 import type { AudioTrack } from '../../entities/audio/model/types';
 import { japaApi } from '../../entities/japa-session/api/japaApi';
+import type { JapaDailyProgress, JapaDailyProgressQuery } from '../../entities/japa-session/model/types';
 import { defaultGoals, readAuthUser } from '../../entities/user/model/auth';
 import { env } from '../../shared/config/env';
 import japaAudioLotus from '../../shared/assets/images/japa-audio-lotus.png';
-import lotusLogo from '../../shared/assets/images/lotus-logo.png';
+import smallCow from '../../shared/assets/images/smallCow.png';
 import pauseButtonIcon from '../../shared/assets/images/pause.svg';
 import playButtonIcon from '../../shared/assets/images/play.svg';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
@@ -64,19 +65,126 @@ const formatAudioTime = (totalSeconds: number) => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
+type CachedJapaHistory = {
+  query: JapaDailyProgressQuery;
+  progressHistory: JapaDailyProgress[];
+};
+
+const dailyProgressCache = new Map<string, JapaDailyProgress>();
+const dailyProgressRequests = new Map<string, Promise<JapaDailyProgress>>();
+const dailyProgressHistoryCache = new Map<string, CachedJapaHistory>();
+const dailyProgressHistoryRequests = new Map<string, Promise<JapaDailyProgress[]>>();
+
+const getDailyProgressCacheKey = (userId: string, date: string) => `${userId}:${date}`;
+
+const getDailyProgressHistoryCacheKey = (userId: string, query: JapaDailyProgressQuery) =>
+  `${userId}:${query.from ?? ''}:${query.to ?? ''}`;
+
+const isDateWithinProgressQuery = (date: string, query: JapaDailyProgressQuery) =>
+  (!query.from || date >= query.from) && (!query.to || date <= query.to);
+
+const getCachedDailyProgress = (userId: string, date: string) => {
+  const cacheKey = getDailyProgressCacheKey(userId, date);
+  const cachedProgress = dailyProgressCache.get(cacheKey);
+
+  if (cachedProgress) {
+    return Promise.resolve(cachedProgress);
+  }
+
+  const pendingRequest = dailyProgressRequests.get(cacheKey);
+
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  const request = japaApi
+    .getToday(date)
+    .then((progress) => {
+      dailyProgressCache.set(cacheKey, progress);
+      return progress;
+    })
+    .finally(() => {
+      dailyProgressRequests.delete(cacheKey);
+    });
+
+  dailyProgressRequests.set(cacheKey, request);
+  return request;
+};
+
+const getCachedDailyProgressHistory = (userId: string, query: JapaDailyProgressQuery) => {
+  const cacheKey = getDailyProgressHistoryCacheKey(userId, query);
+  const cachedHistory = dailyProgressHistoryCache.get(cacheKey);
+
+  if (cachedHistory) {
+    return Promise.resolve(cachedHistory.progressHistory);
+  }
+
+  const pendingRequest = dailyProgressHistoryRequests.get(cacheKey);
+
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  const request = japaApi
+    .getHistory(query)
+    .then((progressHistory) => {
+      dailyProgressHistoryCache.set(cacheKey, {
+        query,
+        progressHistory,
+      });
+      return progressHistory;
+    })
+    .finally(() => {
+      dailyProgressHistoryRequests.delete(cacheKey);
+    });
+
+  dailyProgressHistoryRequests.set(cacheKey, request);
+  return request;
+};
+
+const updateDailyProgressCache = (userId: string, progress: JapaDailyProgress) => {
+  dailyProgressCache.set(getDailyProgressCacheKey(userId, progress.date), progress);
+
+  dailyProgressHistoryCache.forEach((cachedHistory, cacheKey) => {
+    if (!cacheKey.startsWith(`${userId}:`) || !isDateWithinProgressQuery(progress.date, cachedHistory.query)) {
+      return;
+    }
+
+    cachedHistory.progressHistory = [
+      ...cachedHistory.progressHistory.filter((historyItem) => historyItem.date !== progress.date),
+      progress,
+    ].sort((firstItem, secondItem) => firstItem.date.localeCompare(secondItem.date));
+  });
+};
+
 export default function MyJapaPage() {
   useDocumentTitle('Джапа - Садхана Бхакти');
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const completedRoundsRef = useRef(0);
-  const lastSavedCompletedRoundsRef = useRef(0);
-  const saveCompletedRoundsRequestRef = useRef(0);
   const authUser = readAuthUser();
   const configuredDailyJapaGoal = useMemo(() => getInitialDailyJapaGoal(), []);
   const todayDateKey = useMemo(() => getTodayDateKey(), []);
+  const japaStartDate = authUser?.settings.japaStartDate ?? null;
+  const japaGoalHistory = authUser?.settings.japaGoalHistory ?? [];
+  const initialDailyProgress = authUser
+    ? dailyProgressCache.get(getDailyProgressCacheKey(authUser.id, todayDateKey))
+    : undefined;
+  const initialCompletedRounds = normalizeJapaCompletedRounds(initialDailyProgress?.rounds ?? 0);
+  const initialDailyJapaGoal = initialDailyProgress?.goalRounds
+    ? normalizeJapaDailyGoal(initialDailyProgress.goalRounds)
+    : configuredDailyJapaGoal;
+  const initialDailyProgressHistory = authUser && japaStartDate
+    ? dailyProgressHistoryCache.get(getDailyProgressHistoryCacheKey(authUser.id, {
+      from: japaStartDate,
+      to: todayDateKey,
+    }))?.progressHistory ?? []
+    : [];
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const completedRoundsRef = useRef(initialCompletedRounds);
+  const lastSavedCompletedRoundsRef = useRef(initialCompletedRounds);
+  const saveCompletedRoundsRequestRef = useRef(0);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [isSessionRunning, setIsSessionRunning] = useState(false);
-  const [completedRounds, setCompletedRounds] = useState(0);
-  const [dailyJapaGoalInput, setDailyJapaGoalInput] = useState(() => String(configuredDailyJapaGoal));
+  const [completedRounds, setCompletedRounds] = useState(initialCompletedRounds);
+  const [dailyJapaGoalInput, setDailyJapaGoalInput] = useState(() => String(initialDailyJapaGoal));
   const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
   const [selectedAudioId, setSelectedAudioId] = useState('');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -84,6 +192,7 @@ export default function MyJapaPage() {
   const [audioDuration, setAudioDuration] = useState(0);
   const [audioVolume, setAudioVolume] = useState(0.72);
   const [audioStatus, setAudioStatus] = useState('');
+  const [dailyProgressHistory, setDailyProgressHistory] = useState<JapaDailyProgress[]>(initialDailyProgressHistory);
   const dailyJapaGoal = normalizeJapaDailyGoal(Number(dailyJapaGoalInput));
   const sessionTime = useMemo(() => formatSessionTime(sessionSeconds), [sessionSeconds]);
   const sessionActionLabel = isSessionRunning ? 'Пауза' : sessionSeconds > 0 ? 'Продолжить' : 'Начать';
@@ -107,11 +216,17 @@ export default function MyJapaPage() {
   const activeWaveformBars = Math.round(waveformProgress * waveformBarsCount);
   const audioTitle = selectedAudioTrack?.title ?? 'Аудио не выбрано';
   const audioSubtitle = selectedAudioTrack?.subtitle || 'Загрузи аудио в настройках';
-  const japaStartDate = authUser?.settings.japaStartDate ?? null;
-  const japaGoalHistory = authUser?.settings.japaGoalHistory ?? [];
   const totalJapaProgress = useMemo(
-    () => calculateJapaMantraProgress(japaStartDate, new Date(), configuredDailyJapaGoal, japaGoalHistory, completedRounds),
-    [completedRounds, configuredDailyJapaGoal, japaGoalHistory, japaStartDate],
+    () =>
+      calculateJapaMantraProgress(
+        japaStartDate,
+        new Date(),
+        configuredDailyJapaGoal,
+        japaGoalHistory,
+        completedRounds,
+        dailyProgressHistory,
+      ),
+    [completedRounds, configuredDailyJapaGoal, dailyProgressHistory, japaGoalHistory, japaStartDate],
   );
   const totalJapaProgressStyle = {
     width: `${totalJapaProgress.percent}%`,
@@ -141,8 +256,7 @@ export default function MyJapaPage() {
 
     let shouldIgnore = false;
 
-    japaApi
-      .getToday(todayDateKey)
+    getCachedDailyProgress(authUser.id, todayDateKey)
       .then((progress) => {
         if (shouldIgnore) {
           return;
@@ -168,6 +282,34 @@ export default function MyJapaPage() {
       shouldIgnore = true;
     };
   }, [authUser?.id, configuredDailyJapaGoal, todayDateKey]);
+
+  useEffect(() => {
+    if (!authUser || !japaStartDate) {
+      setDailyProgressHistory([]);
+      return undefined;
+    }
+
+    let shouldIgnore = false;
+
+    getCachedDailyProgressHistory(authUser.id, {
+      from: japaStartDate,
+      to: todayDateKey,
+    })
+      .then((progressHistory) => {
+        if (!shouldIgnore) {
+          setDailyProgressHistory(progressHistory);
+        }
+      })
+      .catch(() => {
+        if (!shouldIgnore) {
+          setDailyProgressHistory([]);
+        }
+      });
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, [authUser?.id, japaStartDate, todayDateKey]);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -251,9 +393,14 @@ export default function MyJapaPage() {
 
         const savedRounds = normalizeJapaCompletedRounds(progress.rounds);
 
+        updateDailyProgressCache(authUser.id, progress);
         completedRoundsRef.current = savedRounds;
         lastSavedCompletedRoundsRef.current = savedRounds;
         setCompletedRounds(savedRounds);
+        setDailyProgressHistory((currentHistory) => [
+          ...currentHistory.filter((historyItem) => historyItem.date !== progress.date),
+          progress,
+        ].sort((firstItem, secondItem) => firstItem.date.localeCompare(secondItem.date)));
       })
       .catch(() => {
         if (saveCompletedRoundsRequestRef.current !== requestId) {
@@ -283,6 +430,12 @@ export default function MyJapaPage() {
     void japaApi.updateToday({
       date: todayDateKey,
       goalRounds,
+    }).then((progress) => {
+      updateDailyProgressCache(authUser.id, progress);
+      setDailyProgressHistory((currentHistory) => [
+        ...currentHistory.filter((historyItem) => historyItem.date !== progress.date),
+        progress,
+      ].sort((firstItem, secondItem) => firstItem.date.localeCompare(secondItem.date)));
     });
   };
 
@@ -410,7 +563,7 @@ export default function MyJapaPage() {
                     {visibleRounds}<span>/{dailyJapaGoal}</span>
                   </strong>
                   <small>кругов сегодня</small>
-                  <img src={lotusLogo} alt="" />
+                  <img src={smallCow} alt="" />
                 </div>
               </div>
             </div>
@@ -595,7 +748,7 @@ export default function MyJapaPage() {
                 Всегда думай обо Мне, стань Моим преданным, поклоняйся Мне и поклоняйся Мне.
                 Таким образом ты непременно придёшь ко Мне. Я обещаю тебе это, ибо ты Мне очень дорог.
               </p>
-              <img src={lotusLogo} alt="" />
+              <img src={smallCow} alt="" />
             </div>
             <strong className={styles.verseSource}>— Бхагавад-гита 18.65</strong>
           </article>

@@ -8,6 +8,11 @@ export type JapaGoalHistoryEntry = {
   rounds: number;
 };
 
+export type JapaDailyProgressEntry = {
+  date: string;
+  rounds: number;
+};
+
 type JapaMantraProgress = {
   startDate: string | null;
   targetDate: string | null;
@@ -158,6 +163,7 @@ export const calculateJapaMantraProgress = (
   dailyRounds = JAPA_DAILY_ROUNDS,
   goalHistory: JapaGoalHistoryEntry[] = [],
   todayCompletedRounds?: number,
+  dailyProgressHistory: JapaDailyProgressEntry[] = [],
 ): JapaMantraProgress => {
   const parsedStartDate = startDate ? parseDateKey(startDate) : null;
   const normalizedDailyRounds = normalizeJapaDailyGoal(dailyRounds);
@@ -177,35 +183,45 @@ export const calculateJapaMantraProgress = (
   }
 
   const todayDate = toStartOfLocalDay(today);
+  const todayDateKey = toDateKey(todayDate);
   const days = getInclusiveDays(parsedStartDate, todayDate);
   const normalizedHistory = normalizeGoalHistory(goalHistory, parsedStartDate, normalizedDailyRounds);
   const segments = getSegments(parsedStartDate, normalizedHistory);
+  const completedRoundsByDate = new Map<string, number>();
   let totalMantras = 0;
   let currentDailyRounds = JAPA_DAILY_ROUNDS;
 
-  segments.forEach((segment, index) => {
-    const segmentStartDate = parseDateKey(segment.date) ?? parsedStartDate;
-    const nextSegmentStartDate = segments[index + 1] ? parseDateKey(segments[index + 1].date) : null;
-    const segmentEndDate = nextSegmentStartDate ? addDays(nextSegmentStartDate, -1) : todayDate;
-    const boundedStartDate = segmentStartDate < parsedStartDate ? parsedStartDate : segmentStartDate;
-    const boundedEndDate = segmentEndDate > todayDate ? todayDate : segmentEndDate;
+  dailyProgressHistory.forEach((progress) => {
+    const progressDate = parseDateKey(progress.date);
 
-    if (boundedEndDate < boundedStartDate) {
+    if (!progressDate || progressDate < parsedStartDate || progressDate > todayDate) {
       return;
     }
 
-    const segmentDays = getInclusiveDays(boundedStartDate, boundedEndDate);
-    const segmentRounds = normalizeJapaDailyGoal(segment.rounds);
-
-    totalMantras += segmentDays * segmentRounds * JAPA_MANTRAS_PER_ROUND;
-
-    if (segmentStartDate <= todayDate) {
-      currentDailyRounds = segmentRounds;
-    }
+    completedRoundsByDate.set(progress.date, normalizeJapaCompletedRounds(progress.rounds));
   });
 
   if (todayCompletedRounds !== undefined && parsedStartDate <= todayDate) {
-    totalMantras += normalizeJapaCompletedRounds(todayCompletedRounds) * JAPA_MANTRAS_PER_ROUND;
+    completedRoundsByDate.set(todayDateKey, normalizeJapaCompletedRounds(todayCompletedRounds));
+  }
+
+  for (let date = new Date(parsedStartDate), segmentIndex = 0; date <= todayDate; date = addDays(date, 1)) {
+    while (segments[segmentIndex + 1]) {
+      const nextSegmentStartDate = parseDateKey(segments[segmentIndex + 1].date);
+
+      if (!nextSegmentStartDate || nextSegmentStartDate > date) {
+        break;
+      }
+
+      segmentIndex += 1;
+    }
+
+    const dateKey = toDateKey(date);
+    const segmentRounds = normalizeJapaDailyGoal(segments[segmentIndex].rounds);
+    const completedRounds = completedRoundsByDate.get(dateKey) ?? segmentRounds;
+
+    currentDailyRounds = segmentRounds;
+    totalMantras += completedRounds * JAPA_MANTRAS_PER_ROUND;
   }
 
   const completedMantras = Math.min(totalMantras, JAPA_MANTRA_GOAL);

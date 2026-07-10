@@ -1,4 +1,4 @@
-import lotusSoft from '../../shared/assets/images/lotus-soft.png';
+import lotusSoft from '../../shared/assets/images/lotus-logo1.png';
 import styles from './GoalReminderCard.module.css';
 
 export function GoalReminderCard() {

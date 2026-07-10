@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
-import type { UpdateJapaTodayDto } from './dto/japa-today.dto';
+import type { JapaHistoryQueryDto, UpdateJapaTodayDto } from './dto/japa-today.dto';
 import { toJapaDailyProgressDto } from './types';
 
 const getTodayDateKey = () => new Date().toISOString().slice(0, 10);
@@ -20,6 +20,24 @@ export class JapaService {
     });
 
     return toJapaDailyProgressDto(progress, date);
+  }
+
+  async getDailyProgressHistory(userId: string, query: JapaHistoryQueryDto) {
+    const dateFilter = {
+      gte: query.from,
+      lte: query.to,
+    };
+    const progressItems = await this.prisma.japaDailyProgress.findMany({
+      where: {
+        userId,
+        date: query.from || query.to ? dateFilter : undefined,
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    return progressItems.map((progress) => toJapaDailyProgressDto(progress, progress.date));
   }
 
   async setDailyProgress(userId: string, input: UpdateJapaTodayDto) {

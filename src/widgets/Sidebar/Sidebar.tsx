@@ -4,9 +4,9 @@ import japaIcon from '../../shared/assets/images/02_japa.png';
 import booksIcon from '../../shared/assets/images/03_books.png';
 import versesIcon from '../../shared/assets/images/04_verses.png';
 import calendarIcon from '../../shared/assets/images/05_calendar.png';
-import progressIcon from '../../shared/assets/images/06_progress.png';
 import settingsIcon from '../../shared/assets/images/07_settings.png';
-import lotusLogo from '../../shared/assets/images/lotus-logo.png';
+import friendsMaleIcon from '../../shared/assets/images/friendsMale.png';
+import lotusLogo from '../../shared/assets/images/sadhanaBhakti.png';
 import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
 import styles from './Sidebar.module.css';
 import { GoalReminderCard } from './GoalReminderCard';
@@ -28,8 +28,7 @@ const navItems: NavItem[] = [
   { label: 'Книги', image: booksIcon, href: '/books' },
   { label: 'Стихи', image: versesIcon, href: '/verses' },
   { label: 'Календарь', image: calendarIcon, href: '/calendar' },
-  { label: 'Прогресс', image: progressIcon, href: '/statistics' },
-  { label: 'Друзья', icon: 'users', href: '/profile' },
+  { label: 'Друзья', image: friendsMaleIcon, href: '/profile' },
   { label: 'Настройки', image: settingsIcon, href: '/settings' },
 ];
 
@@ -40,7 +39,7 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
     <aside className={`${styles.sidebar} ${isStatic ? styles.static : ''}`}>
       <Link className={styles.brand} to="/" aria-label="Перейти на главную">
         <img src={lotusLogo} alt="Лотос" />
-        <span>Садхана Бхакти</span>
+        {/* <span>Садхана Бхакти</span> */}
       </Link>
 
       <nav className={styles.nav} aria-label="Основная навигация">

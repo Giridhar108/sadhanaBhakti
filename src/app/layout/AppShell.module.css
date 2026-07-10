@@ -4,7 +4,7 @@
   min-height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 240px minmax(960px, 1fr);
+  grid-template-columns: 300px minmax(960px, 1fr);
 }
 
 .page {
@@ -16,6 +16,6 @@
 
 @media (max-width: 1280px) {
   .app {
-    grid-template-columns: 220px minmax(960px, 1fr);
+    grid-template-columns: 275px minmax(960px, 1fr);
   }
 }

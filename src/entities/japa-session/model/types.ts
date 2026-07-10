@@ -12,3 +12,8 @@ export type JapaDailyProgress = {
   goalRounds: number | null;
   updatedAt: string | null;
 };
+
+export type JapaDailyProgressQuery = {
+  from?: string;
+  to?: string;
+};

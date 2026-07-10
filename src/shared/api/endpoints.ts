@@ -9,6 +9,7 @@ export const endpoints = {
     me: '/users/me',
   },
   japa: {
+    history: '/japa/history',
     sessions: '/japa/sessions',
     today: '/japa/today',
   },
