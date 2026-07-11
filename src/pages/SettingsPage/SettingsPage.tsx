@@ -1,8 +1,10 @@
 import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 import { useUiStore } from '../../app/store/useUiStore';
 import { audioApi } from '../../entities/audio/api/audioApi';
+import { audioTracksQueryKey, useAudioTracks } from '../../entities/audio/model/audioQueries';
 import type { AudioTrack } from '../../entities/audio/model/types';
 import { defaultGoals, defaultSettings, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
 import type { AuthUser } from '../../entities/user/model/types';
@@ -206,6 +208,7 @@ export default function SettingsPage() {
   useDocumentTitle('Настройки - Садхана Бхакти');
   const theme = useUiStore((state) => state.theme);
   const setTheme = useUiStore((state) => state.setTheme);
+  const queryClient = useQueryClient();
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
   const [dailyVerses, setDailyVerses] = useState<DailyVerse[]>(() => readDailyVerses());
   const [verseImage, setVerseImage] = useState<string | undefined>();
@@ -216,10 +219,10 @@ export default function SettingsPage() {
   const [authUser, setAuthUser] = useState(() => readAuthUser());
   const [practiceStatus, setPracticeStatus] = useState<string | null>(null);
   const [verseStatus, setVerseStatus] = useState<string | null>(null);
-  const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
   const [audioDrafts, setAudioDrafts] = useState<AudioUploadDraft[]>([]);
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
   const [isAudioUploading, setIsAudioUploading] = useState(false);
+  const { data: audioTracks = [], isError: isAudioTracksError } = useAudioTracks();
   const dragState = useRef<DragState | null>(null);
   const savedJapaGoal = authUser?.goals.japaRounds ?? defaultGoals.japaRounds;
   const savedDailyReminder = authUser?.settings.dailyReminder ?? defaultSettings.dailyReminder;
@@ -267,10 +270,13 @@ export default function SettingsPage() {
   useEffect(() => {
     setEvents(readCalendarEvents());
     setDailyVerses(readDailyVerses());
-    audioApi.list()
-      .then(setAudioTracks)
-      .catch(() => setAudioStatus('Не удалось загрузить список аудио.'));
   }, []);
+
+  useEffect(() => {
+    if (isAudioTracksError) {
+      setAudioStatus('Не удалось загрузить список аудио.');
+    }
+  }, [isAudioTracksError]);
 
   const onSubmit = async (data: SettingsForm) => {
     const settings = settingsSchema.parse(data);
@@ -576,7 +582,10 @@ export default function SettingsPage() {
         uploadedTracks.push(track);
       }
 
-      setAudioTracks((currentTracks) => [...uploadedTracks, ...currentTracks]);
+      queryClient.setQueryData<AudioTrack[]>(audioTracksQueryKey, (currentTracks = []) => [
+        ...uploadedTracks,
+        ...currentTracks,
+      ]);
       setAudioDrafts([]);
       setAudioStatus('Аудио загружено.');
     } catch {
@@ -589,7 +598,9 @@ export default function SettingsPage() {
   const deleteAudioTrack = async (trackId: string) => {
     try {
       await audioApi.delete(trackId);
-      setAudioTracks((currentTracks) => currentTracks.filter((track) => track.id !== trackId));
+      queryClient.setQueryData<AudioTrack[]>(audioTracksQueryKey, (currentTracks = []) =>
+        currentTracks.filter((track) => track.id !== trackId),
+      );
       setAudioStatus('Аудио удалено.');
     } catch {
       setAudioStatus('Не удалось удалить аудио.');

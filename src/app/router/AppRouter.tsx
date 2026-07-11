@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useUiStore } from '../store/useUiStore';
+import { AudioTracksPreloader } from '../../entities/audio/model/AudioTracksPreloader';
 import { loadAuthSession, readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
 import { AppShell } from '../layout/AppShell';
 import styles from './AppRouter.module.css';
@@ -121,30 +122,35 @@ function RoutedContent() {
     return <Navigate to="/" replace />;
   }
 
+  const shouldPreloadAudio = !appPreview && Boolean(authUser?.isOnboarded);
+
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/components" element={<ComponentsPreviewPage />} />
-        <Route path="/japa" element={<MyJapaPage />} />
-        <Route path="/books" element={<BooksPage />} />
-        <Route path="/verses" element={<VersesPage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/statistics" element={<StatisticsPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Route>
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="/auth/login" element={<AuthPage />} />
-      <Route path="/auth/register" element={<AuthPage />} />
-      <Route path="/auth/onboarding" element={<Navigate to="/auth/onboarding/name" replace />} />
-      <Route path="/auth/onboarding/name" element={<AuthPage />} />
-      <Route path="/auth/onboarding/practices" element={<AuthPage />} />
-      <Route path="/auth/onboarding/goals" element={<AuthPage />} />
-      <Route path="/login" element={<Navigate to="/auth/login" replace />} />
-      <Route path="/register" element={<Navigate to="/auth/register" replace />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <AudioTracksPreloader enabled={shouldPreloadAudio} />
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/components" element={<ComponentsPreviewPage />} />
+          <Route path="/japa" element={<MyJapaPage />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/verses" element={<VersesPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/auth/login" element={<AuthPage />} />
+        <Route path="/auth/register" element={<AuthPage />} />
+        <Route path="/auth/onboarding" element={<Navigate to="/auth/onboarding/name" replace />} />
+        <Route path="/auth/onboarding/name" element={<AuthPage />} />
+        <Route path="/auth/onboarding/practices" element={<AuthPage />} />
+        <Route path="/auth/onboarding/goals" element={<AuthPage />} />
+        <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/register" element={<Navigate to="/auth/register" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
 

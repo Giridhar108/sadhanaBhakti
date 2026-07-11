@@ -1,11 +1,29 @@
 .dashboard {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-auto-rows: max-content;
   align-content: start;
   --top-card-height: 338px;
+  --background-image-width: 1362px;
+}
+
+.dashboard::before {
+  position: fixed;
+  z-index: 0;
+  right: 0;
+  bottom: -500px;
+  left: max(300px, calc((100vw - var(--container)) / 2 + 300px));
+  height: 100%;
+  content: '';
+  pointer-events: none;
+  background: url('../../shared/assets/images/background/background_323.png') left top / var(--background-image-width) auto no-repeat;
+  opacity: 0.56;
 }
 
 .contentGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
@@ -16,8 +34,19 @@
   gap: 12px;
 }
 
-.mainCol > :first-child {
+.mainCol> :first-child {
   height: var(--top-card-height);
+}
+
+@media (max-width: 1280px) {
+  .dashboard::after {
+    content: none;
+  }
+
+  .dashboard::before {
+    left: 0;
+    height: 100%;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -29,5 +58,13 @@
 @media (max-width: 600px) {
   .dashboard {
     --top-card-height: 210px;
+  }
+
+  .dashboard::before {
+    right: 12px;
+    left: 12px;
+    height: 100%;
+    bottom: -500px;
+    opacity: 0.46;
   }
 }

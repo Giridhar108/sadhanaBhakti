@@ -36,15 +36,15 @@
 
 @media (max-width: 1280px) {
   .app {
-    grid-template-columns: 275px minmax(960px, 1fr);
+    grid-template-columns: 240px minmax(0, 1fr);
   }
 }
 
-@media (max-width: 1240px) {
+@media (max-width: 1280px) {
   .app {
     width: 100%;
     min-height: 100dvh;
-    grid-template-columns: minmax(0, 1fr);
+    display: block;
   }
 
   .page {

@@ -1,11 +1,10 @@
 import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { audioApi } from '../../entities/audio/api/audioApi';
-import type { AudioTrack } from '../../entities/audio/model/types';
+import { getAudioTrackUrl, useAudioTracks } from '../../entities/audio/model/audioQueries';
 import { japaApi } from '../../entities/japa-session/api/japaApi';
 import type { JapaDailyProgress, JapaDailyProgressQuery } from '../../entities/japa-session/model/types';
 import { defaultGoals, readAuthUser } from '../../entities/user/model/auth';
-import { env } from '../../shared/config/env';
 import japaAudioLotus from '../../shared/assets/images/japa-audio-lotus.png';
+import kaliImage from '../../shared/assets/images/kali.jpg';
 import smallCow from '../../shared/assets/images/smallCow.png';
 import pauseButtonIcon from '../../shared/assets/images/pause.svg';
 import playButtonIcon from '../../shared/assets/images/play.svg';
@@ -185,14 +184,19 @@ export default function MyJapaPage() {
   const [isSessionRunning, setIsSessionRunning] = useState(false);
   const [completedRounds, setCompletedRounds] = useState(initialCompletedRounds);
   const [dailyJapaGoalInput, setDailyJapaGoalInput] = useState(() => String(initialDailyJapaGoal));
-  const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
   const [selectedAudioId, setSelectedAudioId] = useState('');
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [audioCurrentTime, setAudioCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [audioVolume, setAudioVolume] = useState(0.72);
   const [audioStatus, setAudioStatus] = useState('');
+  const {
+    data: audioTracks = [],
+    isError: isAudioTracksError,
+    isLoading: isAudioTracksLoading,
+  } = useAudioTracks();
   const [dailyProgressHistory, setDailyProgressHistory] = useState<JapaDailyProgress[]>(initialDailyProgressHistory);
+  const [isKaliModalOpen, setIsKaliModalOpen] = useState(false);
   const dailyJapaGoal = normalizeJapaDailyGoal(Number(dailyJapaGoalInput));
   const sessionTime = useMemo(() => formatSessionTime(sessionSeconds), [sessionSeconds]);
   const sessionActionLabel = isSessionRunning ? 'Пауза' : sessionSeconds > 0 ? 'Продолжить' : 'Начать';
@@ -210,12 +214,19 @@ export default function MyJapaPage() {
   } as CSSProperties;
   const selectedAudioTrack = audioTracks.find((track) => track.id === selectedAudioId) ?? audioTracks[0];
   const selectedAudioIndex = selectedAudioTrack ? audioTracks.findIndex((track) => track.id === selectedAudioTrack.id) : -1;
-  const audioSource = selectedAudioTrack ? `${env.apiBaseUrl}${selectedAudioTrack.fileUrl}` : undefined;
+  const audioSource = selectedAudioTrack ? getAudioTrackUrl(selectedAudioTrack) : undefined;
   const audioProgress = audioDuration > 0 ? audioCurrentTime / audioDuration : 0;
   const waveformProgress = Math.min(Math.max(audioProgress, 0), 1);
   const activeWaveformBars = Math.round(waveformProgress * waveformBarsCount);
-  const audioTitle = selectedAudioTrack?.title ?? 'Аудио не выбрано';
-  const audioSubtitle = selectedAudioTrack?.subtitle || 'Загрузи аудио в настройках';
+  const audioTitle = isAudioTracksLoading && audioTracks.length === 0
+    ? 'Загружаем аудио...'
+    : selectedAudioTrack?.title ?? 'Аудио не выбрано';
+  const audioSubtitle = isAudioTracksLoading && audioTracks.length === 0
+    ? 'Подготавливаем плеер для практики'
+    : selectedAudioTrack?.subtitle || 'Загрузи аудио в настройках';
+  const audioStatusMessage = isAudioTracksError
+    ? 'Не удалось загрузить список аудио.'
+    : audioStatus;
   const totalJapaProgress = useMemo(
     () =>
       calculateJapaMantraProgress(
@@ -236,6 +247,27 @@ export default function MyJapaPage() {
   useEffect(() => {
     completedRoundsRef.current = completedRounds;
   }, [completedRounds]);
+
+  useEffect(() => {
+    if (!isKaliModalOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsKaliModalOpen(false);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isKaliModalOpen]);
 
   useEffect(() => {
     if (!isSessionRunning) {
@@ -312,34 +344,14 @@ export default function MyJapaPage() {
   }, [authUser?.id, japaStartDate, todayDateKey]);
 
   useEffect(() => {
-    let shouldIgnore = false;
+    setSelectedAudioId((currentTrackId) => {
+      if (audioTracks.some((track) => track.id === currentTrackId)) {
+        return currentTrackId;
+      }
 
-    audioApi.list()
-      .then((tracks) => {
-        if (shouldIgnore) {
-          return;
-        }
-
-        setAudioTracks(tracks);
-        setSelectedAudioId((currentTrackId) => {
-          if (tracks.some((track) => track.id === currentTrackId)) {
-            return currentTrackId;
-          }
-
-          return tracks[0]?.id ?? '';
-        });
-        setAudioStatus('');
-      })
-      .catch(() => {
-        if (!shouldIgnore) {
-          setAudioStatus('Не удалось загрузить список аудио.');
-        }
-      });
-
-    return () => {
-      shouldIgnore = true;
-    };
-  }, []);
+      return audioTracks[0]?.id ?? '';
+    });
+  }, [audioTracks]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -519,6 +531,7 @@ export default function MyJapaPage() {
   };
 
   return (
+    <>
         <section className={styles.dashboard} aria-label="Моя джапа">
           <article className={`${styles.card} ${styles.todayCard}`}>
             <div className={styles.cardHeader}>
@@ -630,7 +643,7 @@ export default function MyJapaPage() {
                 <audio
                   ref={audioRef}
                   src={audioSource}
-                  preload="metadata"
+                  preload="auto"
                   onLoadedMetadata={(event) => setAudioDuration(event.currentTarget.duration)}
                   onTimeUpdate={(event) => setAudioCurrentTime(event.currentTarget.currentTime)}
                   onPause={() => setIsAudioPlaying(false)}
@@ -668,7 +681,7 @@ export default function MyJapaPage() {
                   <span>{formatAudioTime(audioCurrentTime)}</span>
                   <span>{formatAudioTime(audioDuration)}</span>
                 </div>
-                {audioStatus ? <p className={styles.audioStatus}>{audioStatus}</p> : null}
+                {audioStatusMessage ? <p className={styles.audioStatus}>{audioStatusMessage}</p> : null}
 
                 <div className={styles.playerControls}>
                   <button type="button" onClick={() => selectRelativeTrack(-1)} aria-label="Предыдущий трек">
@@ -781,7 +794,7 @@ export default function MyJapaPage() {
                 Цель 35 млн мантр
                 <Icon name="target" />
               </div>
-              <button className={styles.linkButton} type="button">
+              <button className={styles.linkButton} type="button" onClick={() => setIsKaliModalOpen(true)}>
                 Кали-Сантарана-упанишада
               </button>
             </div>
@@ -803,11 +816,32 @@ export default function MyJapaPage() {
                   ? `При чтении ${formatJapaRoundsPhrase(totalJapaProgress.dailyRounds)} в день цель будет достигнута ${formatJapaDate(totalJapaProgress.targetDate)}.`
                   : 'Укажи дату начала ежедневной практики в настройках, чтобы увидеть прогресс.'}
               </small>
-              <button className={styles.linkButton} type="button">
+              <button className={styles.linkButton} type="button" onClick={() => setIsKaliModalOpen(true)}>
                 Кали-Сантарана-упанишада
               </button>
             </div>
           </article>
         </section>
+      {isKaliModalOpen && (
+        <div
+          className={styles.kaliModalBackdrop}
+          role="presentation"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setIsKaliModalOpen(false);
+            }
+          }}
+        >
+          <section
+            className={styles.kaliModal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="kali-modal-title"
+          >
+            <img className={styles.kaliModalImage} src={kaliImage} alt="Кали-Сантарана-упанишада" />
+          </section>
+        </div>
+      )}
+    </>
   );
 }
