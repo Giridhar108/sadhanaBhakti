@@ -72,3 +72,47 @@
   opacity: 0.42;
   pointer-events: none;
 }
+
+@media (max-width: 760px) {
+  .card {
+    padding: 18px;
+  }
+
+  .verseContent {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 7px 14px;
+  }
+
+  .krishna {
+    width: 58px;
+    height: 58px;
+  }
+
+  .card p {
+    font-size: 14px;
+  }
+
+  .lotus {
+    right: 12px;
+    opacity: 0.26;
+  }
+}
+
+@media (max-width: 480px) {
+  .verseContent {
+    grid-template-columns: 46px minmax(0, 1fr);
+    grid-template-areas:
+      "image source"
+      "text text";
+  }
+
+  .krishna {
+    width: 46px;
+    height: 46px;
+  }
+
+  .card cite {
+    align-self: center;
+    margin-top: 0;
+  }
+}

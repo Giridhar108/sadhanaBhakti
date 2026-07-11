@@ -761,14 +761,17 @@ export default function MyJapaPage() {
             <div className={styles.overallTrack}>
               <span style={totalJapaProgressStyle} />
             </div>
-            <div className={styles.overallInfo}>
-              <p>
-                {formatJapaNumber(totalCompletedRounds)} кругов всего
-                <span>/</span>
-                <strong>{formatJapaNumber(totalJapaProgress.completedMantras)}</strong>
-                <span>/</span>
-                {formatJapaNumber(JAPA_MANTRA_GOAL)} мантр
-              </p>
+            <div className={styles.overallInfoDesktop}>
+              <div className={styles.overallMetrics}>
+                <div>
+                  <strong>{formatJapaNumber(totalCompletedRounds)}</strong>
+                  <span>кругов всего</span>
+                </div>
+                <div>
+                  <strong>{formatJapaNumber(totalJapaProgress.completedMantras)}</strong>
+                  <span>повторено мантр</span>
+                </div>
+              </div>
               <small>
                 {totalJapaProgress.startDate && totalJapaProgress.targetDate
                   ? `При чтении ${formatJapaRoundsPhrase(totalJapaProgress.dailyRounds)} в день цель будет достигнута ${formatJapaDate(totalJapaProgress.targetDate)}.`
@@ -779,7 +782,28 @@ export default function MyJapaPage() {
                 <Icon name="target" />
               </div>
               <button className={styles.linkButton} type="button">
-                <Icon name="chevron" />
+                Кали-Сантарана-упанишада
+              </button>
+            </div>
+            <div className={styles.overallInfoMobile}>
+              <div className={styles.overallStats}>
+                <p>
+                  <span>Пройдено</span>
+                  <strong>{formatJapaNumber(totalJapaProgress.completedMantras)}</strong>
+                  <small>{formatJapaNumber(totalCompletedRounds)} кругов</small>
+                </p>
+                <p>
+                  <span>Цель</span>
+                  <strong>{formatJapaNumber(JAPA_MANTRA_GOAL)}</strong>
+                  <small>мантр</small>
+                </p>
+              </div>
+              <small className={styles.progressForecast}>
+                {totalJapaProgress.startDate && totalJapaProgress.targetDate
+                  ? `При чтении ${formatJapaRoundsPhrase(totalJapaProgress.dailyRounds)} в день цель будет достигнута ${formatJapaDate(totalJapaProgress.targetDate)}.`
+                  : 'Укажи дату начала ежедневной практики в настройках, чтобы увидеть прогресс.'}
+              </small>
+              <button className={styles.linkButton} type="button">
                 Кали-Сантарана-упанишада
               </button>
             </div>

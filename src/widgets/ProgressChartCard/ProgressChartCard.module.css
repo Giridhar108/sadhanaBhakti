@@ -153,3 +153,32 @@
 .goldDot {
   background: var(--gold);
 }
+
+@media (max-width: 600px) {
+  .panel {
+    padding: 16px 12px 10px;
+    overflow: hidden;
+  }
+
+  .head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tabs {
+    width: 100%;
+  }
+
+  .chartWrap {
+    overflow-x: auto;
+  }
+
+  .chartWrap svg {
+    min-width: 560px;
+  }
+
+  .legend {
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+}

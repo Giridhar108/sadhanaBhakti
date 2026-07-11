@@ -94,3 +94,37 @@
     grid-template-columns: minmax(0, 1fr) 314px;
   }
 }
+
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    margin-top: 4px;
+    padding: 18px;
+  }
+
+  .hero h1 {
+    font-size: 25px;
+  }
+
+  .metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metric {
+    min-height: 74px;
+  }
+}

@@ -88,3 +88,18 @@
   color: var(--muted);
   font-size: 13px;
 }
+
+@media (max-width: 520px) {
+  .panel {
+    padding: 16px;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .button,
+  .buttonSecondary {
+    width: 100%;
+  }
+}

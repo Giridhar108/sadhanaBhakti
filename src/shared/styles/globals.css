@@ -5,12 +5,13 @@
 }
 
 html {
-  min-width: 1280px;
+  min-width: 320px;
   background: var(--bg);
   scrollbar-gutter: stable;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
   font-family: var(--font-family);
   color: var(--text);
@@ -20,7 +21,9 @@ body {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
 }
 

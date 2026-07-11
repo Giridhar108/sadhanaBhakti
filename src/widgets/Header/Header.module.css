@@ -17,7 +17,7 @@
 .topbar p {
   margin: 0;
   color: var(--muted);
-  font-size: 16.25px;
+  font-size: 20px;
 }
 
 .actions {
@@ -82,4 +82,55 @@
   width: 22.5px;
   height: 22.5px;
   color: #24202a;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    min-height: 64px;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .topbar h1 {
+    margin-top: 4px;
+    font-size: clamp(21px, 6vw, 27px);
+    line-height: 1.12;
+  }
+
+  .topbar p {
+    font-size: 15px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .iconBtn,
+  .profile {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    padding: 0;
+  }
+
+  .iconBtn img,
+  .profile img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .dot {
+    top: 7px;
+    right: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .iconBtn {
+    display: none;
+  }
+
+  .topbar p {
+    font-size: 13px;
+  }
 }

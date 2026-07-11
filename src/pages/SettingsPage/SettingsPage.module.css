@@ -461,6 +461,13 @@
   font-weight: 900;
 }
 
+.verseItemActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
 .actions {
   position: relative;
   z-index: 1;
@@ -727,5 +734,52 @@
 
   .audioTrackRow button {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .settingsCard {
+    padding: 16px;
+  }
+
+  .cardHeader {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .cardIcon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .verseItem {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .verseItem img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .verseItemActions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+  }
+
+  .verseItemActions button {
+    flex: 1 1 130px;
+  }
+
+  .eventRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cropModal {
+    width: calc(100vw - 24px);
+    padding: 18px;
+  }
+
+  .cropFrame {
+    width: min(260px, calc(100vw - 60px));
+    height: min(260px, calc(100vw - 60px));
   }
 }

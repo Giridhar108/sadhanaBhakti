@@ -16,6 +16,7 @@ import {
   calendarEventsChanged,
 } from '../../shared/lib/calendarEvents';
 import {
+  defaultDailyVerse,
   readDailyVerses,
   type DailyVerse,
   dailyVerseChanged,
@@ -165,7 +166,21 @@ function createCroppedCircle(imageSrc: string, zoom: number, offset: CropOffset)
       context.fillRect(0, 0, cropOutputSize, cropOutputSize);
       context.drawImage(image, x, y, width, height);
       context.restore();
-      resolve(canvas.toDataURL('image/png'));
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Image could not be compressed'));
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        },
+        'image/webp',
+        0.82,
+      );
     };
 
     image.onerror = () => reject(new Error('Image could not be loaded'));
@@ -194,11 +209,13 @@ export default function SettingsPage() {
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
   const [dailyVerses, setDailyVerses] = useState<DailyVerse[]>(() => readDailyVerses());
   const [verseImage, setVerseImage] = useState<string | undefined>();
+  const [editingVerseId, setEditingVerseId] = useState<string | null>(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [cropZoom, setCropZoom] = useState(1);
   const [cropOffset, setCropOffset] = useState<CropOffset>({ x: 0, y: 0 });
   const [authUser, setAuthUser] = useState(() => readAuthUser());
   const [practiceStatus, setPracticeStatus] = useState<string | null>(null);
+  const [verseStatus, setVerseStatus] = useState<string | null>(null);
   const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([]);
   const [audioDrafts, setAudioDrafts] = useState<AudioUploadDraft[]>([]);
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
@@ -233,6 +250,7 @@ export default function SettingsPage() {
     register: registerVerse,
     handleSubmit: handleVerseSubmit,
     reset: resetVerseForm,
+    formState: { isSubmitting: isVerseSubmitting },
   } = useForm<VerseForm>({
     defaultValues: {
       text: '',
@@ -414,51 +432,89 @@ export default function SettingsPage() {
     setCropImage(null);
   };
 
-  const onVerseSubmit = (data: VerseForm) => {
+  const onVerseSubmit = async (data: VerseForm) => {
     const verseResult = verseSchema.safeParse(data);
 
     if (!verseResult.success) {
+      setVerseStatus('Заполни текст стиха и его источник.');
       return;
     }
 
     const verseData = verseResult.data;
+    const editedVerse = editingVerseId
+      ? dailyVerses.find((verse) => verse.id === editingVerseId)
+      : undefined;
     const nextVerse: DailyVerse = {
-      id: `${Date.now()}`,
-      image: verseImage,
+      id: editedVerse?.id ?? `${Date.now()}`,
+      image: verseImage ?? editedVerse?.image,
       ...verseData,
     };
-    const nextVerses = [...dailyVerses, nextVerse];
+    const nextVerses = editedVerse
+      ? dailyVerses.map((verse) => (verse.id === editedVerse.id ? nextVerse : verse))
+      : [...dailyVerses, nextVerse];
+    setVerseStatus('Сохраняем стих...');
+    const isSaved = await saveSettingsPatch({ dailyVerses: nextVerses });
+
+    if (!isSaved) {
+      setVerseStatus('Не удалось сохранить стих. Попробуй ещё раз.');
+      return;
+    }
 
     setDailyVerses(nextVerses);
-    void saveSettingsPatch({ dailyVerses: nextVerses }).then((isSaved) => {
-      if (isSaved) {
-        window.dispatchEvent(new Event(dailyVerseChanged));
-      }
-    });
+    window.dispatchEvent(new Event(dailyVerseChanged));
     setVerseImage(undefined);
+    setEditingVerseId(null);
     resetVerseForm({ text: '', source: '' });
+    setVerseStatus(editedVerse ? 'Изменения сохранены.' : 'Стих сохранён.');
   };
 
-  const resetDailyVerse = () => {
+  const resetDailyVerse = async () => {
+    setVerseStatus('Очищаем список...');
+    const isSaved = await saveSettingsPatch({ dailyVerses: [] });
+
+    if (!isSaved) {
+      setVerseStatus('Не удалось очистить список. Попробуй ещё раз.');
+      return;
+    }
+
     setDailyVerses([]);
-    void saveSettingsPatch({ dailyVerses: [] }).then((isSaved) => {
-      if (isSaved) {
-        window.dispatchEvent(new Event(dailyVerseChanged));
-      }
-    });
+    window.dispatchEvent(new Event(dailyVerseChanged));
     setVerseImage(undefined);
+    setEditingVerseId(null);
     resetVerseForm({ text: '', source: '' });
+    setVerseStatus('Список стихов очищен.');
   };
 
-  const deleteDailyVerse = (verseId: string) => {
-    const nextVerses = dailyVerses.filter((verse) => verse.id !== verseId);
+  const editDailyVerse = (verse: DailyVerse) => {
+    setEditingVerseId(verse.id);
+    setVerseImage(verse.image ?? (verse.id === defaultDailyVerse.id ? defaultDailyVerse.image : undefined));
+    resetVerseForm({ text: verse.text, source: verse.source });
+    setVerseStatus('Редактирование стиха.');
+  };
 
+  const cancelVerseEditing = () => {
+    setEditingVerseId(null);
+    setVerseImage(undefined);
+    resetVerseForm({ text: '', source: '' });
+    setVerseStatus(null);
+  };
+
+  const deleteDailyVerse = async (verseId: string) => {
+    const nextVerses = dailyVerses.filter((verse) => verse.id !== verseId);
+    setVerseStatus('Удаляем стих...');
+    const isSaved = await saveSettingsPatch({ dailyVerses: nextVerses });
+
+    if (!isSaved) {
+      setVerseStatus('Не удалось удалить стих. Попробуй ещё раз.');
+      return;
+    }
+
+    if (editingVerseId === verseId) {
+      cancelVerseEditing();
+    }
     setDailyVerses(nextVerses);
-    void saveSettingsPatch({ dailyVerses: nextVerses }).then((isSaved) => {
-      if (isSaved) {
-        window.dispatchEvent(new Event(dailyVerseChanged));
-      }
-    });
+    window.dispatchEvent(new Event(dailyVerseChanged));
+    setVerseStatus('Стих удалён.');
   };
 
   const onAudioFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -697,29 +753,38 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className={styles.actions}>
-            <button className={styles.primaryButton} type="submit">
-              Добавить стих
+            <button className={styles.primaryButton} type="submit" disabled={isVerseSubmitting}>
+              {isVerseSubmitting ? 'Сохраняем...' : editingVerseId ? 'Сохранить изменения' : 'Добавить стих'}
             </button>
-            <button className={styles.secondaryButton} type="button" onClick={resetDailyVerse}>
-              Очистить список
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              onClick={editingVerseId ? cancelVerseEditing : resetDailyVerse}
+            >
+              {editingVerseId ? 'Отменить редактирование' : 'Очистить список'}
             </button>
           </div>
+          {verseStatus ? <p className={styles.statusText}>{verseStatus}</p> : null}
           <div className={styles.verseList}>
             {dailyVerses.length > 0 ? (
               dailyVerses.map((verse) => (
                 <div className={styles.verseItem} key={verse.id}>
-                  <img src={verse.image ?? lotusSoft} alt="" />
+                  <img
+                    src={verse.image ?? (verse.id === defaultDailyVerse.id ? defaultDailyVerse.image : lotusSoft)}
+                    alt=""
+                  />
                   <div>
                     <strong>{verse.text}</strong>
                     <small>{verse.source}</small>
                   </div>
-                  <button type="button" onClick={() => deleteDailyVerse(verse.id)}>
-                    Удалить
-                  </button>
+                  <div className={styles.verseItemActions}>
+                    <button type="button" onClick={() => editDailyVerse(verse)}>Редактировать</button>
+                    <button type="button" onClick={() => deleteDailyVerse(verse.id)}>Удалить</button>
+                  </div>
                 </div>
               ))
             ) : (
-              <p className={styles.emptyText}>Пока нет добавленных стихов. На главной будет показываться стандартный текст.</p>
+              <p className={styles.emptyText}>Пока нет добавленных стихов. Блок стиха на главной будет скрыт.</p>
             )}
           </div>
         </form>

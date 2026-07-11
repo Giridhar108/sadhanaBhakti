@@ -1,119 +1,87 @@
 # Codex Handoff
 
-## 1. Что уже сделано в проекте
+Актуально на 11 июля 2026 года. Ветка: `design`. Последний production-коммит: `38d6d9f`.
 
-- `hare-krishna` - React + Vite + TypeScript dashboard для духовной практики: джапа, чтение книг, стихи, календарь, друзья, прогресс, профиль и настройки.
-- Есть auth-зона: welcome, login, registration и onboarding из 3 шагов.
-- Авторизация работает через NestJS backend в `backend/`, Prisma, PostgreSQL и Redis; сессия хранится в httpOnly cookies `access_token` и `refresh_token`.
-- Реализованы auth/user endpoints: register, login, refresh, logout, `GET/PATCH /api/users/me`; Google auth временно удален из UI и логики.
-- Настройки практики сохраняются на backend: ежедневное напоминание, цель кругов, дата начала ежедневной практики, тема, события календаря, стихи дня.
-- Для глобальной цели кругов есть история `japaGoalHistory`: до даты изменения считается 16 кругов/день, после даты изменения - новая цель.
-- Страница `Моя джапа` кастомизирована: большой круговой progress, таймер, аудиоплеер, блок ритма, стих дня и общий прогресс до `35 000 000` мантр.
-- Добавлен backend-домен `japa`: дневные круги и дневная цель сохраняются в `JapaDailyProgress` по `userId + date`.
-- На странице джапы кнопки `+1`, `+4`, `Добавить 16 кругов` сохраняют сегодняшние круги на backend; после reload они восстанавливаются.
-- Поле `Цель на день` на странице джапы сохраняется только для текущего дня (`goalRounds`) и не меняет глобальную цель в настройках.
-- Блок `Общий прогресс` прибавляет сегодняшние фактически добавленные круги к расчетному прогрессу от даты старта практики.
-- В sidebar заменены иконки на PNG `01_home.png` ... `07_settings.png`; настройки перенесены из header в sidebar.
-- В header остались уведомления (`08_notifications.png`) и профиль (`09_profile.png`).
-- Добавлен preview-режим без авторизации для локальной проверки: `?preview=app`; выключение: `?preview=off`.
-- Последние важные коммиты: `f9045ee Persist daily japa progress`, `365a726 Update navigation icons`.
+## 1. Что уже сделано
 
-## 2. Какие файлы важны
+- React + Vite + TypeScript dashboard для джапы, чтения, стихов, календаря, прогресса, профиля и настроек.
+- Есть welcome/login/register, onboarding и auth gate. Backend: NestJS + Prisma + PostgreSQL; сессия в httpOnly cookies `access_token` и `refresh_token`. Google auth удалён.
+- Настройки пользователя, события календаря, стихи дня и история глобальной цели джапы сохраняются через backend.
+- `Моя джапа`: круговой прогресс, таймер, аудиоплеер, ритм, стих дня и цель `35 000 000` мантр. `+1`, `+4`, `+16` и дневная цель сохраняются в `JapaDailyProgress` по `userId + date`.
+- Аудиотреки загружаются через API и хранятся в настраиваемом каталоге; в production он подключён как постоянный Docker volume.
+- Production подготовлен: Docker-образы frontend/backend, `compose.production.yml`, Nginx, initial Prisma migration, healthcheck с проверкой БД, env validation, persistent volumes, deploy/backup scripts и инструкция.
+- Production-стек проверен на чистой БД: migration, auth, SPA fallback, healthcheck, пересоздание API и сохранность volumes прошли успешно. В интернет проект ещё не развёрнут.
+- В рабочем дереве есть три незакоммиченных пользовательских файла: `ShrilaPrabhupada.png`, `ShrilaPrabhupada1.png`, `ShrilaPrabhupada2.png`. Не удалять и не коммитить без отдельного решения.
 
-- `AGENTS.md` - правила проекта и стиль работы.
-- `docs/design-system.md` - дизайн-система и визуальные токены.
-- `docs/assets/design-system-reference.png` - утвержденный визуальный референс.
-- `package.json` - root scripts, включая `npm run dev`, `npm run build`.
-- `docker-compose.yml` - PostgreSQL и Redis.
-- `backend/prisma/schema.prisma` - Prisma schema: `User`, `AudioTrack`, `JapaDailyProgress`.
-- `backend/src/modules/japa/` - backend endpoints `GET/PATCH /api/japa/today`.
-- `backend/src/modules/users/` - user DTO/service/controller для сохранения настроек.
-- `src/app/router/AppRouter.tsx` - auth gate, routing и preview-режим.
-- `src/entities/user/model/auth.ts` и `types.ts` - frontend auth/session logic, default settings и типы пользователя.
-- `src/entities/japa-session/api/japaApi.ts` и `model/types.ts` - frontend API/типы дневной джапы.
-- `src/shared/api/endpoints.ts` и `src/shared/api/httpClient.ts` - frontend API слой.
-- `src/shared/lib/japaProgress.ts` - расчет 35 млн мантр, дневных кругов, склонений и дат.
-- `src/pages/MyJapaPage/MyJapaPage.tsx` и `.module.css` - страница джапы.
-- `src/pages/SettingsPage/SettingsPage.tsx` и `.module.css` - настройки практики, аудио, календаря, стихов и темы.
-- `src/widgets/Sidebar/Sidebar.tsx` и `.module.css` - навигация и новые PNG-иконки.
-- `src/widgets/Header/Header.tsx` и `.module.css` - верхняя панель, уведомления, профиль.
-- `src/shared/assets/images/` - все изображения; новые nav/header иконки: `01_home.png` ... `09_profile.png`.
+## 2. Важные файлы
 
-## 3. Какие дизайн-решения приняты
+- `AGENTS.md`, `docs/design-system.md`, `src/shared/styles/tokens.css` — правила и дизайн-токены.
+- `src/app/router/AppRouter.tsx` — маршруты, auth gate и preview (`?preview=app`, `?preview=off`, legacy `?preview=components`).
+- `src/entities/user/model/auth.ts`, `src/shared/api/` — frontend auth/API.
+- `src/pages/MyJapaPage/`, `src/entities/japa-session/`, `src/shared/lib/japaProgress.ts` — джапа и расчёт прогресса.
+- `src/pages/SettingsPage/` — пользовательские настройки, календарь, стихи и аудио.
+- `backend/prisma/schema.prisma`, `backend/prisma/migrations/` — схема и production migrations.
+- `backend/src/modules/auth/`, `users/`, `japa/`, `audio/`, `health/` — backend-домены.
+- `backend/src/config/env.ts` — обязательные production env и проверка секретов/HTTPS.
+- `Dockerfile`, `backend/Dockerfile`, `compose.production.yml` — production stack.
+- `.env.production.example`, `deploy/deploy.sh`, `deploy/backup.sh`, `deploy/nginx/`, `docs/deployment.md` — развёртывание, HTTPS и бэкапы.
 
-- Стиль: мягкий devotional, calm, pastel/premium, не корпоративный dashboard.
-- Основной шрифт: Nunito.
-- Фон: теплый milk/ivory.
-- Акценты: lavender, green, gold; без неона, резкого контраста и тяжелых теней.
-- Карточки: soft white/warm surface, деликатные границы, мягкие тени, округления.
-- Main app container: `max-width: 1540px`, центрированный.
-- Использовать CSS Modules, не Tailwind.
-- Новые иконки меню - обрезанные PNG без лишнего прозрачного поля; текущий размер sidebar-иконок `48px`.
-- Для компонентных задач менять только нужные `.tsx` и `.module.css`, если не требуется shared token/schema/helper.
-- Пользователь предпочитает точные итерации: не редизайнить весь экран при изменении одной карточки или одного меню.
+## 3. Принятые дизайн-решения
 
-## 4. Какие команды запускать
+- Стиль: спокойный devotional, pastel/premium, не корпоративный dashboard.
+- Nunito; тёплый milk/ivory фон; lavender, green и gold accents; мягкие поверхности, границы и тени.
+- Main container: `max-width: 1540px`, по центру.
+- CSS Modules, компоненты в отдельных папках; глобальные цвета/radius/shadows только через tokens.
+- Навигация использует PNG `01_home.png` ... `09_profile.png`; sidebar-иконки около `48px`.
+- Изменения должны быть точечными: одна карточка/страница не является поводом переделывать весь интерфейс.
 
-Первичная установка:
+## 4. Команды
 
 ```bash
-npm install
-cd backend && npm install && cd ..
-```
+# установка
+npm ci
+npm --prefix backend ci
 
-Обычный запуск всего проекта:
-
-```bash
+# локально: frontend + backend + PostgreSQL/Redis
 npm run dev
-```
 
-Раздельный запуск:
-
-```bash
-npm run dev:web
-npm --prefix backend run dev
-```
-
-Проверки:
-
-```bash
-npm run build
-npm --prefix backend run build
+# проверки
+npm run build:all
 npm --prefix backend run prisma:generate
-npm --prefix backend run prisma:push
+cd backend && npx prisma validate && cd ..
 git status --short
+
+# новая Prisma migration после изменения schema.prisma
+npm --prefix backend run prisma:migrate -- --name short_description
+
+# production (Linux VPS)
+cp .env.production.example .env.production
+# заполнить домен и секреты, затем:
+chmod +x deploy/deploy.sh deploy/backup.sh
+./deploy/deploy.sh
+./deploy/backup.sh
 ```
 
-Важно:
+Frontend: `http://localhost:5173`; API: `http://localhost:4000/api`. Для `npm run dev` нужен запущенный Docker Desktop. Полный production-порядок описан в `docs/deployment.md`.
 
-- Frontend dev-server: `http://localhost:5173/`.
-- Backend API: `http://localhost:4000/api`.
-- Vite proxy `/api` ведет на `http://localhost:4000`.
-- Для полного `npm run dev` нужен установленный и запущенный Docker Desktop.
-- Если Prisma `generate` падает на Windows с `EPERM rename query_engine...`, backend держит Prisma DLL. Остановить backend-процесс, выполнить `prisma:generate`/`prisma:push`, затем снова запустить backend.
+## 5. Что делать дальше
 
-## 5. Что нужно делать дальше
+1. Решить, нужны ли три `ShrilaPrabhupada*.png`, и отдельно добавить их в подходящий UI/коммит либо оставить вне Git.
+2. Для публикации: подготовить VPS и домен, заполнить `.env.production`, запустить `deploy/deploy.sh`, установить host Nginx config и выпустить HTTPS через Certbot.
+3. После деплоя выполнить smoke test: register/login/logout/refresh, onboarding, сохранение настроек, дневная джапа после reload, upload/play/delete аудио, restart stack.
+4. Настроить ежедневный `deploy/backup.sh` и внешнее хранение дампов; проверить восстановление.
+5. Дальше переносить оставшиеся mock/localStorage-домены на backend по одному. Для каждой новой схемы создавать и коммитить Prisma migration.
 
-- Вручную проверить полный auth-flow: регистрация, login, logout, refresh, onboarding, переход в dashboard.
-- Вручную проверить сохранение настроек через UI: цель кругов, дата начала практики, напоминание, тема, события, стихи.
-- Вручную проверить дневную джапу: добавить круги, поменять `Цель на день`, reload, убедиться что `rounds` и `goalRounds` восстановились.
-- Проверить, что общий прогресс на странице джапы соответствует принятой логике: расчет от даты старта + сегодняшние фактически добавленные круги.
-- Если пользователь попросит строгую историю всех реально прочитанных дней, расширять `JapaDailyProgress`/историю, а не подменять текущий расчет.
-- Продолжать перенос остальных mock/localStorage данных на backend только по одному домену и по запросу.
-- При новых backend-полях не забывать: Prisma schema, DTO validation, DTO/types, frontend types, `prisma:generate`, `prisma:push`.
+Если production БД уже непустая и раньше управлялась через `prisma db push`, initial migration нельзя применять напрямую: сначала нужен backup и Prisma baseline.
 
 ## 6. Чего нельзя менять
 
-- Не возвращать Google auth без отдельной просьбы.
-- Не удалять backend-сессию и не возвращать чистый localStorage auth.
-- Не редизайнить весь dashboard, auth-зону или страницу джапы при точечной задаче.
-- Не менять утвержденный мягкий devotional стиль на корпоративный.
-- Не добавлять Tailwind.
-- Не заменять CSS Modules глобальными стилями для компонентных правок.
-- Не менять глобальные design tokens без явной причины.
-- Не удалять assets из `src/shared/assets/images/`, особенно auth assets, lotus assets, `play.svg`, `pause.svg` и новые `01_...09_` PNG.
-- Не делать визуальные проверки/скриншоты, если пользователь явно не попросил.
-- Не сохранять временные скриншоты, профили Chrome или другие артефакты в репозитории.
-- Не трогать чужие/несвязанные изменения в `git status`.
-- Не коммитить `node_modules`, `dist`, screenshots, `.env`.
-- Не делать destructive git commands (`git reset --hard`, `git checkout --`) без явной просьбы.
+- Не возвращать Google auth и localStorage-only auth; не ослаблять httpOnly/Secure cookies.
+- Не запускать `prisma db push` на production и не удалять существующие migrations.
+- Не коммитить `.env`, секреты, `node_modules`, `dist`, `backups`, uploads и временные screenshots.
+- Не открывать PostgreSQL `5432` наружу; production web должен идти через HTTPS/Nginx.
+- Не добавлять Tailwind и не заменять CSS Modules без явной просьбы.
+- Не менять глобальные tokens, approved devotional style, layout и assets при точечной задаче.
+- Не ломать семантику джапы: дневная цель не меняет глобальную; фактические круги сохраняются по дате; общий target — `35 000 000` мантр.
+- Не удалять assets, особенно `01_...09_`, lotus/auth/audio изображения, `play.svg` и `pause.svg`.
+- Не трогать чужие изменения в `git status` и не использовать destructive git commands без явной просьбы.

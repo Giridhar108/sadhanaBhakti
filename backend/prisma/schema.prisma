@@ -27,7 +27,7 @@ model User {
   japaStartDate String?
   theme         String        @default("soft")
   calendarEvents Json         @default("[]")
-  dailyVerses   Json          @default("[]")
+  dailyVerses   Json          @default("[{\"id\":\"default-daily-verse\",\"text\":\"Мой дорогой ум, ты избрал путь самосознания, однако, в своем безрассудстве ты считаешь, что купание в претенциозности, обмане и придирчивости, которые сродни ослиной моче, очень очищает.<br> Так ты губишь и себя, и меня. Прошу тебя, остановись! <br>Лучше давай погрузимся в океан нектара любовного служения лотосным стопам Шри&nbsp;Шри&nbsp;Гандхарвики&nbsp;Гиридхари и так принесем нам обоим нескончаемое счастье.\",\"source\":\"Манах Шикша. Стих 6\"}]")
   japaGoalHistory Json        @default("[]")
   isOnboarded   Boolean       @default(false)
   createdAt     DateTime      @default(now())

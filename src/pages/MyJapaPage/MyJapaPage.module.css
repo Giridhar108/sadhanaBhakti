@@ -719,7 +719,7 @@
   background: #8556d8;
 }
 
-.overallInfo {
+.overallInfoDesktop {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 22px;
@@ -727,28 +727,88 @@
   margin-top: 14px;
 }
 
-.overallInfo p {
-  color: #2f2840;
-  font-size: 16px;
-  font-weight: 800;
+.overallMetrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 160px));
+  gap: 8px;
 }
 
-.overallInfo p strong {
+.overallMetrics div {
+  min-width: 0;
+  padding: 8px 10px;
+  border-left: 2px solid rgba(159, 114, 215, 0.24);
+}
+
+.overallMetrics strong,
+.overallMetrics span {
+  display: block;
+}
+
+.overallMetrics strong {
   color: #07142f;
   font-size: 20px;
+  line-height: 1.1;
   font-weight: 900;
 }
 
-.overallInfo p span {
-  margin: 0 10px;
-  color: #5c5268;
+.overallMetrics span {
+  margin-top: 3px;
+  color: #7b6d86;
+  font-size: 12px;
+  font-weight: 800;
 }
 
-.overallInfo small {
+.overallInfoDesktop small {
   display: block;
   grid-column: 1;
   color: #9b79d4;
   font-size: 13px;
+  font-weight: 800;
+}
+
+.overallInfoMobile {
+  display: none;
+  margin-top: 14px;
+}
+
+.overallStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.overallStats p {
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(159, 114, 215, 0.14);
+  border-radius: var(--radius-sm);
+  background: rgba(248, 239, 248, 0.58);
+}
+
+.overallStats p span,
+.overallStats p small {
+  display: block;
+  color: #7b6d86;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.overallStats p strong {
+  display: block;
+  margin: 3px 0 2px;
+  color: #07142f;
+  font-size: 21px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.progressForecast {
+  display: block;
+  grid-column: 1 / -1;
+  color: #9b79d4;
+  font-size: 13px;
+  line-height: 1.45;
   font-weight: 800;
 }
 
@@ -801,5 +861,158 @@
 
   .overallInfo small {
     grid-column: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .dashboard {
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .todayCard,
+  .sessionCard,
+  .audioCard,
+  .rhythmCard,
+  .verseCard,
+  .overallCard {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .roundMilestones {
+    gap: 7px;
+  }
+
+  .milestoneGroup {
+    gap: 3px;
+  }
+
+  .milestoneGroup span {
+    width: 3px;
+    height: 17px;
+  }
+
+  .progressCircle {
+    margin-top: 16px;
+  }
+
+  .progressRing {
+    width: 300px;
+  }
+
+  .progressRing::before,
+  .progressRing::after {
+    inset: 12px;
+  }
+
+  .progressMarker {
+    width: 22px;
+    height: 22px;
+    border-width: 3px;
+    transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-124px);
+  }
+
+  .progressCenter {
+    width: 180px;
+    height: 180px;
+  }
+
+  .progressCenter strong {
+    font-size: 52px;
+  }
+
+  .progressCenter strong span {
+    font-size: 28px;
+  }
+
+  .progressCenter small {
+    font-size: 14px;
+  }
+
+  .progressCenter img {
+    width: 58px;
+    height: 36px;
+    margin-top: 12px;
+  }
+
+  .sessionActions {
+    gap: 8px;
+  }
+
+  .timer {
+    font-size: 42px;
+  }
+
+  .audioBody {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .albumArt {
+    width: 154px;
+    height: 154px;
+  }
+
+  .audioFooter {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .audioFooter button:last-child {
+    display: none;
+  }
+
+  .rhythmGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rhythmItem + .rhythmItem {
+    padding: 10px 0 0;
+    border-top: 1px solid rgba(226, 194, 151, 0.6);
+    border-left: 0;
+  }
+
+  .verseBody {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .verseBody img {
+    display: none;
+  }
+
+  .overallHeader,
+  .overallInfoMobile {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .overallInfoDesktop {
+    display: none;
+  }
+
+  .overallInfoMobile {
+    display: grid;
+  }
+
+  .linkButton {
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: stretch;
+    min-width: 0;
+  }
+
+  .overallStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .progressRing {
+    width: 274px;
+  }
+
+  .progressMarker {
+    transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-113px);
   }
 }

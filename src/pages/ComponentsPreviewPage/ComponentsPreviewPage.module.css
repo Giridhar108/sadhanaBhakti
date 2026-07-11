@@ -57,3 +57,24 @@
   font-size: 14px;
   letter-spacing: -0.02em;
 }
+
+@media (max-width: 1024px) {
+  .previewGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebarBox {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    width: calc(100% - 24px);
+    padding: 20px 0 96px;
+  }
+
+  .head h1 {
+    font-size: 30px;
+  }
+}

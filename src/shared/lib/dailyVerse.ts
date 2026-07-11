@@ -1,10 +1,18 @@
 import { readAuthUser } from '../../entities/user/model/auth';
+import krishna from '../assets/images/krishna.png';
 
 export type DailyVerse = {
   id: string;
   image?: string;
   text: string;
   source: string;
+};
+
+export const defaultDailyVerse: DailyVerse = {
+  id: 'default-daily-verse',
+  image: krishna,
+  text: 'Мой дорогой ум, ты избрал путь самосознания, однако, в своем безрассудстве ты считаешь, что купание в претенциозности, обмане и придирчивости, которые сродни ослиной моче, очень очищает.<br> Так ты губишь и себя, и меня. Прошу тебя, остановись! <br>Лучше давай погрузимся в океан нектара любовного служения лотосным стопам Шри&nbsp;Шри&nbsp;Гандхарвики&nbsp;Гиридхари и так принесем нам обоим нескончаемое счастье.',
+  source: 'Манах Шикша. Стих 6',
 };
 
 const STORAGE_KEY = 'hare-krishna-daily-verse';
@@ -56,16 +64,17 @@ export function readDailyVerses(): DailyVerse[] {
     const parsedVerse: unknown = rawVerse ? JSON.parse(rawVerse) : null;
 
     if (Array.isArray(parsedVerse)) {
-      return parsedVerse.filter(isDailyVerse);
+      const validVerses = parsedVerse.filter(isDailyVerse);
+      return validVerses.length > 0 ? validVerses : [defaultDailyVerse];
     }
 
     if (isLegacyDailyVerse(parsedVerse)) {
       return [{ id: 'legacy-daily-verse', ...parsedVerse }];
     }
 
-    return [];
+    return [defaultDailyVerse];
   } catch {
-    return [];
+    return [defaultDailyVerse];
   }
 }
 
