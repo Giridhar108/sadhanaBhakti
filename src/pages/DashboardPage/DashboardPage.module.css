@@ -61,10 +61,10 @@
   }
 
   .dashboard::before {
-    right: 12px;
-    left: 12px;
+    right: 0;
+    left: 0;
     height: 100%;
-    bottom: -500px;
-    opacity: 0.46;
+    bottom: -376px;
+    opacity: 0.56;
   }
 }
