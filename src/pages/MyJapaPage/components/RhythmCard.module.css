@@ -1,0 +1,110 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
+}
+
+.card h2,
+.card p {
+  margin: 0;
+}
+
+.card h2 {
+  color: #2c2641;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.rhythmCard {
+  min-height: 168px;
+  padding: 24px 28px;
+}
+
+.rhythmGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.rhythmItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+  min-height: 80px;
+}
+
+.rhythmItem + .rhythmItem {
+  border-left: 1px solid rgba(226, 194, 151, 0.6);
+  padding-left: 24px;
+}
+
+.rhythmIcon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  font-size: 42px;
+}
+
+.rhythmIcon.mala {
+  color: #8f61d5;
+}
+
+.rhythmIcon.clock {
+  color: #70b45d;
+}
+
+.rhythmIcon.flame span {
+  width: 28px;
+  height: 42px;
+  border: 3px solid #ff784a;
+  border-top-color: transparent;
+  border-radius: 60% 45% 55% 45%;
+  transform: rotate(35deg);
+}
+
+.rhythmItem strong {
+  display: inline-block;
+  margin-right: 8px;
+  color: #07142f;
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.rhythmItem span,
+.rhythmItem small {
+  color: #7b6d86;
+  font-weight: 800;
+}
+
+.rhythmItem small {
+  display: block;
+  margin-top: 12px;
+  color: #9b73db;
+  font-size: 13px;
+}
+
+@media (max-width: 650px) {
+  .rhythmCard {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .rhythmGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rhythmItem + .rhythmItem {
+    padding: 10px 0 0;
+    border-top: 1px solid rgba(226, 194, 151, 0.6);
+    border-left: 0;
+  }
+}

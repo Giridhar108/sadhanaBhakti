@@ -4,6 +4,7 @@ import { useUiStore } from '../store/useUiStore';
 import { AudioTracksPreloader } from '../../entities/audio/model/AudioTracksPreloader';
 import { loadAuthSession, readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
 import { AppShell } from '../layout/AppShell';
+import { YesterdayJapaPrompt } from '../../widgets/YesterdayJapaPrompt/YesterdayJapaPrompt';
 import styles from './AppRouter.module.css';
 
 const DashboardPage = lazy(() =>
@@ -127,6 +128,7 @@ function RoutedContent() {
   return (
     <>
       <AudioTracksPreloader enabled={shouldPreloadAudio} />
+      <YesterdayJapaPrompt enabled={shouldPreloadAudio} user={authUser} />
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />

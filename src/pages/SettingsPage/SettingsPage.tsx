@@ -1,7 +1,6 @@
 import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
 import { useUiStore } from '../../app/store/useUiStore';
 import { audioApi } from '../../entities/audio/api/audioApi';
 import { audioTracksQueryKey, useAudioTracks } from '../../entities/audio/model/audioQueries';
@@ -14,7 +13,6 @@ import lotusSoft from '../../shared/assets/images/lotus-soft.png';
 import {
   readCalendarEvents,
   type CalendarEvent,
-  type CalendarEventType,
   calendarEventsChanged,
 } from '../../shared/lib/calendarEvents';
 import {
@@ -23,186 +21,30 @@ import {
   type DailyVerse,
   dailyVerseChanged,
 } from '../../shared/lib/dailyVerse';
-import { getTodayDateKey } from '../../shared/lib/japaProgress';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
-import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import { ModulePage } from '../ModulePage/ModulePage';
+import { SettingsCardHeader } from './components/SettingsCardHeader';
+import {
+  type AudioUploadDraft,
+  type CropOffset,
+  type DragState,
+  type EventForm,
+  type SettingsForm,
+  type VerseForm,
+  createCroppedCircle,
+  cropFrameSize,
+  eventSchema,
+  eventTypeLabels,
+  formatFileSize,
+  getNextJapaGoalHistory,
+  getTitleFromAudioFile,
+  readFileAsDataUrl,
+  settingsSchema,
+  toDateKey,
+  verseSchema,
+} from './model/settingsPageModel';
 import styles from './SettingsPage.module.css';
-
-const cropFrameSize = 260;
-const cropOutputSize = 320;
-
-type CropOffset = {
-  x: number;
-  y: number;
-};
-
-type DragState = {
-  pointerId: number;
-  startX: number;
-  startY: number;
-  offsetX: number;
-  offsetY: number;
-};
-
-type AudioUploadDraft = {
-  id: string;
-  file: File;
-  title: string;
-  subtitle: string;
-};
-
-type SettingsCardHeaderProps = {
-  icon: IconName;
-  title: string;
-  description: string;
-  tone: 'green' | 'violet' | 'gold';
-};
-
-const settingsSchema = z.object({
-  dailyReminder: z.string().min(4),
-  dailyGoal: z.coerce.number().min(1).max(64),
-  japaStartDate: z.string(),
-});
-
-const eventSchema = z.object({
-  date: z.string().min(10),
-  title: z.string().trim().min(2),
-  type: z.enum(['japa', 'reading', 'verse', 'meeting', 'other']),
-});
-
-const verseSchema = z.object({
-  text: z.string().trim().min(2),
-  source: z.string().trim().min(2),
-});
-
-type SettingsForm = z.infer<typeof settingsSchema>;
-type EventForm = z.infer<typeof eventSchema>;
-type VerseForm = z.infer<typeof verseSchema>;
-
-const eventTypeLabels: Record<CalendarEventType, string> = {
-  japa: 'Джапа',
-  reading: 'Чтение',
-  verse: 'Стихи',
-  meeting: 'Встреча',
-  other: 'Другое',
-};
-
-function toDateKey(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-function getNextJapaGoalHistory(
-  currentHistory: AuthUser['settings']['japaGoalHistory'],
-  currentGoal: number,
-  nextGoal: number,
-) {
-  if (currentGoal === nextGoal && (currentHistory.length > 0 || nextGoal === defaultGoals.japaRounds)) {
-    return currentHistory;
-  }
-
-  const today = getTodayDateKey();
-  const historyWithoutToday = currentHistory.filter((entry) => entry.date !== today);
-
-  return [...historyWithoutToday, { date: today, rounds: nextGoal }].sort((firstEntry, secondEntry) =>
-    firstEntry.date.localeCompare(secondEntry.date),
-  );
-}
-
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-function formatFileSize(size: number) {
-  if (size < 1024 * 1024) {
-    return `${Math.max(1, Math.round(size / 1024))} КБ`;
-  }
-
-  return `${(size / 1024 / 1024).toFixed(1)} МБ`;
-}
-
-function getTitleFromAudioFile(fileName: string) {
-  return fileName.replace(/\.[^/.]+$/, '').trim() || 'Аудио для практики';
-}
-
-function createCroppedCircle(imageSrc: string, zoom: number, offset: CropOffset) {
-  return new Promise<string>((resolve, reject) => {
-    const image = new Image();
-
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-
-      if (!context) {
-        reject(new Error('Canvas is not available'));
-        return;
-      }
-
-      canvas.width = cropOutputSize;
-      canvas.height = cropOutputSize;
-      context.clearRect(0, 0, cropOutputSize, cropOutputSize);
-      context.save();
-      context.beginPath();
-      context.arc(cropOutputSize / 2, cropOutputSize / 2, cropOutputSize / 2, 0, Math.PI * 2);
-      context.clip();
-
-      const baseScale = Math.min(cropOutputSize / image.naturalWidth, cropOutputSize / image.naturalHeight);
-      const scale = baseScale * zoom;
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      const offsetScale = cropOutputSize / cropFrameSize;
-      const x = (cropOutputSize - width) / 2 + offset.x * offsetScale;
-      const y = (cropOutputSize - height) / 2 + offset.y * offsetScale;
-
-      context.fillStyle = '#fffefa';
-      context.fillRect(0, 0, cropOutputSize, cropOutputSize);
-      context.drawImage(image, x, y, width, height);
-      context.restore();
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error('Image could not be compressed'));
-            return;
-          }
-
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result));
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(blob);
-        },
-        'image/webp',
-        0.82,
-      );
-    };
-
-    image.onerror = () => reject(new Error('Image could not be loaded'));
-    image.src = imageSrc;
-  });
-}
-
-function SettingsCardHeader({ icon, title, description, tone }: SettingsCardHeaderProps) {
-  return (
-    <header className={styles.cardHeader}>
-      <span className={`${styles.cardIcon} ${styles[tone]}`}>
-        <Icon name={icon} />
-      </span>
-      <div>
-        <h2>{title}</h2>
-        <p>{description}</p>
-      </div>
-    </header>
-  );
-}
 
 export default function SettingsPage() {
   useDocumentTitle('Настройки - Садхана Бхакти');
