@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import lotusSoft from '../../shared/assets/images/lotus-soft.png';
+import lotusSoft from '../../shared/assets/images/smallCow1.png';
 import { dailyVerseChanged, defaultDailyVerse, readDailyVerses, type DailyVerse } from '../../shared/lib/dailyVerse';
 import styles from './QuoteCard.module.css';
 

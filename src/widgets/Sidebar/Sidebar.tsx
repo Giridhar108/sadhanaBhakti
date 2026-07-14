@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import homeIcon from '../../shared/assets/images/01_home.png';
 import japaIcon from '../../shared/assets/images/02_japa.png';
@@ -42,8 +42,31 @@ const navItems: NavItem[] = [
 export function Sidebar({ isStatic = false }: SidebarProps) {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuClosing, setIsMenuClosing] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const openMenu = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
+    setIsMenuClosing(false);
+    setIsMenuOpen(true);
+  };
+
+  const closeMenu = () => {
+    if (!isMenuOpen || isMenuClosing) {
+      return;
+    }
+
+    setIsMenuClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsMenuClosing(false);
+      closeTimerRef.current = null;
+    }, 240);
+  };
   const featuredMenuItems = navItems.slice(0, 2);
   const compactMenuItems = navItems.slice(2);
 
@@ -68,6 +91,12 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
       window.scrollTo(0, scrollY);
     };
   }, [isMenuOpen]);
+
+  useEffect(() => () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+  }, []);
 
   return (
     <aside className={`${styles.sidebar} ${isStatic ? styles.static : ''}`}>
@@ -94,7 +123,7 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
             <button
               className={styles.mobileDockItem}
               type="button"
-              onClick={() => setIsMenuOpen(true)}
+              onClick={openMenu}
               aria-label="Открыть меню"
               aria-expanded={isMenuOpen}
             >
@@ -114,7 +143,7 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
           </nav>
 
           {isMenuOpen ? (
-            <div className={styles.menuLayer} role="presentation">
+            <div className={`${styles.menuLayer} ${isMenuClosing ? styles.menuLayerClosing : ''}`} role="presentation">
               <button className={styles.menuBackdrop} type="button" onClick={closeMenu} aria-label="Закрыть меню" />
               <section className={styles.menuSheet} role="dialog" aria-modal="true" aria-label="Меню разделов">
                 <header className={styles.menuHero}>

@@ -1,4 +1,4 @@
-import profile from '../../shared/assets/images/09_profile.png';
+import profile from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
 import notifications from '../../shared/assets/images/08_notifications.png';
 import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
 import styles from './Header.module.css';

@@ -383,6 +383,7 @@
     border: 0;
     background: rgba(51, 42, 55, 0.34);
     backdrop-filter: blur(6px);
+    animation: menu-backdrop-enter 220ms ease-out both;
   }
 
   .menuSheet {
@@ -404,7 +405,7 @@
       linear-gradient(180deg, rgba(255, 250, 242, 0.99), rgba(255, 251, 248, 0.99) 48%, rgba(252, 247, 252, 0.99)),
       var(--surface);
     box-shadow: 0 18px 54px rgba(64, 43, 62, 0.2);
-    animation: menu-sheet-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: menu-sheet-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .menuHero {
@@ -493,6 +494,15 @@
     text-align: center;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+    animation: menu-item-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .menuFeatureTile:nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .menuFeatureTile:nth-child(2) {
+    animation-delay: 110ms;
   }
 
   .menuFeatureTile::after {
@@ -507,8 +517,8 @@
 
   .menuFeatureTile img,
   .menuFeatureTile svg {
-    width: 78px;
-    height: 78px;
+    width: 98px;
+    height: 98px;
     object-fit: contain;
   }
 
@@ -545,7 +555,7 @@
     min-height: 86px;
     padding: 10px 18px;
     display: grid;
-    grid-template-columns: 74px minmax(0, 1fr) 18px;
+    grid-template-columns: 90px minmax(0, 1fr) 22px;
     align-items: center;
     gap: 12px;
     border: 1px solid rgba(226, 194, 151, 0.62);
@@ -558,13 +568,41 @@
     text-align: left;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+    animation: menu-item-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .menuTile:nth-child(1) {
+    animation-delay: 135ms;
+  }
+
+  .menuTile:nth-child(2) {
+    animation-delay: 160ms;
+  }
+
+  .menuTile:nth-child(3) {
+    animation-delay: 185ms;
+  }
+
+  .menuTile:nth-child(4) {
+    animation-delay: 210ms;
+  }
+
+  .menuTile:nth-child(5) {
+    animation-delay: 235ms;
   }
 
   .menuTile img,
   .menuTile svg {
-    width: 60px;
-    height: 60px;
+    width: 75px;
+    height: 75px;
     object-fit: contain;
+  }
+
+  .menuTile span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .menuTile img {
@@ -594,6 +632,7 @@
 
   .menuTileWide span {
     grid-column: 3;
+    overflow: visible;
   }
 
   .menuTileWide>svg {
@@ -628,15 +667,102 @@
     transform: scaleX(-1);
   }
 
+  .menuLayerClosing .menuBackdrop {
+    animation: menu-backdrop-exit 220ms ease-in both;
+  }
+
+  .menuLayerClosing .menuSheet {
+    animation: menu-sheet-exit 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  .menuLayerClosing .menuFeatureTile,
+  .menuLayerClosing .menuTile {
+    animation: menu-item-exit 150ms ease-in both;
+    animation-delay: 0ms;
+  }
+
+  @keyframes menu-backdrop-enter {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+
+    to {
+      opacity: 1;
+      backdrop-filter: blur(6px);
+    }
+  }
+
+  @keyframes menu-backdrop-exit {
+    from {
+      opacity: 1;
+      backdrop-filter: blur(6px);
+    }
+
+    to {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+  }
+
   @keyframes menu-sheet-enter {
     from {
       opacity: 0;
-      transform: translateY(32px);
+      transform: translateY(34px) scale(0.985);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes menu-sheet-exit {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(34px) scale(0.99);
+    }
+  }
+
+  @keyframes menu-item-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
     }
 
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes menu-item-exit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menuBackdrop,
+    .menuSheet,
+    .menuFeatureTile,
+    .menuTile,
+    .menuLayerClosing .menuBackdrop,
+    .menuLayerClosing .menuSheet,
+    .menuLayerClosing .menuFeatureTile,
+    .menuLayerClosing .menuTile {
+      animation: none;
     }
   }
 
@@ -668,8 +794,8 @@
 
     .menuFeatureTile img,
     .menuFeatureTile svg {
-      width: 58px;
-      height: 58px;
+      width: 73px;
+      height: 73px;
     }
 
     .menuFeatureTile::after {
@@ -678,7 +804,7 @@
 
     .menuTile {
       min-height: 58px;
-      grid-template-columns: 48px minmax(0, 1fr) 16px;
+      grid-template-columns: 58px minmax(0, 1fr) 18px;
       padding: 6px 12px;
       border-radius: 16px;
       font-size: 15px;
@@ -686,8 +812,8 @@
 
     .menuTile img,
     .menuTile svg {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
     }
 
     .menuTileWide {
@@ -763,8 +889,8 @@
 
   .menuFeatureTile img,
   .menuFeatureTile svg {
-    width: 62px;
-    height: 62px;
+    width: 78px;
+    height: 78px;
   }
 
   .menuFeatureTile i {
@@ -780,7 +906,7 @@
   }
 
   .menuTile {
-    grid-template-columns: 58px minmax(0, 1fr) 16px;
+    grid-template-columns: 68px minmax(0, 1fr) 18px;
     min-height: 68px;
     padding: 8px 14px;
     border-radius: 18px;
@@ -790,13 +916,13 @@
 
   .menuTile img,
   .menuTile svg {
-    width: 44px;
-    height: 44px;
+    width: 55px;
+    height: 55px;
   }
 
   .menuTile>svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .menuTileWide {
@@ -816,6 +942,82 @@
   .menuOrnamentRight {
     right: -12px;
     transform: scaleX(-1);
+  }
+}
+
+@media (max-width: 460px) {
+  .menuTile:not(.menuTileWide) {
+    min-height: 92px;
+    padding: 10px 8px;
+    grid-template-columns: minmax(0, auto) auto;
+    grid-template-rows: auto auto;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    gap: 4px 6px;
+    text-align: center;
+  }
+
+  .menuTile:not(.menuTileWide) img {
+    grid-column: 1 / -1;
+    width: 55px;
+    height: 55px;
+  }
+
+  .menuTile:not(.menuTileWide) span {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 100%;
+    justify-self: end;
+    font-size: 14px;
+  }
+
+  .menuTile:not(.menuTileWide)>svg {
+    grid-column: 2;
+    grid-row: 2;
+    width: 16px;
+    height: 16px;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 380px) {
+  .menuGrid {
+    gap: 8px;
+  }
+
+  .menuTile {
+    min-height: 88px;
+    padding: 8px 7px;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.05;
+  }
+
+  .menuTile img,
+  .menuTile svg {
+    width: 55px;
+    height: 55px;
+  }
+
+  .menuTile > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .menuTileWide {
+    grid-template-columns: minmax(0, 1fr) auto auto minmax(0, 1fr);
+    min-height: 70px;
+    font-size: 15px;
+  }
+
+  .menuTileWide img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .menuTileWide span {
+    overflow: visible;
   }
 }
 

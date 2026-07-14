@@ -46,6 +46,8 @@
   .dashboard::before {
     left: 0;
     height: 100%;
+    bottom: -490px;
+    background: url('../../shared/assets/images/background/background_323.png') right top / var(--background-image-width) auto no-repeat;
   }
 }
 
