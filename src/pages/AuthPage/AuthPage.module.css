@@ -3,7 +3,7 @@
   isolation: isolate;
   width: 100%;
   max-width: none;
-  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
   padding: 34px 32px;
   display: grid;
@@ -36,16 +36,6 @@
   opacity: 0.34;
 }
 
-.leftPanel {
-  position: relative;
-  min-width: 0;
-  min-height: 730px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-bottom: 90px;
-}
-
 :global(html:has(.auth-page)) {
   min-width: 0;
 }
@@ -55,186 +45,17 @@
   overflow-x: hidden;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 34px;
-  color: #171236;
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-}
+@media (min-width: 1181px) and (min-height: 768px) {
+  :global(html:has(.auth-page)),
+  :global(body:has(.auth-page)) {
+    height: 100%;
+    overflow: hidden;
+  }
 
-.brand span {
-  min-width: 0;
-}
-
-.logoMark {
-  width: 76px;
-  height: 76px;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid rgba(159, 114, 215, 0.2);
-  border-radius: 999px;
-  background: rgba(245, 237, 249, 0.8);
-  color: var(--violet-dark);
-  box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.42);
-}
-
-.logoMark img {
-  width: 52px;
-  height: 42px;
-  display: block;
-  object-fit: contain;
-}
-
-.compactLogo {
-  width: 92px;
-  height: 58px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.compactLogo img {
-  width: 88px;
-  height: 62px;
-}
-
-.heroCopy {
-  max-width: 620px;
-  min-width: 0;
-}
-
-.heroCopy h1 {
-  margin: 0;
-  color: #151136;
-  font-size: 46px;
-  font-weight: 900;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
-}
-
-.heroCopy h1 span {
-  color: var(--violet);
-}
-
-.heroCopy p {
-  max-width: 570px;
-  margin: 18px 0 0;
-  color: #4f5c72;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.55;
-  overflow-wrap: break-word;
-}
-
-.quote {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 560px);
-  min-height: 118px;
-  margin: 18px 0 18px;
-  padding: 20px 28px 20px 60px;
-  overflow: hidden;
-  border: 1px solid rgba(159, 114, 215, 0.22);
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 2px 4px rgba(60, 49, 80, 0.04);
-}
-
-.quote img {
-  position: absolute;
-  right: 18px;
-  bottom: -10px;
-  width: 132px;
-  height: auto;
-  opacity: 0.25;
-}
-
-.quote > span {
-  position: absolute;
-  top: 8px;
-  left: 22px;
-  color: rgba(159, 114, 215, 0.76);
-  font-size: 50px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.quote blockquote {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  color: #161345;
-  font-size: 18px;
-  font-style: italic;
-  font-weight: 700;
-  line-height: 1.55;
-  overflow-wrap: break-word;
-}
-
-.teasers {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  width: min(100%, 760px);
-}
-
-.teasers article {
-  min-width: 0;
-}
-
-.teaserImage {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 22px;
-  box-shadow: 0 2px 4px rgba(60, 49, 80, 0.04);
-  user-select: none;
-}
-
-.featureIcon {
-  width: 46px;
-  height: 46px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-}
-
-.featureIcon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.green {
-  background: var(--green-soft);
-  color: var(--green-dark);
-}
-
-.violet {
-  background: var(--violet-soft);
-  color: var(--violet-dark);
-}
-
-.gold {
-  background: var(--gold-soft);
-  color: var(--gold-dark);
-}
-
-.heroLotus {
-  position: absolute;
-  left: 12px;
-  bottom: -30px;
-  width: 880px;
-  max-width: 132%;
-  opacity: 0.48;
-  filter: saturate(0.92);
-  transform: translate(-144px, 141px);
+  .page {
+    height: 100dvh;
+    min-height: 0;
+  }
 }
 
 .card {
@@ -355,33 +176,6 @@
   color: var(--violet-dark);
 }
 
-.lineIcon {
-  width: 22px;
-  height: 22px;
-  stroke-width: 1.9;
-}
-
-.divider {
-  width: 100%;
-  margin: 42px 0 28px;
-  display: grid;
-  grid-template-columns: 1fr 42px 1fr;
-  gap: 16px;
-  align-items: center;
-  color: rgba(159, 114, 215, 0.24);
-}
-
-.divider span {
-  height: 1px;
-  background: rgba(227, 215, 220, 0.82);
-}
-
-.divider svg {
-  width: 42px;
-  height: 26px;
-  margin: 0 auto;
-}
-
 .privacyNote {
   width: 100%;
   display: grid;
@@ -500,13 +294,6 @@
   border-color: rgba(255, 138, 61, 0.78);
 }
 
-.errorText {
-  margin: -8px 0 0 18px;
-  color: var(--gold-dark);
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .hintText {
   margin: -8px 0 0 18px;
   color: #85899b;
@@ -562,64 +349,6 @@
   font-size: 16px;
   font-weight: 750;
   text-align: center;
-}
-
-.stepper {
-  width: min(320px, 100%);
-  margin: 24px auto 20px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-}
-
-.stepItem {
-  position: relative;
-  display: grid;
-  place-items: center;
-}
-
-.stepItem:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: calc(50% + 30px);
-  z-index: 0;
-  width: 66px;
-  height: 2px;
-  background-image: linear-gradient(90deg, rgba(157, 154, 170, 0.36) 55%, transparent 0);
-  background-size: 8px 2px;
-  transform: translateY(-50%);
-}
-
-.stepper a {
-  position: relative;
-  z-index: 1;
-  width: 46px;
-  height: 46px;
-  margin: 0 auto;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid rgba(157, 154, 170, 0.42);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  color: #7d8192;
-  font-size: 16px;
-  font-weight: 850;
-  text-decoration: none;
-  transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
-}
-
-.stepper a:hover {
-  border-color: rgba(159, 114, 215, 0.64);
-  color: var(--violet-dark);
-  transform: translateY(-1px);
-}
-
-.stepper .activeStep {
-  border-color: transparent;
-  background: linear-gradient(180deg, #a974dd, #8151c0);
-  color: #fff;
-  box-shadow: 0 7px 14px rgba(129, 81, 192, 0.18);
 }
 
 .stepForm {
@@ -774,21 +503,8 @@
   color: var(--violet-dark);
 }
 
-.register .divider {
-  margin: 28px 0 20px;
-}
-
 .register .privacyNote {
   margin-bottom: 18px;
-}
-
-.login .divider {
-  margin: 28px 0 24px;
-}
-
-.goals .logoMark {
-  width: 78px;
-  height: 78px;
 }
 
 .practices .cardHeading,
@@ -821,13 +537,7 @@
     padding: 28px;
   }
 
-  .heroCopy h1 {
-    font-size: 44px;
-  }
 
-  .heroCopy p {
-    font-size: 17px;
-  }
 
   .card {
     padding-inline: 42px;
@@ -844,12 +554,6 @@
     overflow-y: auto;
   }
 
-  .leftPanel {
-    width: 100%;
-    min-height: auto;
-    padding-bottom: 72px;
-    justify-content: flex-start;
-  }
 
   .card {
     min-height: auto;
@@ -882,10 +586,6 @@
     padding: 18px;
   }
 
-  .leftPanel {
-    display: flex;
-    padding-bottom: 64px;
-  }
 
   .card,
   .login,
@@ -906,57 +606,15 @@
     padding: 36px 24px 32px;
   }
 
-  .brand {
-    justify-content: center;
-    margin-bottom: 26px;
-    font-size: 24px;
-  }
 
-  .compactLogo {
-    width: 74px;
-    height: 50px;
-  }
 
-  .compactLogo img {
-    width: 72px;
-    height: 50px;
-  }
 
-  .heroCopy {
-    max-width: 100%;
-    text-align: center;
-  }
 
-  .heroCopy h1 {
-    font-size: 36px;
-  }
 
-  .heroCopy p {
-    max-width: 520px;
-    margin-inline: auto;
-    font-size: 16px;
-  }
 
-  .quote {
-    width: 100%;
-    padding: 18px 22px 18px 54px;
-  }
 
-  .quote blockquote {
-    font-size: 16px;
-  }
 
-  .teasers {
-    width: 100%;
-    gap: 12px;
-  }
 
-  .heroLotus {
-    left: 50%;
-    width: 620px;
-    max-width: none;
-    transform: translate(-50%, 150px);
-  }
 
   .goalOption {
     grid-template-columns: 42px 1fr 36px 58px 36px;
@@ -984,78 +642,17 @@
     min-width: 0;
   }
 
-  .leftPanel {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    overflow: hidden;
-    padding-bottom: 44px;
-  }
 
-  .brand {
-    gap: 8px;
-    margin-bottom: 20px;
-    font-size: 20px;
-  }
 
-  .compactLogo {
-    width: 58px;
-    height: 42px;
-  }
 
-  .compactLogo img {
-    width: 56px;
-    height: 42px;
-  }
 
-  .heroCopy h1 {
-    font-size: 30px;
-    overflow-wrap: anywhere;
-  }
 
-  .heroCopy p {
-    width: 100%;
-    margin-top: 14px;
-    font-size: 14px;
-    line-height: 1.48;
-    overflow-wrap: anywhere;
-  }
 
-  .quote {
-    width: 100%;
-    max-width: 100%;
-    min-height: auto;
-    margin: 16px 0;
-    padding: 16px 16px 16px 44px;
-    border-radius: 13px;
-  }
 
-  .quote > span {
-    left: 16px;
-    font-size: 40px;
-  }
 
-  .quote img {
-    width: 100px;
-  }
 
-  .quote blockquote {
-    font-size: 14px;
-    overflow-wrap: anywhere;
-  }
 
-  .teasers {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    width: min(100%, 250px);
-    margin-inline: auto;
-  }
 
-  .heroLotus {
-    width: 520px;
-    opacity: 0.38;
-    transform: translate(-50%, 118px);
-  }
 
   .card {
     width: 100%;
@@ -1065,15 +662,7 @@
     border-radius: 20px;
   }
 
-  .logoMark {
-    width: 66px;
-    height: 66px;
-  }
 
-  .logoMark img {
-    width: 46px;
-    height: 38px;
-  }
 
   .cardHeading {
     margin-top: 22px;
@@ -1125,23 +714,9 @@
     font-size: 14px;
   }
 
-  .divider {
-    margin: 28px 0 20px;
-  }
 
-  .stepper {
-    width: min(280px, 100%);
-  }
 
-  .stepItem:not(:last-child)::after {
-    left: calc(50% + 27px);
-    width: 54px;
-  }
 
-  .stepper a {
-    width: 42px;
-    height: 42px;
-  }
 
   .stepActions,
   .finishActions {
@@ -1170,15 +745,7 @@
     height: 34px;
   }
 
-  .featureIcon {
-    width: 40px;
-    height: 40px;
-  }
 
-  .featureIcon svg {
-    width: 21px;
-    height: 21px;
-  }
 
   .goalOption {
     height: auto;
@@ -1191,9 +758,6 @@
     border-radius: 16px;
   }
 
-  .goalOption .featureIcon {
-    flex: 0 0 40px;
-  }
 
   .goalTitle {
     flex: 1 1 calc(100% - 52px);
@@ -1234,25 +798,10 @@
     padding: 10px;
   }
 
-  .heroCopy h1 {
-    font-size: 24px;
-  }
 
-  .heroCopy p {
-    font-size: 13px;
-  }
 
-  .quote {
-    padding: 14px 14px 14px 38px;
-  }
 
-  .quote blockquote {
-    font-size: 13px;
-  }
 
-  .teasers {
-    width: min(100%, 224px);
-  }
 
   .card {
     padding: 28px 12px 24px;
@@ -1291,10 +840,6 @@
     align-items: start;
   }
 
-  .leftPanel {
-    min-height: 680px;
-    padding-bottom: 74px;
-  }
 
   .card {
     min-height: 700px;
@@ -1310,9 +855,6 @@
     padding: 36px 52px 34px;
   }
 
-  .heroCopy h1 {
-    font-size: 44px;
-  }
 
   .cardHeading h2 {
     font-size: 30px;

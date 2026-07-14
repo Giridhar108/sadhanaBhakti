@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../../../shared/ui/Icon/Icon';
-import lotusLogo from '../../../shared/assets/images/lotus-logo.png';
+import ShrilaPrabhupada from '../../../shared/assets/images/ShrilaPrabhupada.png';
 import authLotus from '../../../shared/assets/images/authLotus.png';
 import authTeaserBooks from '../../../shared/assets/images/auth-teaser-books.png';
 import authTeaserJapa from '../../../shared/assets/images/auth-teaser-japa.png';
 import authTeaserVerses from '../../../shared/assets/images/auth-teaser-verses.png';
-import lotusSoft from '../../../shared/assets/images/lotus-soft.png';
+import lotusSoft from '../../../shared/assets/images/lotus-logo1.png';
+import sadhanaBhakti from '../../../shared/assets/images/sadhanaBhakti.png';
 import { practiceCards } from '../model/authPageModel';
 import styles from './AuthShared.module.css';
 
@@ -76,10 +77,10 @@ export function LineIcon({ name }: { name: LineIconName }) {
   );
 }
 
-export function LogoMark({ compact = false }: { compact?: boolean }) {
+export function LogoMark({ large = false }: { large?: boolean }) {
   return (
-    <span className={`${styles.logoMark} ${compact ? styles.compactLogo : ''}`}>
-      <img src={lotusLogo} alt="" aria-hidden="true" />
+    <span className={`${styles.logoMark} ${large ? styles.largeLogo : ''}`}>
+      <img src={ShrilaPrabhupada} alt="" aria-hidden="true" />
     </span>
   );
 }
@@ -96,9 +97,9 @@ export function FieldError({ message }: { message?: string }) {
   return message ? <small className={styles.errorText}>{message}</small> : null;
 }
 
-export function DividerLotus() {
+export function DividerLotus({ spacing = 'default' }: { spacing?: 'default' | 'login' | 'register' }) {
   return (
-    <div className={styles.divider} aria-hidden="true">
+    <div className={`${styles.divider} ${styles[`${spacing}Divider`]}`} aria-hidden="true">
       <span />
       <Icon name="lotus" />
       <span />
@@ -112,8 +113,7 @@ export function LeftPanel() {
   return (
     <section className={styles.leftPanel} aria-label="О проекте">
       <div className={styles.brand}>
-        <LogoMark compact />
-        <span>Садхана Бхакти</span>
+        <img className={styles.brandImage} src={sadhanaBhakti} alt="Садхана Бхакти" />
       </div>
 
       <div className={styles.heroCopy}>
@@ -131,8 +131,9 @@ export function LeftPanel() {
         <img src={lotusSoft} alt="" aria-hidden="true" />
         <span aria-hidden="true">“</span>
         <blockquote>
-          О дорогой ум, оставь гордость, обман и придирчивость. Давай вместе искать счастье в любовном служении и
-          духовной практике.
+          Соблюдая требования к чистоте, которые я установил в Движении сознания Кришны, вы обретёте реальную
+          духовную силу, необходимую для проповеди. Просто не отступайте от этих принципов, и тогда весь мир станет
+          уважать вас и наша проповедническая деятельность будет успешной.
         </blockquote>
       </figure>
 

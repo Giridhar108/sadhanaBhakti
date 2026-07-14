@@ -157,7 +157,7 @@ function LoginView() {
         </button>
       </form>
 
-      <DividerLotus />
+      <DividerLotus spacing="login" />
 
       <p className={styles.switchLine}>
         Нет аккаунта? <Link to="/auth/register">Создать аккаунт</Link>
@@ -259,7 +259,7 @@ function RegisterView() {
         </button>
       </form>
 
-      <DividerLotus />
+      <DividerLotus spacing="register" />
 
       <div className={styles.privacyNote}>
         <span>
@@ -438,7 +438,7 @@ function GoalStepView() {
 
   return (
     <>
-      <LogoMark />
+      <LogoMark large />
       <Stepper activeStep={3} />
       <div className={styles.cardHeading}>
         <span>Шаг 3 из 3</span>
