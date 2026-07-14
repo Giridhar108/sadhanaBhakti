@@ -1,0 +1,107 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card h2,
+.card p {
+  margin: 0;
+}
+
+.card h2 {
+  color: #2c2641;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.sessionCard {
+  min-height: 250px;
+  padding: 24px 28px;
+  display: grid;
+}
+
+.headerIcon {
+  color: #9a65df;
+  font-size: 26px;
+}
+
+.timer {
+  margin-top: 20px;
+  color: #07142f;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 900;
+  text-align: center;
+}
+
+.timerCaption {
+  margin-top: 8px;
+  color: #8659d7;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.sessionActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  align-self: end;
+  margin-top: 22px;
+}
+
+.pauseButton,
+.stopButton {
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid rgba(144, 101, 190, 0.22);
+  border-radius: 8px;
+  color: #7b58bf;
+  background: rgba(248, 239, 248, 0.78);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.stopButton {
+  border-color: rgba(255, 82, 82, 0.34);
+  color: #ef1b1b;
+  background: rgba(255, 251, 247, 0.85);
+}
+
+.stopButton span {
+  width: 10px;
+  height: 10px;
+  background: #ed1b1b;
+}
+
+@media (max-width: 650px) {
+  .sessionCard {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .sessionActions {
+    gap: 8px;
+  }
+
+  .timer {
+    font-size: 42px;
+  }
+}

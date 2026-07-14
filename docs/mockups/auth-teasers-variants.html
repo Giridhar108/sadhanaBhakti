@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auth Teasers Variants</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 32px;
+        font-family: Nunito, system-ui, sans-serif;
+        color: #171236;
+        background:
+          radial-gradient(circle at 10% 92%, rgba(159, 114, 215, 0.14), transparent 28%),
+          linear-gradient(115deg, #fffaf4 0%, #fffaf8 44%, #fcf7f4 100%);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 30px;
+        font-weight: 900;
+      }
+
+      .intro {
+        max-width: 760px;
+        margin: 0 0 30px;
+        color: #596276;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .variant {
+        width: min(100%, 760px);
+        margin: 0 0 28px;
+      }
+
+      .variant h2 {
+        margin: 0 0 10px;
+        color: #7047a5;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        position: relative;
+        min-height: 96px;
+        padding: 18px 16px;
+        border: 1px solid rgba(227, 215, 220, 0.92);
+        border-radius: 14px;
+        background: rgba(255, 254, 250, 0.9);
+        box-shadow: 0 8px 24px rgba(68, 56, 83, 0.08);
+        overflow: hidden;
+      }
+
+      .card strong {
+        display: block;
+        max-width: 112px;
+        font-size: 17px;
+        font-weight: 900;
+        line-height: 1.12;
+      }
+
+      .card p {
+        max-width: 124px;
+        margin: 5px 0 0;
+        color: #526076;
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.35;
+      }
+
+      .icon {
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+      }
+
+      .green {
+        color: #5ba257;
+        background: rgba(112, 191, 102, 0.14);
+      }
+
+      .violet {
+        color: #7047a5;
+        background: rgba(159, 114, 215, 0.16);
+      }
+
+      .gold {
+        color: #c87905;
+        background: rgba(236, 178, 73, 0.16);
+      }
+
+      .icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .variantA .icon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .variantA .card::before {
+        content: "";
+        position: absolute;
+        inset: 14px auto 14px 0;
+        width: 3px;
+        border-radius: 999px;
+        background: currentColor;
+        opacity: 0.26;
+      }
+
+      .variantA .card:nth-child(1) {
+        color: #5ba257;
+      }
+
+      .variantA .card:nth-child(2) {
+        color: #7047a5;
+      }
+
+      .variantA .card:nth-child(3) {
+        color: #c87905;
+      }
+
+      .variantA strong,
+      .variantA p {
+        color: #171236;
+      }
+
+      .variantB .card {
+        min-height: 102px;
+        padding: 16px 16px 15px;
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .variantB .icon {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 10px;
+      }
+
+      .variantB strong,
+      .variantB p {
+        max-width: none;
+      }
+
+      .variantB .card::after {
+        content: "";
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 0;
+        height: 3px;
+        border-radius: 999px 999px 0 0;
+        background: linear-gradient(90deg, transparent, rgba(159, 114, 215, 0.26), transparent);
+      }
+
+      .variantC .card {
+        min-height: 92px;
+        padding: 18px 14px 16px 58px;
+      }
+
+      .variantC .icon {
+        position: absolute;
+        left: 16px;
+        top: 20px;
+        width: 30px;
+        height: 30px;
+      }
+
+      .variantC strong,
+      .variantC p {
+        max-width: none;
+      }
+
+      .variantC .card::before {
+        content: "";
+        position: absolute;
+        right: -24px;
+        bottom: -30px;
+        width: 82px;
+        height: 82px;
+        border-radius: 999px;
+        background: rgba(159, 114, 215, 0.07);
+      }
+
+      .variantC .card > * {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Три варианта секции практик</h1>
+    <p class="intro">Это только макет для выбора направления. После выбора я перенесу один вариант в рабочую страницу регистрации.</p>
+
+    <section class="variant variantA">
+      <h2>Вариант 1: иконка в правом верхнем углу</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10Z"/><path d="M9 14a3 3 0 0 0 6 0"/><path d="M12 8v6"/></svg></span>
+          <strong>Джапа</strong>
+          <p>Отмечай круги и серии</p>
+        </article>
+        <article class="card">
+          <span class="icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16H6z"/><path d="M9 8h6"/><path d="M9 12h5"/></svg></span>
+          <strong>Чтение книг</strong>
+          <p>Записывай страницы и цель на день</p>
+        </article>
+        <article class="card">
+          <span class="icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
+          <strong>Изучение стихов</strong>
+          <p>Повторяй, учи и отслеживай прогресс</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="variant variantB">
+      <h2>Вариант 2: иконка сверху внутри карточки</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10Z"/><path d="M9 14a3 3 0 0 0 6 0"/><path d="M12 8v6"/></svg></span>
+          <strong>Джапа</strong>
+          <p>Отмечай круги и серии</p>
+        </article>
+        <article class="card">
+          <span class="icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16H6z"/><path d="M9 8h6"/><path d="M9 12h5"/></svg></span>
+          <strong>Чтение книг</strong>
+          <p>Записывай страницы и цель на день</p>
+        </article>
+        <article class="card">
+          <span class="icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
+          <strong>Изучение стихов</strong>
+          <p>Повторяй, учи и отслеживай прогресс</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="variant variantC">
+      <h2>Вариант 3: компактная строка с иконкой слева</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10Z"/><path d="M9 14a3 3 0 0 0 6 0"/><path d="M12 8v6"/></svg></span>
+          <strong>Джапа</strong>
+          <p>Отмечай круги и серии</p>
+        </article>
+        <article class="card">
+          <span class="icon violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16H6z"/><path d="M9 8h6"/><path d="M9 12h5"/></svg></span>
+          <strong>Чтение книг</strong>
+          <p>Записывай страницы и цель на день</p>
+        </article>
+        <article class="card">
+          <span class="icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
+          <strong>Изучение стихов</strong>
+          <p>Повторяй, учи и отслеживай прогресс</p>
+        </article>
+      </div>
+    </section>
+  </body>
+</html>

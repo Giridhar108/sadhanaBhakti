@@ -1,30 +1,27 @@
-import profile from '../../shared/assets/images/profile.png';
-import { Icon } from '../../shared/ui/Icon/Icon';
+import profile from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
+import notifications from '../../shared/assets/images/08_notifications.png';
+import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
 import styles from './Header.module.css';
 
 export function Header() {
+  const authUser = readAuthUser();
+  const displayName = getUserDisplayName(authUser);
+
   return (
     <header className={styles.topbar}>
       <div>
-        <h1>Сегодняшняя практика</h1>
-        <p>Продолжай спокойно — каждый день уже часть пути.</p>
+        <h1>Харе Кришна, {displayName}</h1>
+        <p>Вся слава Шриле Прабхупаде</p>
       </div>
 
       <div className={styles.actions}>
-        <label className={styles.search}>
-          <Icon name="search" />
-          <input placeholder="Поиск практики" />
-        </label>
-
         <button className={styles.iconBtn} type="button" aria-label="Уведомления">
-          <Icon name="bell" />
+          <img src={notifications} alt={displayName} />
           <span className={styles.dot} />
         </button>
 
         <button className={styles.profile} type="button">
-          <img src={profile} alt="Ананда дас" />
-          <span>Ананда дас</span>
-          <Icon name="chevron" />
+          <img src={profile} alt={displayName} />
         </button>
       </div>
     </header>

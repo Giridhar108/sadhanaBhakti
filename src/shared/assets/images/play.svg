@@ -1,0 +1,14 @@
+<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Воспроизвести</title>
+  <defs>
+    <linearGradient id="playGradient" x1="8" y1="5" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A97BE4"/>
+      <stop offset="1" stop-color="#7654C8"/>
+    </linearGradient>
+    <filter id="playShadow" x="-10" y="-8" width="72" height="72" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#6E4BB8" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <circle cx="26" cy="26" r="23.5" fill="url(#playGradient)" filter="url(#playShadow)"/>
+  <path d="M21.25 17.8C21.25 16.87 22.27 16.30 23.07 16.78L36.15 24.98C36.89 25.44 36.89 26.56 36.15 27.02L23.07 35.22C22.27 35.70 21.25 35.13 21.25 34.20V17.8Z" fill="white"/>
+</svg>

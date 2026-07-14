@@ -1,5 +1,6 @@
 export const endpoints = {
   auth: {
+    register: '/auth/register',
     login: '/auth/login',
     logout: '/auth/logout',
     refresh: '/auth/refresh',
@@ -8,7 +9,14 @@ export const endpoints = {
     me: '/users/me',
   },
   japa: {
+    history: '/japa/history',
     sessions: '/japa/sessions',
+    today: '/japa/today',
+  },
+  audio: {
+    root: '/audio',
+    file: (trackId: string) => `/audio/${trackId}/file`,
+    item: (trackId: string) => `/audio/${trackId}`,
   },
   progress: {
     summary: '/progress/summary',

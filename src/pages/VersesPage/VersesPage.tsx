@@ -9,7 +9,7 @@ const verses = [
 ];
 
 export default function VersesPage() {
-  useDocumentTitle('Стихи - Путь практики');
+  useDocumentTitle('Стихи - Садхана Бхакти');
 
   return (
     <ModulePage

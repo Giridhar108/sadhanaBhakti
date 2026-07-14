@@ -1,0 +1,15 @@
+<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Пауза</title>
+  <defs>
+    <linearGradient id="pauseGradient" x1="8" y1="5" x2="44" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A97BE4"/>
+      <stop offset="1" stop-color="#7654C8"/>
+    </linearGradient>
+    <filter id="pauseShadow" x="-10" y="-8" width="72" height="72" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#6E4BB8" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <circle cx="26" cy="26" r="23.5" fill="url(#pauseGradient)" filter="url(#pauseShadow)"/>
+  <rect x="16.75" y="16.75" width="6.5" height="18.5" rx="3.25" fill="white"/>
+  <rect x="28.75" y="16.75" width="6.5" height="18.5" rx="3.25" fill="white"/>
+</svg>

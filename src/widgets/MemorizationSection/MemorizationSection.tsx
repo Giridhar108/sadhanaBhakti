@@ -1,117 +1,149 @@
-import { useMemo, useState } from 'react';
-import { Card } from '../../shared/ui/Card/Card';
-import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
+import { useState } from 'react';
+import verseImg from '../../shared/assets/images/verseImg2.png';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './MemorizationSection.module.css';
 
-type Verse = {
-  ref: string;
-  text: string;
-  description: string;
-  progress: number;
-  icon: IconName;
-};
+const grades = [
+  { emoji: '☹', title: 'Не помню', tone: 'red' },
+  { emoji: '😐', title: 'С ошибками', tone: 'orange' },
+  { emoji: '☺', title: 'Почти идеально', tone: 'amber' },
+  { emoji: '🙂', title: 'Легко вспомнил', tone: 'green' },
+] as const;
 
-const verses: Verse[] = [
+const verses = [
   {
-    ref: 'Бхагавад-гита 2.47',
-    text: 'karmaṇy evādhikāras te\nmā phaleṣu kadācana\nmā karma-phala-hetur bhūr\nmā te saṅgo stv akarmaṇi',
-    description: 'Тебе дано право лишь на выполнение своих обязанностей, но не на плоды их.',
-    progress: 60,
-    icon: 'mala',
+    reference: 'Бхагавад-гита 3.27',
+    lines: ['пракр̣тех̣ крийама̄н̣а̄ни', 'гун̣аих̣ карма̄н̣и сарваш́ах̣', 'ахан̇ка̄ра-вимӯд̣ха̄тма̄', 'карта̄хам ити манйате'],
+    meaning: 'Душа, введенная в заблуждение ложным эго, считает себя совершающей действия, хотя они выполняются гунами материальной природы.',
   },
   {
-    ref: 'Шримад-Бхагаватам 1.2.6',
-    text: 'sa vai puṁsāṁ paro dharmo\nyato bhaktir adhokṣaje\nahaituky apratihatā yayā\nātmā suprasīdati',
-    description: 'Высшая обязанность человека - развивать чистую преданность Верховному Господу.',
-    progress: 40,
-    icon: 'scroll',
+    reference: 'Бхагавад-гита 3.28',
+    lines: ['таттва-вит ту маха̄-ба̄хо', 'гун̣а-карма-вибха̄гайох̣', 'гун̣а̄ гун̣еш̣у вартанта', 'ити матва̄ на саджджате'],
+    meaning: 'Тот, кто знает истину, понимает связь гун и деятельности. Видя, что гуны взаимодействуют с гунами, он не привязывается.',
   },
   {
-    ref: 'Шримад-Бхагаватам 11.29.34',
-    text: 'mat-karma-kṛn mat-paramo\nmad-bhaktaḥ saṅga-varjitaḥ\nnirvairaḥ sarva-bhūteṣu\nyaḥ sa mām eti pāṇḍava',
-    description: 'Держи ум в практике, избегая лишнего, и постепенно укрепляй преданность.',
-    progress: 75,
-    icon: 'target',
+    reference: 'Бхагавад-гита 3.29',
+    lines: ['пракр̣тер гун̣а-саммӯд̣ха̄х̣', 'саджджанте гун̣а-кармасу', 'та̄н акр̣тсна-видо манда̄н', 'кр̣тсна-вин на вича̄лайет'],
+    meaning: 'Люди, сбитые с толку гунами природы, привязываются к действиям, рожденным гунами. Мудрый не должен тревожить тех, чье понимание еще неполно.',
   },
   {
-    ref: 'Бхагавад-гита 4.9',
-    text: 'janma karma ca me divyam\nevaṁ yo vetti tattvataḥ\ntyaktvā dehaṁ punar janma\nnaiti mām eti so rjuna',
-    description: 'Понимание божественной природы Господа освобождает от повторного рождения.',
-    progress: 35,
-    icon: 'lotus',
+    reference: 'Бхагавад-гита 3.30',
+    lines: ['майи сарва̄н̣и карма̄н̣и', 'саннйасйа̄дхйа̄тма-четаса̄', 'нира̄ш́ӣр нирмамо бхӯтва̄', 'йудхйасва вигата-джварах̣'],
+    meaning: 'Посвяти все свои действия Мне, сосредоточь сознание на духовном, оставь ожидания и чувство собственности, и действуй без беспокойства.',
   },
-  {
-    ref: 'Бхагавад-гита 9.22',
-    text: 'ananyāś cintayanto māṁ\nye janāḥ paryupāsate\nteṣāṁ nityābhiyuktānāṁ\nyoga-kṣemaṁ vahāmy aham',
-    description: 'Господь Сам заботится о тех, кто с постоянством и любовью помнит о Нем.',
-    progress: 55,
-    icon: 'home',
-  },
-  {
-    ref: 'Шримад-Бхагаватам 1.2.17',
-    text: 'śṛṇvatāṁ sva-kathāḥ kṛṣṇaḥ\npuṇya-śravaṇa-kīrtanaḥ\nhṛdy antaḥ-stho hy abhadrāṇi\nvidhunoti suhṛt satām',
-    description: 'Слушание о Кришне очищает сердце и мягко возвращает внимание к духовной жизни.',
-    progress: 20,
-    icon: 'book',
-  },
-];
-
-const cardsPerSlide = 3;
+] as const;
 
 export function MemorizationSection() {
-  const slidesCount = Math.ceil(verses.length / cardsPerSlide);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const visibleVerses = useMemo(
-    () => verses.slice(activeSlide * cardsPerSlide, activeSlide * cardsPerSlide + cardsPerSlide),
-    [activeSlide],
-  );
+  const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  const [isAnswerVisible, setIsAnswerVisible] = useState(false);
 
-  const showPrevSlide = () => {
-    setActiveSlide((slide) => (slide === 0 ? slidesCount - 1 : slide - 1));
+  const currentVerse = verses[currentVerseIndex];
+
+  const goToPreviousVerse = () => {
+    setCurrentVerseIndex((index) => (index === 0 ? verses.length - 1 : index - 1));
+    setIsAnswerVisible(false);
   };
 
-  const showNextSlide = () => {
-    setActiveSlide((slide) => (slide + 1) % slidesCount);
+  const goToNextVerse = () => {
+    setCurrentVerseIndex((index) => (index === verses.length - 1 ? 0 : index + 1));
+    setIsAnswerVisible(false);
   };
 
   return (
-    <Card className={styles.panel}>
-      <div className={styles.head}>
-        <h2>Стихи для запоминания</h2>
-        <a href="/verses">Смотреть все</a>
-      </div>
+    <section className={styles.section} aria-labelledby="memorization-title">
+      <header className={styles.header}>
+        <div className={styles.titleGroup}>
+          <Icon name="lotus" className={styles.lotusIcon} />
+          <div>
+            <h2 id="memorization-title">Проверь себя</h2>
+            <p>Вспомни стих полностью без подсказок</p>
+          </div>
+        </div>
 
-      <button className={`${styles.sliderBtn} ${styles.prev}`} type="button" aria-label="Предыдущие стихи" onClick={showPrevSlide}>
-        <Icon name="chevron" />
-      </button>
+        <span className={styles.pill}>{currentVerse.reference}</span>
 
-      <div className={styles.grid} aria-live="polite">
-        {visibleVerses.map((verse) => (
-          <article className={styles.verseCard} key={verse.ref}>
-            <div className={styles.verseTop}>
-              <div className={styles.verseIcon}>
-                <Icon name={verse.icon} />
+        <div className={styles.controls} aria-label="Навигация по стихам">
+          <span className={styles.counter}>{currentVerseIndex + 1} / {verses.length}</span>
+          <button className={styles.navBtn} type="button" aria-label="Предыдущий стих" onClick={goToPreviousVerse}>
+            <Icon name="chevron" />
+          </button>
+          <button className={styles.navBtn} type="button" aria-label="Следующий стих" onClick={goToNextVerse}>
+            <Icon name="chevron" />
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.content}>
+        <article className={styles.heroCard}>
+          <img src={verseImg} alt="" aria-hidden="true" />
+          <div className={styles.heroOverlay}>
+            {isAnswerVisible ? (
+              <div className={styles.answerCard}>
+                <div className={styles.answerContent}>
+                  <p className={styles.verseText}>
+                    {currentVerse.lines.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </p>
+                  <div className={styles.answerDivider} aria-hidden="true">
+                    <span />
+                    <Icon name="lotus" />
+                    <span />
+                  </div>
+                  <p className={styles.meaning}>{currentVerse.meaning}</p>
+                </div>
               </div>
-              <div>
-                <p className={styles.verseRef}>{verse.ref}</p>
-                <p className={styles.verseText}>{verse.text}</p>
-              </div>
-            </div>
-            <p className={styles.desc}>{verse.description}</p>
-            <div className={styles.progressLine}>
-              <span>Прогресс запоминания</span>
-              <b>{verse.progress}%</b>
-            </div>
-            <div className={styles.bar}>
-              <i style={{ width: `${verse.progress}%` }} />
-            </div>
-          </article>
-        ))}
-      </div>
+            ) : (
+              <p className={styles.prompt}>
+                Попробуй вспомнить стих целиком.
+                <br />
+                Когда будешь готов — открой ответ.
+              </p>
+            )}
+            <button className={styles.answerBtn} type="button" onClick={() => setIsAnswerVisible((isVisible) => !isVisible)}>
+              <span className={`${styles.eyeIcon} ${isAnswerVisible ? styles.eyeOff : ''}`} aria-hidden="true" />
+              {isAnswerVisible ? 'Скрыть ответ' : 'Показать ответ'}
+            </button>
+          </div>
+          <Icon name="lotus" className={styles.heroLotus} />
+        </article>
 
-      <button className={`${styles.sliderBtn} ${styles.next}`} type="button" aria-label="Следующие стихи" onClick={showNextSlide}>
-        <Icon name="chevron" />
-      </button>
-    </Card>
+        <aside className={styles.scoreCard}>
+          <div className={styles.scoreHead}>
+            <h3>Оцени, как получилось</h3>
+            <p>От этого зависит, когда стих появится снова</p>
+          </div>
+
+          <div className={styles.gradeGrid}>
+            {grades.map((grade) => (
+              <button className={`${styles.grade} ${styles[grade.tone]}`} type="button" key={grade.title}>
+                <span className={styles.face}>{grade.emoji}</span>
+                <span>
+                  <strong>{grade.title}</strong>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.note}>
+            <span className={styles.infoWrap}>
+              <button className={styles.infoTrigger} type="button" aria-label="Показать подсказку">
+                i
+              </button>
+              <span className={styles.tooltip} role="tooltip">
+                <span className={styles.tooltipHead}>
+                  <Icon name="lotus" className={styles.tooltipIcon} />
+                  <strong>Качество &gt; Количество</strong>
+                </span>
+                <span className={styles.tooltipText}>
+                  Лучше вспомнить один раз с усилием, чем читать десять раз подряд. Старайся вспоминать, а не просто перечитывать.
+                </span>
+              </span>
+            </span>
+            <p>Система интервального повторения подберёт оптимальное время для следующего повторения.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
   );
 }

@@ -1,0 +1,178 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
+}
+
+.rhythmCard {
+  min-height: 168px;
+  padding: 22px 28px 18px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.header h2,
+.header p {
+  margin: 0;
+}
+
+.header h2 {
+  color: #2c2641;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.header p {
+  margin-top: 4px;
+  color: #8a7e91;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.goalBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(145, 94, 226, 0.18);
+  border-radius: 8px;
+  background: rgba(249, 245, 253, 0.78);
+  color: #7455ac;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.goalBadge i {
+  width: 22px;
+  border-top: 2px dashed #9865e6;
+}
+
+.chartWrap {
+  width: 100%;
+  margin-top: 2px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 126px;
+  overflow: visible;
+}
+
+.baseLine {
+  stroke: #ded8e2;
+  stroke-width: 1.2;
+}
+
+.scaleLine {
+  stroke: #eee9f0;
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+
+.goalLine {
+  stroke: #a77aeb;
+  stroke-width: 1.2;
+  stroke-dasharray: 5 5;
+  opacity: 0.72;
+}
+
+.scaleLabel {
+  fill: #8a7e91;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.stem {
+  stroke: #cbc2d2;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.pointHalo {
+  fill: rgba(145, 94, 226, 0.12);
+}
+
+.point {
+  fill: #8e55df;
+  stroke: #fffefa;
+  stroke-width: 2;
+}
+
+.value {
+  fill: #18132d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.dateLabel {
+  fill: #6f6679;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.todayLabel {
+  fill: #5c9f4d;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.todayPoint .stem {
+  stroke: #a9cfa0;
+}
+
+.todayPoint .pointHalo {
+  fill: rgba(103, 174, 86, 0.14);
+}
+
+.todayPoint .point {
+  fill: #67ae56;
+}
+
+.todayPoint .dateLabel {
+  fill: #5c9f4d;
+}
+
+@media (max-width: 650px) {
+  .rhythmCard {
+    min-height: auto;
+    padding: 18px 16px 16px;
+  }
+
+  .header {
+    gap: 10px;
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .header p {
+    display: none;
+  }
+
+  .goalBadge {
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .goalBadge i {
+    width: 16px;
+  }
+
+  .chart {
+    height: 118px;
+  }
+}

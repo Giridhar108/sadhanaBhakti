@@ -1,0 +1,90 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card h2,
+.card p {
+  margin: 0;
+}
+
+.card h2 {
+  color: #2c2641;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.verseCard {
+  min-height: 168px;
+  padding: 24px 28px;
+}
+
+.headerIcon {
+  color: #9a65df;
+  font-size: 26px;
+}
+
+.verseBody {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 126px;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.quoteMark {
+  color: #9d70db;
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.verseBody p {
+  color: #3d3549;
+  font-size: 14px;
+  line-height: 1.42;
+  font-weight: 700;
+}
+
+.verseBody img {
+  width: 126px;
+  height: 86px;
+  object-fit: contain;
+  opacity: 0.34;
+  filter: saturate(0.9);
+}
+
+.verseSource {
+  display: block;
+  margin-top: 8px;
+  color: #9870d9;
+  font-size: 14px;
+}
+
+@media (max-width: 650px) {
+  .verseCard {
+    min-height: auto;
+    padding: 18px 16px;
+  }
+
+  .verseBody {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .verseBody img {
+    display: none;
+  }
+}

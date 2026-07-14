@@ -7,4 +7,11 @@ export type AppRoute =
   | '/calendar'
   | '/statistics'
   | '/profile'
-  | '/settings';
+  | '/settings'
+  | '/auth'
+  | '/auth/login'
+  | '/auth/register'
+  | '/auth/onboarding'
+  | '/auth/onboarding/name'
+  | '/auth/onboarding/practices'
+  | '/auth/onboarding/goals';

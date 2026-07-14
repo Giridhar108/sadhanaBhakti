@@ -1,35 +1,72 @@
-.app {
-  width: min(100%, var(--container));
-  max-width: var(--container);
-  min-height: 100vh;
-  margin: 0 auto;
+.dashboard {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: 240px minmax(960px, 1fr);
+  grid-auto-rows: max-content;
+  align-content: start;
+  --top-card-height: 338px;
+  --background-image-width: 1362px;
 }
 
-.dashboard {
-  padding: 16px 18px 24px;
+.dashboard::before {
+  position: fixed;
+  z-index: 0;
+  right: 0;
+  bottom: -500px;
+  left: max(300px, calc((100vw - var(--container)) / 2 + 300px));
+  height: 100%;
+  content: '';
+  pointer-events: none;
+  background: url('../../shared/assets/images/background/background_323.png') left top / var(--background-image-width) auto no-repeat;
+  opacity: 0.56;
 }
 
 .contentGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(700px, 1fr) 326px;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
 }
 
-.mainCol,
-.sideCol {
+.mainCol {
   display: grid;
   gap: 12px;
 }
 
+.mainCol> :first-child {
+  height: var(--top-card-height);
+}
+
 @media (max-width: 1280px) {
-  .app {
-    grid-template-columns: 220px minmax(960px, 1fr);
+  .dashboard::after {
+    content: none;
   }
 
-  .contentGrid {
-    grid-template-columns: minmax(640px, 1fr) 314px;
+  .dashboard::before {
+    left: 0;
+    height: 100%;
+    bottom: -490px;
+    background: url('../../shared/assets/images/background/background_323.png') right top / var(--background-image-width) auto no-repeat;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    --top-card-height: 280px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    --top-card-height: 210px;
+  }
+
+  .dashboard::before {
+    right: 0;
+    left: 0;
+    height: 100%;
+    bottom: -376px;
+    opacity: 0.56;
   }
 }
