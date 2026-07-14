@@ -34,6 +34,19 @@ import styles from './MyJapaPage.module.css';
 const getInitialDailyJapaGoal = () =>
   normalizeJapaDailyGoal(readAuthUser()?.goals.japaRounds ?? defaultGoals.japaRounds);
 
+const getDateKeyDaysAgo = (dateKey: string, daysAgo: number) => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+
+  date.setDate(date.getDate() - daysAgo);
+
+  const nextYear = date.getFullYear();
+  const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
+  const nextDay = String(date.getDate()).padStart(2, '0');
+
+  return `${nextYear}-${nextMonth}-${nextDay}`;
+};
+
 const formatSessionTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -45,18 +58,25 @@ const formatSessionTime = (totalSeconds: number) => {
 export default function MyJapaPage() {
   useDocumentTitle('Джапа - Садхана Бхакти');
   const authUser = readAuthUser();
-  const configuredDailyJapaGoal = useMemo(() => getInitialDailyJapaGoal(), []);
-  const todayDateKey = useMemo(() => getTodayDateKey(), []);
+  const configuredDailyJapaGoal = useMemo(
+    () => getInitialDailyJapaGoal(),
+    [authUser?.goals.japaRounds],
+  );
+  const [todayDateKey, setTodayDateKey] = useState(getTodayDateKey);
   const japaStartDate = authUser?.settings.japaStartDate ?? null;
   const japaGoalHistory = authUser?.settings.japaGoalHistory ?? [];
+  const recentProgressStartDate = getDateKeyDaysAgo(todayDateKey, 4);
+  const progressHistoryStartDate = japaStartDate && japaStartDate < recentProgressStartDate
+    ? japaStartDate
+    : recentProgressStartDate;
   const initialDailyProgress = authUser ? readCachedDailyProgress(authUser.id, todayDateKey) : undefined;
   const initialCompletedRounds = normalizeJapaCompletedRounds(initialDailyProgress?.rounds ?? 0);
   const initialDailyJapaGoal = initialDailyProgress?.goalRounds
     ? normalizeJapaDailyGoal(initialDailyProgress.goalRounds)
     : configuredDailyJapaGoal;
-  const initialDailyProgressHistory = authUser && japaStartDate
+  const initialDailyProgressHistory = authUser
     ? readCachedDailyProgressHistory(authUser.id, {
-      from: japaStartDate,
+      from: progressHistoryStartDate,
       to: todayDateKey,
     }) ?? []
     : [];
@@ -119,6 +139,35 @@ export default function MyJapaPage() {
   }, [completedRounds]);
 
   useEffect(() => {
+    saveCompletedRoundsRequestRef.current += 1;
+  }, [todayDateKey]);
+
+  useEffect(() => {
+    const syncTodayDateKey = () => {
+      setTodayDateKey((currentDateKey) => {
+        const nextDateKey = getTodayDateKey();
+
+        return currentDateKey === nextDateKey ? currentDateKey : nextDateKey;
+      });
+    };
+    const syncWhenVisible = () => {
+      if (document.visibilityState === 'visible') {
+        syncTodayDateKey();
+      }
+    };
+    const intervalId = window.setInterval(syncTodayDateKey, 30_000);
+
+    window.addEventListener('focus', syncTodayDateKey);
+    document.addEventListener('visibilitychange', syncWhenVisible);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener('focus', syncTodayDateKey);
+      document.removeEventListener('visibilitychange', syncWhenVisible);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isKaliModalOpen) {
       return undefined;
     }
@@ -157,6 +206,16 @@ export default function MyJapaPage() {
     }
 
     let shouldIgnore = false;
+    const cachedProgress = readCachedDailyProgress(authUser.id, todayDateKey);
+    const cachedRounds = normalizeJapaCompletedRounds(cachedProgress?.rounds ?? 0);
+    const cachedGoal = cachedProgress?.goalRounds
+      ? normalizeJapaDailyGoal(cachedProgress.goalRounds)
+      : configuredDailyJapaGoal;
+
+    completedRoundsRef.current = cachedRounds;
+    lastSavedCompletedRoundsRef.current = cachedRounds;
+    setCompletedRounds(cachedRounds);
+    setDailyJapaGoalInput(String(cachedGoal));
 
     getCachedDailyProgress(authUser.id, todayDateKey)
       .then((progress) => {
@@ -186,7 +245,7 @@ export default function MyJapaPage() {
   }, [authUser?.id, configuredDailyJapaGoal, todayDateKey]);
 
   useEffect(() => {
-    if (!authUser || !japaStartDate) {
+    if (!authUser) {
       setDailyProgressHistory([]);
       return undefined;
     }
@@ -194,7 +253,7 @@ export default function MyJapaPage() {
     let shouldIgnore = false;
 
     getCachedDailyProgressHistory(authUser.id, {
-      from: japaStartDate,
+      from: progressHistoryStartDate,
       to: todayDateKey,
     })
       .then((progressHistory) => {
@@ -211,7 +270,7 @@ export default function MyJapaPage() {
     return () => {
       shouldIgnore = true;
     };
-  }, [authUser?.id, japaStartDate, todayDateKey]);
+  }, [authUser?.id, progressHistoryStartDate, todayDateKey]);
 
   useEffect(() => {
     if (!authUser) {
@@ -231,7 +290,7 @@ export default function MyJapaPage() {
         setCompletedRounds(savedRounds);
       }
 
-      if (!japaStartDate || progress.date < japaStartDate || progress.date > todayDateKey) {
+      if (progress.date < progressHistoryStartDate || progress.date > todayDateKey) {
         return;
       }
 
@@ -246,7 +305,7 @@ export default function MyJapaPage() {
     return () => {
       window.removeEventListener(japaDailyProgressChanged, handleDailyProgressChange);
     };
-  }, [authUser?.id, japaStartDate, todayDateKey]);
+  }, [authUser?.id, progressHistoryStartDate, todayDateKey]);
 
   useEffect(() => {
     setSelectedAudioId((currentTrackId) => {
@@ -301,7 +360,6 @@ export default function MyJapaPage() {
       .updateToday({
         date: todayDateKey,
         rounds,
-        goalRounds: dailyJapaGoal,
       })
       .then((progress) => {
         if (saveCompletedRoundsRequestRef.current !== requestId) {
@@ -339,7 +397,7 @@ export default function MyJapaPage() {
     saveCompletedRounds(nextRounds);
   };
 
-  const saveDailyJapaGoal = (goalRounds: number) => {
+  const saveDailyJapaGoal = (goalRounds: number | null) => {
     if (!authUser) {
       return;
     }
@@ -374,7 +432,7 @@ export default function MyJapaPage() {
     const nextGoal = dailyJapaGoal;
 
     setDailyJapaGoalInput(String(nextGoal));
-    saveDailyJapaGoal(nextGoal);
+    saveDailyJapaGoal(nextGoal === configuredDailyJapaGoal ? null : nextGoal);
   };
 
   const handleAudioToggle = async () => {
@@ -444,6 +502,7 @@ export default function MyJapaPage() {
             dailyJapaGoalInput={dailyJapaGoalInput}
             onAddRounds={addCompletedRounds}
             onAddDailyGoal={handleAddDailyGoal}
+            onCompletedRoundsChange={updateCompletedRounds}
             onDailyGoalChange={handleDailyGoalChange}
             onDailyGoalBlur={handleDailyGoalBlur}
           />
@@ -483,7 +542,12 @@ export default function MyJapaPage() {
             onVolumeChange={handleVolumeChange}
           />
 
-          <RhythmCard />
+          <RhythmCard
+            progressHistory={dailyProgressHistory}
+            todayDateKey={todayDateKey}
+            todayCompletedRounds={completedRounds}
+            dailyGoal={dailyJapaGoal}
+          />
 
           <ReflectionVerseCard />
 

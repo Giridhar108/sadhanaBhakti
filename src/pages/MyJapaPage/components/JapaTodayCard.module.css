@@ -134,6 +134,30 @@
   box-shadow: 0 8px 20px rgba(133, 86, 216, 0.22);
   transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-161px);
   transition: transform 260ms ease;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.progressMarker::after {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  content: '';
+}
+
+.progressMarker:focus-visible {
+  outline: 3px solid rgba(133, 86, 216, 0.3);
+  outline-offset: 5px;
+}
+
+.progressRing[data-dragging='true'] .progressMarker {
+  cursor: grabbing;
+  transition: none;
+}
+
+.progressRing[data-dragging='true'] .progressValue {
+  transition: none;
 }
 
 .progressCenter {

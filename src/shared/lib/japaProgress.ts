@@ -122,39 +122,17 @@ const getSegments = (startDate: Date, history: JapaGoalHistoryEntry[]) => [
   ...history,
 ];
 
-const calculateTargetDate = (startDate: Date, history: JapaGoalHistoryEntry[]) => {
-  const segments = getSegments(startDate, history);
-  let accumulatedMantras = 0;
+const calculateTargetDate = (today: Date, completedMantras: number, dailyRounds: number) => {
+  const remainingMantras = Math.max(JAPA_MANTRA_GOAL - completedMantras, 0);
 
-  for (let index = 0; index < segments.length; index += 1) {
-    const segmentStartDate = parseDateKey(segments[index].date) ?? startDate;
-    const nextSegmentStartDate = segments[index + 1] ? parseDateKey(segments[index + 1].date) : null;
-    const rounds = normalizeJapaDailyGoal(segments[index].rounds);
-    const dailyMantras = rounds * JAPA_MANTRAS_PER_ROUND;
-
-    if (nextSegmentStartDate) {
-      const segmentEndDate = addDays(nextSegmentStartDate, -1);
-      const segmentDays = getInclusiveDays(segmentStartDate, segmentEndDate);
-      const segmentMantras = segmentDays * dailyMantras;
-
-      if (accumulatedMantras + segmentMantras >= JAPA_MANTRA_GOAL) {
-        const remainingMantras = JAPA_MANTRA_GOAL - accumulatedMantras;
-        const daysToGoal = Math.ceil(remainingMantras / dailyMantras);
-
-        return toDateKey(addDays(segmentStartDate, daysToGoal - 1));
-      }
-
-      accumulatedMantras += segmentMantras;
-      continue;
-    }
-
-    const remainingMantras = Math.max(JAPA_MANTRA_GOAL - accumulatedMantras, 0);
-    const daysToGoal = Math.ceil(remainingMantras / dailyMantras);
-
-    return toDateKey(addDays(segmentStartDate, Math.max(daysToGoal - 1, 0)));
+  if (remainingMantras === 0) {
+    return toDateKey(today);
   }
 
-  return toDateKey(startDate);
+  const dailyMantras = normalizeJapaDailyGoal(dailyRounds) * JAPA_MANTRAS_PER_ROUND;
+  const remainingDays = Math.ceil(remainingMantras / dailyMantras);
+
+  return toDateKey(addDays(today, remainingDays));
 };
 
 export const calculateJapaMantraProgress = (
@@ -226,7 +204,7 @@ export const calculateJapaMantraProgress = (
 
   const completedMantras = Math.min(totalMantras, JAPA_MANTRA_GOAL);
   const percent = Math.min((totalMantras / JAPA_MANTRA_GOAL) * 100, 100);
-  const targetDate = calculateTargetDate(parsedStartDate, normalizedHistory);
+  const targetDate = calculateTargetDate(todayDate, completedMantras, currentDailyRounds);
 
   return {
     startDate,
@@ -244,8 +222,8 @@ export const formatJapaNumber = (value: number) => new Intl.NumberFormat('ru-RU'
 
 export const formatJapaProgressPercent = (value: number) =>
   `${new Intl.NumberFormat('ru-RU', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
   }).format(value)}%`;
 
 export const formatJapaDate = (dateKey: string) => {
