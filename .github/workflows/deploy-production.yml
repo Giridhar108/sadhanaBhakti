@@ -1,0 +1,115 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: npm --prefix backend ci
+
+      - name: Build frontend and backend
+        run: npm run build:all
+
+  deploy:
+    name: Deploy to production
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+      SSH_USER: ${{ secrets.PROD_SSH_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+      SSH_PORT: ${{ vars.PROD_SSH_PORT }}
+      APP_DIR: ${{ vars.PROD_APP_DIR }}
+
+    steps:
+      - name: Configure SSH
+        shell: bash
+        run: |
+          set -eu
+          test -n "$SSH_HOST"
+          test -n "$SSH_USER"
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$SSH_KNOWN_HOSTS"
+
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/production_key
+          chmod 600 ~/.ssh/production_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Update and restart production
+        shell: bash
+        run: |
+          set -eu
+          SSH_PORT="${SSH_PORT:-22}"
+          APP_DIR="${APP_DIR:-/opt/hare-krishna}"
+
+          ssh \
+            -i ~/.ssh/production_key \
+            -p "$SSH_PORT" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$SSH_USER@$SSH_HOST" \
+            "sh -s -- '$APP_DIR' '$GITHUB_SHA'" <<'REMOTE_SCRIPT'
+          set -eu
+
+          app_dir=$1
+          expected_revision=$2
+
+          cd "$app_dir"
+
+          if [ "$(git branch --show-current)" != "main" ]; then
+            echo "Production checkout must be on the main branch." >&2
+            exit 1
+          fi
+
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            echo "Production checkout contains uncommitted tracked changes." >&2
+            exit 1
+          fi
+
+          test -f .env.production
+          git fetch --prune origin main
+          git merge --ff-only origin/main
+
+          if [ "$(git rev-parse HEAD)" != "$expected_revision" ]; then
+            echo "Production revision does not match the GitHub Actions revision." >&2
+            exit 1
+          fi
+
+          sh ./deploy/deploy.sh
+          REMOTE_SCRIPT

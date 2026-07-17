@@ -683,9 +683,16 @@
   .field,
   .simpleField {
     min-height: 58px;
-    grid-template-columns: 24px 1fr 24px;
     gap: 10px;
     padding-inline: 14px;
+  }
+
+  .field {
+    grid-template-columns: 24px 1fr 24px;
+  }
+
+  .simpleField {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .field input,

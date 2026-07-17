@@ -96,6 +96,47 @@ docker compose --env-file .env.production -f compose.production.yml logs -f --ta
 curl --fail https://practice.example.com/api/health
 ```
 
+## Automatic deployment from GitHub
+
+The workflow in `.github/workflows/deploy-production.yml` verifies the frontend
+and backend and then deploys every push to `main`. It can also be started
+manually from the Actions page. Pushes to `dev` never deploy production.
+
+Prepare the server checkout once:
+
+```bash
+cd /opt/hare-krishna
+git switch main
+git pull --ff-only origin main
+git config core.fileMode false
+```
+
+The SSH user used by GitHub Actions must be able to read this checkout and run
+Docker without an interactive password. Keep `.env.production` only on the
+server; never add it to GitHub secrets or commit it.
+
+Create a dedicated SSH key for GitHub Actions. Add its public key to the
+deployment user's `~/.ssh/authorized_keys`, then add these secrets to the
+GitHub `production` environment:
+
+- `PROD_SSH_HOST`: server hostname or IP address;
+- `PROD_SSH_USER`: Linux deployment user;
+- `PROD_SSH_PRIVATE_KEY`: the complete private key, including its header and
+  footer;
+- `PROD_SSH_KNOWN_HOSTS`: the trusted server host-key line. Generate it from a
+  trusted machine with `ssh-keyscan -H your-server.example.com` and verify its
+  fingerprint before saving it.
+
+Optional GitHub environment variables:
+
+- `PROD_SSH_PORT`: SSH port, defaults to `22`;
+- `PROD_APP_DIR`: checkout path, defaults to `/opt/hare-krishna`.
+
+The deployment refuses to overwrite tracked changes on the server and verifies
+that the checked-out revision exactly matches the revision that passed the
+GitHub build. Configure a required reviewer for the `production` environment if
+production updates should need manual approval after a successful build.
+
 ## Backups and restore
 
 `deploy/backup.sh` creates two private archives in `backups/`: a PostgreSQL
