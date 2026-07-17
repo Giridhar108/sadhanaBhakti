@@ -21,9 +21,13 @@ compose() {
 }
 
 compose config --quiet
-compose pull postgres
+
+if ! docker image inspect postgres:16-alpine >/dev/null 2>&1; then
+  compose pull postgres
+fi
+
 compose up -d postgres
-compose build --pull
+compose build
 compose run --rm api npm run prisma:deploy
 compose up -d --remove-orphans --wait --wait-timeout 120
 
