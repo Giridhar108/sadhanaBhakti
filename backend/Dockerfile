@@ -1,4 +1,6 @@
-FROM node:22-alpine AS build
+ARG DOCKER_REGISTRY=docker.io/library
+
+FROM ${DOCKER_REGISTRY}/node:22-alpine AS build
 
 WORKDIR /app
 
@@ -11,7 +13,7 @@ COPY src ./src
 
 RUN npm run prisma:generate && npm run build
 
-FROM node:22-alpine AS production
+FROM ${DOCKER_REGISTRY}/node:22-alpine AS production
 
 ENV NODE_ENV=production
 WORKDIR /app
