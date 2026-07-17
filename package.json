@@ -12,7 +12,7 @@
     "backend:push": "npm --prefix backend run prisma:push",
     "dev:full": "npm run backend:env && npm run db:up && npm run backend:push && concurrently -n web,api -c cyan,magenta \"npm run dev:web\" \"npm run dev:api\"",
     "build": "tsc -b && vite build",
-    "build:all": "npm run build && npm --prefix backend run build",
+    "build:all": "npm run build && npm --prefix backend run prisma:generate && npm --prefix backend run build",
     "deploy:check": "docker compose --env-file .env.production -f compose.production.yml config --quiet",
     "preview": "vite preview --host 0.0.0.0"
   },
