@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useUiStore } from '../../app/store/useUiStore';
 import { audioApi } from '../../entities/audio/api/audioApi';
 import { audioTracksQueryKey, useAudioTracks } from '../../entities/audio/model/audioQueries';
+import { maxUserAudioFileSize, maxUserAudioTracks } from '../../entities/audio/model/defaultAudioTracks';
 import type { AudioTrack } from '../../entities/audio/model/types';
 import { defaultGoals, defaultSettings, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
 import type { AuthUser } from '../../entities/user/model/types';
@@ -65,6 +66,8 @@ export default function SettingsPage() {
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
   const [isAudioUploading, setIsAudioUploading] = useState(false);
   const { data: audioTracks = [], isError: isAudioTracksError } = useAudioTracks();
+  const userAudioTracks = audioTracks.filter((track) => !track.isDefault);
+  const remainingAudioSlots = Math.max(0, maxUserAudioTracks - userAudioTracks.length - audioDrafts.length);
   const dragState = useRef<DragState | null>(null);
   const savedJapaGoal = authUser?.goals.japaRounds ?? defaultGoals.japaRounds;
   const savedDailyReminder = authUser?.settings.dailyReminder ?? defaultSettings.dailyReminder;
@@ -372,16 +375,30 @@ export default function SettingsPage() {
       return;
     }
 
+    const validAudioFiles = files.filter((file) => file.type.startsWith('audio/'));
+    const filesWithinSizeLimit = validAudioFiles.filter((file) => file.size <= maxUserAudioFileSize);
+    const acceptedFiles = filesWithinSizeLimit.slice(0, remainingAudioSlots);
+
     setAudioDrafts((currentDrafts) => [
       ...currentDrafts,
-      ...files.map((file, index) => ({
+      ...acceptedFiles.map((file, index) => ({
         id: `${file.name}-${file.lastModified}-${index}-${Date.now()}`,
         file,
         title: getTitleFromAudioFile(file.name),
         subtitle: 'Мягкое повторение',
       })),
     ]);
-    setAudioStatus(null);
+
+    if (validAudioFiles.length !== files.length) {
+      setAudioStatus('Можно выбирать только аудиофайлы.');
+    } else if (filesWithinSizeLimit.length !== validAudioFiles.length) {
+      setAudioStatus('Размер одного аудиофайла не должен превышать 50 МБ.');
+    } else if (acceptedFiles.length !== filesWithinSizeLimit.length) {
+      setAudioStatus('Можно добавить не больше трёх своих аудиозаписей.');
+    } else {
+      setAudioStatus(null);
+    }
+
     event.target.value = '';
   };
 
@@ -397,7 +414,17 @@ export default function SettingsPage() {
 
   const uploadAudioDrafts = async () => {
     if (audioDrafts.length === 0) {
-      setAudioStatus('Выбери один или несколько аудиофайлов.');
+      setAudioStatus('Выбери аудиофайл.');
+      return;
+    }
+
+    if (userAudioTracks.length + audioDrafts.length > maxUserAudioTracks) {
+      setAudioStatus('Можно добавить не больше трёх своих аудиозаписей.');
+      return;
+    }
+
+    if (audioDrafts.some((draft) => draft.file.size > maxUserAudioFileSize)) {
+      setAudioStatus('Размер одного аудиофайла не должен превышать 50 МБ.');
       return;
     }
 
@@ -422,15 +449,16 @@ export default function SettingsPage() {
         });
 
         uploadedTracks.push(track);
+        queryClient.setQueryData<AudioTrack[]>(audioTracksQueryKey, (currentTracks = []) => [
+          ...currentTracks,
+          track,
+        ]);
       }
 
-      queryClient.setQueryData<AudioTrack[]>(audioTracksQueryKey, (currentTracks = []) => [
-        ...uploadedTracks,
-        ...currentTracks,
-      ]);
       setAudioDrafts([]);
-      setAudioStatus('Аудио загружено.');
+      setAudioStatus(uploadedTracks.length === 1 ? 'Аудио загружено.' : 'Аудиозаписи загружены.');
     } catch {
+      void queryClient.invalidateQueries({ queryKey: audioTracksQueryKey });
       setAudioStatus('Не удалось загрузить аудио. Проверь backend-сессию и формат файла.');
     } finally {
       setIsAudioUploading(false);
@@ -509,15 +537,25 @@ export default function SettingsPage() {
           <SettingsCardHeader
             icon="music"
             title="Аудио для джапы"
-            description="Загружай мантры и лекции для плеера на странице джапы. У каждого аудио можно указать название и подпись."
+            description="Три записи Шрилы Прабхупады доступны всем. Дополнительно можно загрузить до трёх своих аудиозаписей размером не больше 50 МБ каждая."
             tone="violet"
           />
           <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
-          <label className={styles.audioDropzone}>
-            <input type="file" accept="audio/*" multiple onChange={onAudioFilesChange} />
+          <label className={`${styles.audioDropzone} ${remainingAudioSlots === 0 ? styles.audioDropzoneDisabled : ''}`}>
+            <input
+              type="file"
+              accept="audio/*"
+              multiple
+              disabled={remainingAudioSlots === 0 || isAudioUploading}
+              onChange={onAudioFilesChange}
+            />
             <Icon name="plus" />
-            <span>Выбрать аудиофайлы</span>
-            <small>Можно загрузить несколько файлов сразу</small>
+            <span>{remainingAudioSlots > 0 ? 'Выбрать аудиофайлы' : 'Лимит личных записей достигнут'}</span>
+            <small>
+              {remainingAudioSlots > 0
+                ? `Осталось мест: ${remainingAudioSlots} · до 50 МБ на файл`
+                : 'Чтобы загрузить другую запись, сначала удали одну из своих'}
+            </small>
           </label>
 
           {audioDrafts.length > 0 ? (
@@ -567,9 +605,13 @@ export default function SettingsPage() {
                       {track.subtitle || track.originalName} · {formatFileSize(track.size)}
                     </small>
                   </div>
-                  <button type="button" onClick={() => deleteAudioTrack(track.id)}>
-                    Удалить
-                  </button>
+                  {track.isDefault ? (
+                    <div className={styles.defaultAudioBadge}>По умолчанию</div>
+                  ) : (
+                    <button type="button" onClick={() => deleteAudioTrack(track.id)}>
+                      Удалить
+                    </button>
+                  )}
                 </div>
               ))
             ) : (

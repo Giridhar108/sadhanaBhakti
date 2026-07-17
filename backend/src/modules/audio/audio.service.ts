@@ -6,6 +6,7 @@ import { extname, join, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Response } from 'express';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+import { maxUserAudioFileSize, maxUserAudioTracks } from './audio.constants';
 import type { UploadedAudioFile } from './types';
 
 const maxTitleLength = 80;
@@ -45,25 +46,41 @@ export class AudioService {
       throw new BadRequestException('Only audio files are supported');
     }
 
+    if (file.size > maxUserAudioFileSize) {
+      throw new BadRequestException('Audio file must not exceed 50 MB');
+    }
+
+    const trackCount = await this.prisma.audioTrack.count({ where: { userId } });
+
+    if (trackCount >= maxUserAudioTracks) {
+      throw new BadRequestException('A user can upload up to 3 audio tracks');
+    }
+
     const title = this.normalizeText(input.title, maxTitleLength) || this.getTitleFromFile(file.originalname);
     const subtitle = this.normalizeText(input.subtitle, maxSubtitleLength);
     const extension = extname(file.originalname).toLowerCase() || '.mp3';
     const fileName = `${randomUUID()}${extension}`;
 
     await mkdir(this.uploadDirectory, { recursive: true });
-    await writeFile(join(this.uploadDirectory, fileName), file.buffer);
+    const filePath = join(this.uploadDirectory, fileName);
+    await writeFile(filePath, file.buffer);
 
-    return this.prisma.audioTrack.create({
-      data: {
-        userId,
-        title,
-        subtitle,
-        fileName,
-        originalName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-      },
-    });
+    try {
+      return await this.prisma.audioTrack.create({
+        data: {
+          userId,
+          title,
+          subtitle,
+          fileName,
+          originalName: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+        },
+      });
+    } catch (error) {
+      await unlink(filePath).catch(() => undefined);
+      throw error;
+    }
   }
 
   async delete(userId: string, trackId: string) {

@@ -16,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { JwtUser } from '../auth/types';
+import { maxUserAudioFileSize } from './audio.constants';
 import { AudioService } from './audio.service';
 import { toAudioTrackDto, type UploadedAudioFile } from './types';
 
@@ -41,7 +42,7 @@ export class AudioController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 80 * 1024 * 1024 } }))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: maxUserAudioFileSize } }))
   async create(
     @Req() request: AuthenticatedRequest,
     @Body() body: CreateAudioTrackRequest,

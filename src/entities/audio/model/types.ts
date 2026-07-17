@@ -8,6 +8,7 @@ export type AudioTrack = {
   size: number;
   duration?: number;
   createdAt: string;
+  isDefault?: boolean;
 };
 
 export type UploadAudioTrackInput = {
