@@ -1,5 +1,4 @@
 import { type CSSProperties, type MouseEvent, type RefObject } from 'react';
-import type { AudioTrack } from '../../../entities/audio/model/types';
 import japaAudioLotus from '../../../shared/assets/images/japa-audio-lotus.png';
 import pauseButtonIcon from '../../../shared/assets/images/pause.svg';
 import playButtonIcon from '../../../shared/assets/images/play.svg';
@@ -11,8 +10,6 @@ type AudioPracticeCardProps = {
   audioSource?: string;
   audioTitle: string;
   audioSubtitle: string;
-  audioTracks: AudioTrack[];
-  selectedAudioTrack?: AudioTrack;
   audioCurrentTime: number;
   audioDuration: number;
   audioVolume: number;
@@ -25,7 +22,6 @@ type AudioPracticeCardProps = {
   onAudioPause: () => void;
   onAudioPlay: () => void;
   onAudioEnded: () => void;
-  onSelectedAudioChange: (trackId: string) => void;
   onAudioSeek: (event: MouseEvent<HTMLDivElement>) => void;
   onSelectRelativeTrack: (direction: -1 | 1) => void;
   onAudioToggle: () => void;
@@ -55,8 +51,6 @@ export function AudioPracticeCard({
   audioSource,
   audioTitle,
   audioSubtitle,
-  audioTracks,
-  selectedAudioTrack,
   audioCurrentTime,
   audioDuration,
   audioVolume,
@@ -69,7 +63,6 @@ export function AudioPracticeCard({
   onAudioPause,
   onAudioPlay,
   onAudioEnded,
-  onSelectedAudioChange,
   onAudioSeek,
   onSelectRelativeTrack,
   onAudioToggle,
@@ -99,21 +92,7 @@ export function AudioPracticeCard({
             onEnded={onAudioEnded}
           />
           <h3>{audioTitle}</h3>
-          <p>{audioSubtitle}</p>
-          {audioTracks.length > 1 ? (
-            <select
-              className={styles.audioSelect}
-              value={selectedAudioTrack?.id ?? ''}
-              onChange={(event) => onSelectedAudioChange(event.target.value)}
-              aria-label="Выбрать аудио"
-            >
-              {audioTracks.map((track) => (
-                <option key={track.id} value={track.id}>
-                  {track.title}
-                </option>
-              ))}
-            </select>
-          ) : null}
+          <p className={styles.audioSubtitle}>{audioSubtitle}</p>
 
           <div className={styles.waveform} onClick={onAudioSeek} role="presentation">
             {waveformBars.map((height, index) => (

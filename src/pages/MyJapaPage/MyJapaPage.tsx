@@ -1,4 +1,5 @@
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { getAudioTrackUrl, useAudioTracks } from '../../entities/audio/model/audioQueries';
 import { japaApi } from '../../entities/japa-session/api/japaApi';
 import {
@@ -81,6 +82,7 @@ export default function MyJapaPage() {
     }) ?? []
     : [];
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const keepAudioPlayingOnSourceChangeRef = useRef(false);
   const completedRoundsRef = useRef(initialCompletedRounds);
   const lastSavedCompletedRoundsRef = useRef(initialCompletedRounds);
   const saveCompletedRoundsRequestRef = useRef(0);
@@ -324,6 +326,11 @@ export default function MyJapaPage() {
       return;
     }
 
+    if (keepAudioPlayingOnSourceChangeRef.current) {
+      keepAudioPlayingOnSourceChangeRef.current = false;
+      return;
+    }
+
     audio.pause();
     audio.load();
     audio.volume = audioVolume;
@@ -458,14 +465,35 @@ export default function MyJapaPage() {
     setIsAudioPlaying(false);
   };
 
-  const selectRelativeTrack = (direction: -1 | 1) => {
+  const selectRelativeTrack = async (direction: -1 | 1) => {
     if (audioTracks.length === 0 || selectedAudioIndex < 0) {
       return;
     }
 
     const nextIndex = (selectedAudioIndex + direction + audioTracks.length) % audioTracks.length;
+    const nextTrack = audioTracks[nextIndex];
+    const audio = audioRef.current;
 
-    setSelectedAudioId(audioTracks[nextIndex].id);
+    if (!audio) {
+      return;
+    }
+
+    if (nextTrack.id !== selectedAudioTrack?.id) {
+      keepAudioPlayingOnSourceChangeRef.current = true;
+      flushSync(() => setSelectedAudioId(nextTrack.id));
+      audio.load();
+      setAudioCurrentTime(0);
+      setAudioDuration(0);
+    }
+
+    try {
+      await audio.play();
+      setIsAudioPlaying(true);
+      setAudioStatus('');
+    } catch {
+      setIsAudioPlaying(false);
+      setAudioStatus('Не удалось запустить аудио.');
+    }
   };
 
   const handleAudioSeek = (event: MouseEvent<HTMLDivElement>) => {
@@ -521,8 +549,6 @@ export default function MyJapaPage() {
             audioSource={audioSource}
             audioTitle={audioTitle}
             audioSubtitle={audioSubtitle}
-            audioTracks={audioTracks}
-            selectedAudioTrack={selectedAudioTrack}
             audioCurrentTime={audioCurrentTime}
             audioDuration={audioDuration}
             audioVolume={audioVolume}
@@ -535,7 +561,6 @@ export default function MyJapaPage() {
             onAudioPause={() => setIsAudioPlaying(false)}
             onAudioPlay={() => setIsAudioPlaying(true)}
             onAudioEnded={() => setIsAudioPlaying(false)}
-            onSelectedAudioChange={setSelectedAudioId}
             onAudioSeek={handleAudioSeek}
             onSelectRelativeTrack={selectRelativeTrack}
             onAudioToggle={handleAudioToggle}

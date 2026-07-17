@@ -9,7 +9,7 @@ export const maxUserAudioFileSize = 50 * 1024 * 1024;
 export const defaultAudioTracks: AudioTrack[] = [
   {
     id: 'default-prabhupada-one-round',
-    title: 'Джапа Шрилы Прабхупады — 1 круг',
+    title: 'Джапа Шрилы Прабхупады',
     subtitle: '108 повторений маха-мантры',
     fileUrl: oneRoundAudioUrl,
     originalName: 'Джапа — 1 круг (108).mp3',
@@ -32,7 +32,7 @@ export const defaultAudioTracks: AudioTrack[] = [
   {
     id: 'default-prabhupada-seven-rounds',
     title: 'Совместная джапа — 7 кругов',
-    subtitle: 'Шрила Прабхупада · один круг около 6,5 минут',
+    subtitle: 'Шрила Прабхупада',
     fileUrl: sevenRoundsAudioUrl,
     originalName: 'Шрила Прабхупада — Совместная джапа 7 кругов.mp3',
     mimeType: 'audio/mpeg',

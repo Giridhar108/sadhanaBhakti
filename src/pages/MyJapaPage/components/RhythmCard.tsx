@@ -18,8 +18,8 @@ type RhythmDay = {
 const chart = {
   left: 42,
   right: 512,
-  top: 22,
-  bottom: 104,
+  top: 26,
+  bottom: 157,
 };
 
 const parseDateKey = (dateKey: string) => {
@@ -94,7 +94,7 @@ export function RhythmCard({
       <div className={styles.chartWrap}>
         <svg
           className={styles.chart}
-          viewBox="0 0 540 142"
+          viewBox="0 0 540 185"
           role="img"
           aria-label={`Прочитанные круги за последние пять дней. Дневная цель — ${dailyGoal} кругов.`}
         >
@@ -103,9 +103,6 @@ export function RhythmCard({
           <line className={styles.goalLine} x1={chart.left} y1={goalY} x2={chart.right} y2={goalY} />
           <text className={styles.scaleLabel} x={chart.left - 8} y={chart.top + 4} textAnchor="end">
             {maxRounds}
-          </text>
-          <text className={styles.scaleLabel} x={chart.left - 8} y={chart.bottom + 4} textAnchor="end">
-            0
           </text>
 
           {days.map((day, index) => {
@@ -118,17 +115,12 @@ export function RhythmCard({
                 <line className={styles.stem} x1={x} y1={chart.bottom} x2={x} y2={y} />
                 <circle className={styles.pointHalo} cx={x} cy={y} r="8" />
                 <circle className={styles.point} cx={x} cy={y} r="5" />
-                <text className={styles.value} x={x} y={Math.max(y - 12, 11)} textAnchor="middle">
+                <text className={styles.value} x={x} y={Math.max(y - 14, 17)} textAnchor="middle">
                   {day.rounds}
                 </text>
-                <text className={styles.dateLabel} x={x} y="126" textAnchor="middle">
+                <text className={styles.dateLabel} x={x} y="180" textAnchor="middle">
                   {day.label}
                 </text>
-                {day.isToday ? (
-                  <text className={styles.todayLabel} x={x} y="140" textAnchor="middle">
-                    Сегодня
-                  </text>
-                ) : null}
               </g>
             );
           })}
