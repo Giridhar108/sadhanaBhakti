@@ -28,6 +28,107 @@
     linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(248, 253, 246, 0.94));
 }
 
+.personalDataCard {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(245, 237, 249, 0.9), transparent 32%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(252, 247, 252, 0.94));
+}
+
+.personalDataCard .primaryButton {
+  background: var(--violet);
+}
+
+.avatarEditor {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(159, 114, 215, 0.18);
+  border-radius: var(--radius-lg);
+  background: rgba(245, 237, 249, 0.46);
+}
+
+.avatarPreview {
+  width: 76px;
+  height: 76px;
+  border: 3px solid rgba(255, 254, 250, 0.96);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(112, 73, 156, 0.13);
+}
+
+.avatarEditorText {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.avatarEditorText strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.avatarEditorText small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.avatarActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.avatarPickerButton,
+.avatarRemoveButton {
+  min-height: 34px;
+  margin: 0;
+  border-radius: 11px;
+  padding: 7px 11px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.avatarPickerButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  background: var(--violet);
+}
+
+.avatarPickerButton input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.avatarPickerButton:focus-within {
+  outline: 3px solid rgba(159, 114, 215, 0.18);
+  outline-offset: 2px;
+}
+
+.avatarRemoveButton {
+  border: 1px solid rgba(159, 114, 215, 0.22);
+  color: var(--violet-dark);
+  background: rgba(255, 254, 250, 0.74);
+}
+
 .themeCard {
   background:
     radial-gradient(circle at 92% 10%, rgba(245, 237, 249, 0.9), transparent 32%),
@@ -103,6 +204,20 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.personalDataGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.personalDataGrid input[type='date'] {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .practiceCard .formGrid .field span {
@@ -710,6 +825,17 @@
   user-select: none;
 }
 
+.cropImageAvatar {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+
 .zoomField {
   display: grid;
   gap: 8px;
@@ -746,6 +872,7 @@
 @media (max-width: 760px) {
   .settingsBoard,
   .formGrid,
+  .personalDataGrid,
   .japaStartBlock,
   .themeOptions,
   .actions,
@@ -775,6 +902,17 @@
   .cardIcon {
     width: 38px;
     height: 38px;
+  }
+
+  .avatarEditor {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .avatarPreview {
+    width: 64px;
+    height: 64px;
   }
 
   .verseItem {

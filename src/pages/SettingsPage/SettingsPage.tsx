@@ -11,6 +11,7 @@ import type { AuthUser } from '../../entities/user/model/types';
 import { endpoints } from '../../shared/api/endpoints';
 import { httpClient } from '../../shared/api/httpClient';
 import lotusSoft from '../../shared/assets/images/lotus-soft.png';
+import defaultAvatar from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
 import {
   readCalendarEvents,
   type CalendarEvent,
@@ -31,6 +32,7 @@ import {
   type CropOffset,
   type DragState,
   type EventForm,
+  type PersonalDataForm,
   type SettingsForm,
   type VerseForm,
   createCroppedCircle,
@@ -40,12 +42,15 @@ import {
   formatFileSize,
   getNextJapaGoalHistory,
   getTitleFromAudioFile,
+  personalDataSchema,
   readFileAsDataUrl,
   settingsSchema,
   toDateKey,
   verseSchema,
 } from './model/settingsPageModel';
 import styles from './SettingsPage.module.css';
+
+const maxAvatarFileSize = 10 * 1024 * 1024;
 
 export default function SettingsPage() {
   useDocumentTitle('Настройки - Садхана Бхакти');
@@ -54,13 +59,16 @@ export default function SettingsPage() {
   const queryClient = useQueryClient();
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
   const [dailyVerses, setDailyVerses] = useState<DailyVerse[]>(() => readDailyVerses());
+  const [authUser, setAuthUser] = useState(() => readAuthUser());
+  const [avatarDraft, setAvatarDraft] = useState<string | undefined>(() => readAuthUser()?.avatarUrl);
   const [verseImage, setVerseImage] = useState<string | undefined>();
   const [editingVerseId, setEditingVerseId] = useState<string | null>(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
+  const [cropTarget, setCropTarget] = useState<'avatar' | 'verse' | null>(null);
   const [cropZoom, setCropZoom] = useState(1);
   const [cropOffset, setCropOffset] = useState<CropOffset>({ x: 0, y: 0 });
-  const [authUser, setAuthUser] = useState(() => readAuthUser());
   const [practiceStatus, setPracticeStatus] = useState<string | null>(null);
+  const [personalDataStatus, setPersonalDataStatus] = useState<string | null>(null);
   const [verseStatus, setVerseStatus] = useState<string | null>(null);
   const [audioDrafts, setAudioDrafts] = useState<AudioUploadDraft[]>([]);
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
@@ -81,6 +89,18 @@ export default function SettingsPage() {
     },
   });
   const currentDailyGoal = watch('dailyGoal', savedJapaGoal);
+
+  const {
+    register: registerPersonalData,
+    handleSubmit: handlePersonalDataSubmit,
+    reset: resetPersonalData,
+    formState: { isSubmitting: isPersonalDataSubmitting },
+  } = useForm<PersonalDataForm>({
+    defaultValues: {
+      birthDate: authUser?.birthDate ?? '',
+      gender: authUser?.gender ?? '',
+    },
+  });
 
   const {
     register: registerEvent,
@@ -167,6 +187,37 @@ export default function SettingsPage() {
     }
   };
 
+  const onPersonalDataSubmit = async (data: PersonalDataForm) => {
+    const personalData = personalDataSchema.parse(data);
+    const currentUser = readAuthUser();
+
+    if (!currentUser) {
+      setPersonalDataStatus('Не удалось сохранить: пользователь не найден.');
+      return;
+    }
+
+    setPersonalDataStatus(null);
+
+    try {
+      const user = await httpClient.patch<AuthUser>(endpoints.users.me, {
+        avatarUrl: avatarDraft ?? null,
+        birthDate: personalData.birthDate || null,
+        gender: personalData.gender || null,
+      });
+
+      writeAuthUser(user);
+      setAuthUser(user);
+      setAvatarDraft(user.avatarUrl);
+      resetPersonalData({
+        birthDate: user.birthDate ?? '',
+        gender: user.gender ?? '',
+      });
+      setPersonalDataStatus('Личные данные сохранены.');
+    } catch {
+      setPersonalDataStatus('Не удалось сохранить личные данные. Проверь backend-сессию.');
+    }
+  };
+
   const saveSettingsPatch = async (settingsPatch: Partial<AuthUser['settings']>) => {
     const currentUser = readAuthUser();
 
@@ -236,6 +287,7 @@ export default function SettingsPage() {
 
     const image = await readFileAsDataUrl(file);
     setCropImage(image);
+    setCropTarget('verse');
     setCropZoom(1);
     setCropOffset({ x: 0, y: 0 });
     event.target.value = '';
@@ -272,6 +324,11 @@ export default function SettingsPage() {
     }
   };
 
+  const closeCropEditor = () => {
+    setCropImage(null);
+    setCropTarget(null);
+  };
+
   const saveCroppedImage = async () => {
     if (!cropImage) {
       return;
@@ -279,8 +336,13 @@ export default function SettingsPage() {
 
     const croppedImage = await createCroppedCircle(cropImage, cropZoom, cropOffset);
 
-    setVerseImage(croppedImage);
-    setCropImage(null);
+    if (cropTarget === 'avatar') {
+      setAvatarDraft(croppedImage);
+    } else {
+      setVerseImage(croppedImage);
+    }
+
+    closeCropEditor();
   };
 
   const onVerseSubmit = async (data: VerseForm) => {
@@ -399,6 +461,34 @@ export default function SettingsPage() {
       setAudioStatus(null);
     }
 
+    event.target.value = '';
+  };
+
+  const onAvatarImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setPersonalDataStatus('Выбери изображение для аватара.');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > maxAvatarFileSize) {
+      setPersonalDataStatus('Изображение должно быть не больше 10 МБ.');
+      event.target.value = '';
+      return;
+    }
+
+    const image = await readFileAsDataUrl(file);
+    setPersonalDataStatus(null);
+    setCropImage(image);
+    setCropTarget('avatar');
+    setCropZoom(1);
+    setCropOffset({ x: 0, y: 0 });
     event.target.value = '';
   };
 
@@ -531,6 +621,66 @@ export default function SettingsPage() {
             {isSubmitting ? 'Сохраняем...' : 'Сохранить практику'}
           </button>
           {practiceStatus ? <p className={styles.statusText}>{practiceStatus}</p> : null}
+        </form>
+
+        <form
+          className={`${styles.settingsCard} ${styles.personalDataCard}`}
+          onSubmit={handlePersonalDataSubmit(onPersonalDataSubmit)}
+        >
+          <SettingsCardHeader
+            icon="users"
+            title="Личные данные"
+            description="Дата рождения и пол в вашем личном профиле."
+            tone="violet"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.avatarEditor}>
+            <img
+              className={styles.avatarPreview}
+              src={avatarDraft || defaultAvatar}
+              alt="Предпросмотр аватара"
+            />
+            <div className={styles.avatarEditorText}>
+              <strong>Аватар профиля</strong>
+              <small>JPG, PNG или WebP, не больше 10 МБ.</small>
+              <div className={styles.avatarActions}>
+                <label className={styles.avatarPickerButton}>
+                  <input type="file" accept="image/*" onChange={onAvatarImageChange} />
+                  <span>{avatarDraft ? 'Изменить аватар' : 'Выбрать аватар'}</span>
+                </label>
+                {avatarDraft ? (
+                  <button
+                    className={styles.avatarRemoveButton}
+                    type="button"
+                    onClick={() => {
+                      setAvatarDraft(undefined);
+                      setPersonalDataStatus(null);
+                    }}
+                  >
+                    Убрать
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+          <div className={styles.personalDataGrid}>
+            <label className={styles.field}>
+              <span>Дата рождения</span>
+              <input type="date" max={toDateKey(new Date())} {...registerPersonalData('birthDate')} />
+            </label>
+            <label className={styles.field}>
+              <span>Пол</span>
+              <select className={styles.select} {...registerPersonalData('gender')}>
+                <option value="">Не указан</option>
+                <option value="male">Мужской</option>
+                <option value="female">Женский</option>
+              </select>
+            </label>
+          </div>
+          <button className={styles.primaryButton} type="submit" disabled={isPersonalDataSubmitting}>
+            {isPersonalDataSubmitting ? 'Сохраняем...' : 'Сохранить личные данные'}
+          </button>
+          {personalDataStatus ? <p className={styles.statusText}>{personalDataStatus}</p> : null}
         </form>
 
         <article className={`${styles.settingsCard} ${styles.audioSettingsCard} ${styles.wideCard}`}>
@@ -775,8 +925,13 @@ export default function SettingsPage() {
 
       {cropImage ? (
         <div className={styles.modalOverlay} role="presentation">
-          <div className={styles.cropModal} role="dialog" aria-modal="true" aria-label="Выбор круглой картинки">
-            <h2>Выбери кружок</h2>
+          <div
+            className={styles.cropModal}
+            role="dialog"
+            aria-modal="true"
+            aria-label={cropTarget === 'avatar' ? 'Кадрирование аватара' : 'Выбор круглой картинки'}
+          >
+            <h2>{cropTarget === 'avatar' ? 'Настрой аватар' : 'Выбери кружок'}</h2>
             <div
               className={styles.cropFrame}
               onPointerDown={onCropPointerDown}
@@ -785,7 +940,7 @@ export default function SettingsPage() {
               onPointerCancel={onCropPointerUp}
             >
               <img
-                className={styles.cropImage}
+                className={`${styles.cropImage} ${cropTarget === 'avatar' ? styles.cropImageAvatar : ''}`}
                 src={cropImage}
                 alt=""
                 draggable={false}
@@ -807,9 +962,9 @@ export default function SettingsPage() {
             </label>
             <div className={styles.actions}>
               <button className={styles.primaryButton} type="button" onClick={saveCroppedImage}>
-                Сохранить кружок
+                {cropTarget === 'avatar' ? 'Применить аватар' : 'Сохранить кружок'}
               </button>
-              <button className={styles.secondaryButton} type="button" onClick={() => setCropImage(null)}>
+              <button className={styles.secondaryButton} type="button" onClick={closeCropEditor}>
                 Отмена
               </button>
             </div>

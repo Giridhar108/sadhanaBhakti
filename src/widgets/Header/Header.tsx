@@ -1,12 +1,19 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import profile from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
+import defaultAvatar from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
 import focusIcon from '../../shared/assets/images/focus.png';
-import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
+import {
+  getUserDisplayName,
+  readAuthUser,
+  subscribeToAuthUserChange,
+} from '../../entities/user/model/auth';
 import styles from './Header.module.css';
 
 export function Header() {
-  const authUser = readAuthUser();
+  const [authUser, setAuthUser] = useState(() => readAuthUser());
   const displayName = getUserDisplayName(authUser);
+
+  useEffect(() => subscribeToAuthUserChange(() => setAuthUser(readAuthUser())), []);
 
   return (
     <header className={styles.topbar}>
@@ -21,7 +28,7 @@ export function Header() {
         </Link>
 
         <button className={styles.profile} type="button">
-          <img src={profile} alt={displayName} />
+          <img src={authUser?.avatarUrl || defaultAvatar} alt={displayName} />
         </button>
       </div>
     </header>

@@ -5,6 +5,8 @@ export type User = {
   avatarUrl?: string;
 };
 
+export type UserGender = 'male' | 'female';
+
 export type AuthPractice = 'japa' | 'books' | 'verses';
 
 export type AuthGoals = {
@@ -36,6 +38,8 @@ export type JapaGoalHistoryEntry = {
 
 export type AuthUser = User & {
   spiritualName: string;
+  birthDate: string | null;
+  gender: UserGender | null;
   practices: AuthPractice[];
   goals: AuthGoals;
   settings: {

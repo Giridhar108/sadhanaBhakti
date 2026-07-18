@@ -19,6 +19,7 @@ import {
 import { AudioPracticeCard, waveformBarsCount } from './components/AudioPracticeCard';
 import { JapaTodayCard } from './components/JapaTodayCard';
 import { KaliModal } from './components/KaliModal';
+import { LifeWeeksCard } from './components/LifeWeeksCard/LifeWeeksCard';
 import { OverallProgressCard } from './components/OverallProgressCard';
 import { ReflectionVerseCard } from './components/ReflectionVerseCard';
 import { RhythmCard } from './components/RhythmCard';
@@ -580,6 +581,12 @@ export default function MyJapaPage() {
             totalJapaProgress={totalJapaProgress}
             totalCompletedRounds={totalCompletedRounds}
             onOpenKaliModal={() => setIsKaliModalOpen(true)}
+          />
+
+          <LifeWeeksCard
+            birthDate={authUser?.birthDate ?? null}
+            goalDate={totalJapaProgress.targetDate}
+            gender={authUser?.gender ?? null}
           />
         </section>
       {isKaliModalOpen ? <KaliModal onClose={() => setIsKaliModalOpen(false)} /> : null}

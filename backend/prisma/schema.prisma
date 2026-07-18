@@ -17,6 +17,8 @@ model User {
   name          String
   spiritualName String        @default("")
   avatarUrl     String?
+  birthDate     String?
+  gender        String?
   provider      AuthProvider  @default(EMAIL)
   passwordHash  String?
   practices     String[]      @default(["japa", "books", "verses"])

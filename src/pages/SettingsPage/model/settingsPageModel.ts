@@ -33,6 +33,11 @@ export const settingsSchema = z.object({
   japaStartDate: z.string(),
 });
 
+export const personalDataSchema = z.object({
+  birthDate: z.string(),
+  gender: z.enum(['', 'male', 'female']),
+});
+
 export const eventSchema = z.object({
   date: z.string().min(10),
   title: z.string().trim().min(2),
@@ -45,6 +50,7 @@ export const verseSchema = z.object({
 });
 
 export type SettingsForm = z.infer<typeof settingsSchema>;
+export type PersonalDataForm = z.infer<typeof personalDataSchema>;
 export type EventForm = z.infer<typeof eventSchema>;
 export type VerseForm = z.infer<typeof verseSchema>;
 

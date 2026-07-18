@@ -99,6 +99,8 @@ function normalizeAuthUser(user: AuthUser | null) {
 
   return {
     ...user,
+    birthDate: user.birthDate ?? null,
+    gender: user.gender ?? null,
     settings: {
       ...defaultSettings,
       ...user.settings,

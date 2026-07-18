@@ -26,6 +26,8 @@ export type AuthUserDto = {
   id: string;
   name: string;
   spiritualName: string;
+  birthDate: string | null;
+  gender: 'male' | 'female' | null;
   email: string;
   avatarUrl?: string;
   provider: 'email';
@@ -57,6 +59,8 @@ export function toAuthUserDto(user: User): AuthUserDto {
     id: user.id,
     name: user.name,
     spiritualName: user.spiritualName,
+    birthDate: user.birthDate,
+    gender: user.gender as AuthUserDto['gender'],
     email: user.email,
     avatarUrl: user.avatarUrl ?? undefined,
     provider: user.provider.toLowerCase() as AuthUserDto['provider'],

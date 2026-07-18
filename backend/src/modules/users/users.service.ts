@@ -29,6 +29,9 @@ export class UsersService {
       data: {
         name: input.name,
         spiritualName: input.spiritualName,
+        avatarUrl: input.avatarUrl,
+        birthDate: input.birthDate,
+        gender: input.gender,
         practices: input.practices,
         japaRounds: input.goals?.japaRounds,
         readingPages: input.goals?.readingPages,
