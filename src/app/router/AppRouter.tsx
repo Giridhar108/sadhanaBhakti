@@ -16,6 +16,7 @@ const ComponentsPreviewPage = lazy(() =>
   })),
 );
 const MyJapaPage = lazy(() => import('../../pages/MyJapaPage/MyJapaPage'));
+const FocusModePage = lazy(() => import('../../pages/FocusModePage/FocusModePage'));
 const BooksPage = lazy(() => import('../../pages/BooksPage/BooksPage'));
 const VersesPage = lazy(() => import('../../pages/VersesPage/VersesPage'));
 const CalendarPage = lazy(() => import('../../pages/CalendarPage/CalendarPage'));
@@ -141,6 +142,7 @@ function RoutedContent() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
+        <Route path="/japa/focus" element={<FocusModePage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/auth/login" element={<AuthPage />} />
         <Route path="/auth/register" element={<AuthPage />} />

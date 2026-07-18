@@ -1,0 +1,46 @@
+.actions {
+  display: grid;
+  gap: 8px;
+  width: min(100%, 314px);
+  margin: 24px auto 0;
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.primaryButton,
+.secondaryButton {
+  height: 46px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border: 0;
+  color: #fff;
+  background: #8556d8;
+  box-shadow: 0 12px 22px rgba(137, 87, 210, 0.22);
+}
+
+.secondaryButton {
+  border: 2px solid #9d6ddb;
+  color: #8a5bd0;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: none;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 3px solid rgba(133, 86, 216, 0.24);
+  outline-offset: 3px;
+}

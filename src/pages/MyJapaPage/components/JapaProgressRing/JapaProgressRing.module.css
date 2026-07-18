@@ -1,0 +1,197 @@
+.progressCircle {
+  position: relative;
+  width: min(100%, 420px);
+  margin: 26px auto 0;
+  padding-top: 8px;
+}
+
+.progressRing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 390px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.progressRing::before,
+.progressRing::after {
+  position: absolute;
+  inset: 15px;
+  border: 2px solid rgba(159, 114, 215, 0.22);
+  border-radius: 50%;
+  clip-path: polygon(0 0, 29% 0, 29% 100%, 0 100%);
+  content: '';
+  pointer-events: none;
+}
+
+.progressRing::after {
+  clip-path: polygon(71% 0, 100% 0, 100% 100%, 71% 100%);
+}
+
+.progressSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.progressTrack,
+.progressValue {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 26;
+  transform: rotate(-90deg);
+  transform-origin: 160px 160px;
+}
+
+.progressTrack {
+  stroke: rgba(159, 114, 215, 0.12);
+}
+
+.progressValue {
+  stroke: #8556d8;
+  transition: stroke-dashoffset 260ms ease;
+}
+
+.progressArcText {
+  fill: #302646;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.progressMarker {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  border: 4px solid #fbf7f4;
+  border-radius: 50%;
+  background: #8556d8;
+  box-shadow: 0 8px 20px rgba(133, 86, 216, 0.22);
+  transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-161px);
+  transition: transform 260ms ease;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.progressMarker::after {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  content: '';
+}
+
+.progressMarker:focus-visible {
+  outline: 3px solid rgba(133, 86, 216, 0.3);
+  outline-offset: 5px;
+}
+
+.progressRing[data-dragging='true'] .progressMarker {
+  cursor: grabbing;
+  transition: none;
+}
+
+.progressRing[data-dragging='true'] .progressValue {
+  transition: none;
+}
+
+.progressCenter {
+  position: relative;
+  z-index: 1;
+  width: 234px;
+  height: 234px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.progressCenter strong {
+  color: #08132f;
+  font-size: 70px;
+  line-height: 0.92;
+  font-weight: 900;
+}
+
+.progressCenter strong span {
+  font-size: 38px;
+  font-weight: 800;
+}
+
+.progressCenter small {
+  margin-top: 8px;
+  color: #875bd6;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.progressCenter img {
+  width: 72px;
+  height: 46px;
+  margin-top: 18px;
+  object-fit: contain;
+  opacity: 0.78;
+}
+
+@media (max-width: 650px) {
+  .progressCircle {
+    margin-top: 16px;
+  }
+
+  .progressRing {
+    width: 300px;
+  }
+
+  .progressRing::before,
+  .progressRing::after {
+    inset: 12px;
+  }
+
+  .progressMarker {
+    width: 22px;
+    height: 22px;
+    border-width: 3px;
+    transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-124px);
+  }
+
+  .progressCenter {
+    width: 180px;
+    height: 180px;
+  }
+
+  .progressCenter strong {
+    font-size: 52px;
+  }
+
+  .progressCenter strong span {
+    font-size: 28px;
+  }
+
+  .progressCenter small {
+    font-size: 14px;
+  }
+
+  .progressCenter img {
+    width: 58px;
+    height: 36px;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .progressRing {
+    width: 274px;
+  }
+
+  .progressMarker {
+    transform: translate(-50%, -50%) rotate(var(--progress-angle)) translateY(-113px);
+  }
+}

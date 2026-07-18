@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import profile from '../../shared/assets/images/ShrilaPrabhupadaIcon.png';
 import notifications from '../../shared/assets/images/08_notifications.png';
 import { getUserDisplayName, readAuthUser } from '../../entities/user/model/auth';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './Header.module.css';
 
 export function Header() {
@@ -15,6 +17,12 @@ export function Header() {
       </div>
 
       <div className={styles.actions}>
+        <Link className={styles.focusMode} to="/japa/focus">
+          <Icon name="settings" />
+          <span>Фокус-режим</span>
+          <i aria-hidden="true" />
+        </Link>
+
         <button className={styles.iconBtn} type="button" aria-label="Уведомления">
           <img src={notifications} alt={displayName} />
           <span className={styles.dot} />

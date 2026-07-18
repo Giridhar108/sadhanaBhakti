@@ -1,0 +1,139 @@
+.player {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-self: center;
+  gap: 12px;
+  width: fit-content;
+  min-width: 0;
+  max-width: min(46vw, 520px);
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.player audio {
+  display: none;
+}
+
+.trackInfo {
+  min-width: 0;
+}
+
+.trackInfo strong {
+  display: block;
+  overflow: hidden;
+  color: #746b7c;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.controls button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  color: #8a858d;
+  background: transparent;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  color: #665f6c;
+  background: rgba(90, 80, 101, 0.06);
+  transform: none;
+}
+
+.controls button:focus-visible {
+  outline: 3px solid rgba(133, 86, 216, 0.22);
+  outline-offset: 2px;
+}
+
+.controls button:disabled {
+  cursor: default;
+  opacity: 0.36;
+}
+
+.controls button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.controls .playButton {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: #8a858d;
+  background: transparent;
+  box-shadow: none;
+}
+
+.controls .playButton:hover {
+  color: #665f6c;
+  background: rgba(90, 80, 101, 0.06);
+}
+
+.playButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 900px) {
+  .player {
+    max-width: min(48vw, 440px);
+  }
+}
+
+@media (max-width: 760px) {
+  .player {
+    max-width: calc(100vw - 28px);
+  }
+}
+
+@media (max-width: 520px) {
+  .player {
+    gap: 4px;
+    min-height: 40px;
+    padding: 4px 5px 4px 8px;
+  }
+
+  .trackInfo strong {
+    font-size: 15px;
+  }
+
+  .controls button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .controls .playButton {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 390px) {
+  .trackInfo {
+    display: none;
+  }
+
+  .player {
+    display: flex;
+    justify-content: center;
+  }
+}

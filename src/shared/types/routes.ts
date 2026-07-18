@@ -2,6 +2,7 @@ export type AppRoute =
   | '/'
   | '/components'
   | '/japa'
+  | '/japa/focus'
   | '/books'
   | '/verses'
   | '/calendar'

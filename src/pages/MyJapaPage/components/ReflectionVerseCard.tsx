@@ -2,9 +2,13 @@ import smallCow from '../../../shared/assets/images/smallCow.png';
 import { Icon } from '../../../shared/ui/Icon/Icon';
 import styles from './ReflectionVerseCard.module.css';
 
-export function ReflectionVerseCard() {
+type ReflectionVerseCardProps = {
+  className?: string;
+};
+
+export function ReflectionVerseCard({ className }: ReflectionVerseCardProps = {}) {
   return (
-    <article className={`${styles.card} ${styles.verseCard}`}>
+    <article className={`${styles.card} ${styles.verseCard}${className ? ` ${className}` : ''}`}>
       <div className={styles.cardHeader}>
         <h2>Стих дня размышления</h2>
         <Icon className={styles.headerIcon} name="book" />

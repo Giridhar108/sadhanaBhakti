@@ -26,6 +26,59 @@
   gap: 20px;
 }
 
+.focusMode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 148px;
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  color: #8a5bd0;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.focusMode svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  stroke-width: 2.2;
+}
+
+.focusMode i {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #8a5bd0;
+  box-shadow: none;
+}
+
+.focusMode:hover {
+  border-color: rgba(226, 194, 151, 0.74);
+  color: #794ac7;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.focusMode:focus-visible {
+  outline: 3px solid rgba(154, 101, 223, 0.2);
+  outline-offset: 3px;
+}
+
 .iconBtn {
   position: relative;
   width: 72.5px;
@@ -102,7 +155,21 @@
   }
 
   .actions {
-    gap: 4px;
+    gap: 8px;
+  }
+
+  .focusMode {
+    min-width: 54px;
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .focusMode span,
+  .focusMode i {
+    display: none;
   }
 
   .iconBtn,
@@ -126,6 +193,10 @@
 }
 
 @media (max-width: 480px) {
+  .focusMode {
+    display: none;
+  }
+
   .iconBtn {
     display: none;
   }
