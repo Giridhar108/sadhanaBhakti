@@ -215,9 +215,34 @@
 }
 
 .personalDataGrid input[type='date'] {
+  display: block;
   box-sizing: border-box;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  inline-size: 100%;
+  overflow: hidden;
+}
+
+.selectField::after {
+  position: absolute;
+  right: 17px;
+  bottom: 19px;
+  z-index: 2;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--text);
+  border-bottom: 2px solid var(--text);
+  content: '';
+  pointer-events: none;
+  transform: rotate(45deg);
+}
+
+.selectField .select {
+  padding-right: 52px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: none;
 }
 
 .practiceCard .formGrid .field span {
@@ -253,6 +278,16 @@
   min-width: 0;
   max-width: 100%;
   inline-size: 100%;
+}
+
+.eventForm .field input[type='date'] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  inline-size: 100%;
+  overflow: hidden;
 }
 
 .field span,

@@ -7,6 +7,7 @@ import versesIcon from '../../shared/assets/images/04_verses.png';
 import calendarIcon from '../../shared/assets/images/05_calendar.png';
 import settingsIcon from '../../shared/assets/images/07_settings.png';
 import friendsMaleIcon from '../../shared/assets/images/friendsMale.png';
+import friendsFemaleIcon from '../../shared/assets/images/friendFamale.png';
 import japaIconMobile from '../../shared/assets/images/japa.png';
 import menu from '../../shared/assets/images/menu.png';
 import settings from '../../shared/assets/images/settings.png';
@@ -14,6 +15,7 @@ import lotusLogo from '../../shared/assets/images/sadhanaBhakti.png';
 import menuHeader from '../../shared/assets/images/sadhana_bhakti_header_argb.png';
 import menuOrnamentLeft from '../../shared/assets/images/ornament2.png';
 import menuOrnamentRight from '../../shared/assets/images/ornament2.png';
+import { readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
 import { Icon, type IconName } from '../../shared/ui/Icon/Icon';
 import { GoalReminderCard } from './GoalReminderCard';
 import styles from './Sidebar.module.css';
@@ -29,7 +31,7 @@ type NavItem = {
   href: string;
 };
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { label: 'Главная', image: homeIcon, href: '/' },
   { label: 'Джапа', image: japaIcon, href: '/japa' },
   { label: 'Книги', image: booksIcon, href: '/books' },
@@ -41,9 +43,14 @@ const navItems: NavItem[] = [
 
 export function Sidebar({ isStatic = false }: SidebarProps) {
   const location = useLocation();
+  const [authUser, setAuthUser] = useState(() => readAuthUser());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
+  const friendsIcon = authUser?.gender === 'female' ? friendsFemaleIcon : friendsMaleIcon;
+  const navItems = baseNavItems.map((item) => (
+    item.href === '/profile' ? { ...item, image: friendsIcon } : item
+  ));
 
   const openMenu = () => {
     if (closeTimerRef.current) {
@@ -69,6 +76,8 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
   };
   const featuredMenuItems = navItems.slice(0, 2);
   const compactMenuItems = navItems.slice(2);
+
+  useEffect(() => subscribeToAuthUserChange(() => setAuthUser(readAuthUser())), []);
 
   useEffect(() => {
     if (!isMenuOpen) {

@@ -668,7 +668,7 @@ export default function SettingsPage() {
               <span>Дата рождения</span>
               <input type="date" max={toDateKey(new Date())} {...registerPersonalData('birthDate')} />
             </label>
-            <label className={styles.field}>
+            <label className={`${styles.field} ${styles.selectField}`}>
               <span>Пол</span>
               <select className={styles.select} {...registerPersonalData('gender')}>
                 <option value="">Не указан</option>
