@@ -115,6 +115,7 @@
   position: relative;
   z-index: 1;
   display: grid;
+  min-width: 0;
   gap: 10px;
   padding: 12px;
   border: 1px solid rgba(132, 185, 122, 0.2);
@@ -126,7 +127,17 @@
   position: relative;
   z-index: 1;
   display: grid;
+  min-width: 0;
   gap: 7px;
+}
+
+.japaStartBlock .field input[type='date'] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  inline-size: 100%;
 }
 
 .field span,

@@ -57,40 +57,6 @@
   outline-offset: 3px;
 }
 
-.iconBtn {
-  position: relative;
-  width: 72.5px;
-  height: 72.5px;
-  border: 0;
-  background: transparent;
-  display: grid;
-  place-items: center;
-  color: #201927;
-}
-
-.iconBtn svg {
-  width: 30px;
-  height: 30px;
-}
-
-.iconBtn img {
-  width: 67.5px;
-  height: 67.5px;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-}
-
-.dot {
-  position: absolute;
-  top: 12.5px;
-  right: 15px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--danger);
-  border: 2.5px solid #fff;
-}
-
 .profile {
   display: flex;
   align-items: center;
@@ -150,7 +116,6 @@
     height: 52px;
   }
 
-  .iconBtn,
   .profile {
     width: 54px;
     height: 54px;
@@ -158,23 +123,14 @@
     padding: 0;
   }
 
-  .iconBtn img,
   .profile img {
     width: 52px;
     height: 52px;
   }
 
-  .dot {
-    top: 7px;
-    right: 7px;
-  }
 }
 
 @media (max-width: 480px) {
-  .iconBtn {
-    display: none;
-  }
-
   .topbar p {
     font-size: 13px;
   }
