@@ -99,7 +99,7 @@
   opacity: 0.25;
 }
 
-.quote > span {
+.quote>span {
   position: absolute;
   top: 8px;
   left: 22px;
@@ -400,7 +400,7 @@
     border-radius: 13px;
   }
 
-  .quote > span {
+  .quote>span {
     left: 16px;
     font-size: 40px;
   }
@@ -472,28 +472,28 @@
 
   .heroCopy p {
     font-size: 13px;
+
+    .quote {
+      padding: 14px 14px 14px 38px;
+    }
+
+    .quote blockquote {
+      font-size: 13px;
+    }
+
+    .teasers {
+      width: min(100%, 224px);
+    }
   }
 
-  .quote {
-    padding: 14px 14px 14px 38px;
-  }
+  @media (max-height: 900px) and (min-width: 1181px) {
+    .leftPanel {
+      min-height: 680px;
+      padding-bottom: 74px;
+    }
 
-  .quote blockquote {
-    font-size: 13px;
-  }
-
-  .teasers {
-    width: min(100%, 224px);
-  }
-}
-
-@media (max-height: 900px) and (min-width: 1181px) {
-  .leftPanel {
-    min-height: 680px;
-    padding-bottom: 74px;
-  }
-
-  .heroCopy h1 {
-    font-size: 44px;
+    .heroCopy h1 {
+      font-size: 44px;
+    }
   }
 }
