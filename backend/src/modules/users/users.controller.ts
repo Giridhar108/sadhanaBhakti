@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -15,6 +15,11 @@ type AuthenticatedRequest = Request & {
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  getCommunity(@Query('date') date?: string) {
+    return this.usersService.findCommunity(date);
+  }
 
   @Get('me')
   async getMe(@Req() request: AuthenticatedRequest) {

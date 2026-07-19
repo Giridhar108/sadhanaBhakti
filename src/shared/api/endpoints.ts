@@ -6,6 +6,7 @@ export const endpoints = {
     refresh: '/auth/refresh',
   },
   users: {
+    community: '/users',
     me: '/users/me',
   },
   japa: {

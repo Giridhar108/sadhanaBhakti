@@ -50,6 +50,18 @@ export type AuthUserDto = {
   isOnboarded: boolean;
 };
 
+export type FriendSummaryDto = {
+  id: string;
+  name: string;
+  spiritualName: string;
+  avatarUrl?: string;
+  gender: 'male' | 'female' | null;
+  todayRounds: number;
+  dailyGoalRounds: number;
+  totalRounds: number;
+  goalDate: string | null;
+};
+
 export function toAuthUserDto(user: User): AuthUserDto {
   const calendarEvents = Array.isArray(user.calendarEvents) ? user.calendarEvents : [];
   const dailyVerses = Array.isArray(user.dailyVerses) ? user.dailyVerses : [];
