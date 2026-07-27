@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import {
   getReviewDateLabel,
+  getVerseLines,
+  getVerseProgress,
   type Verse,
   VerseReference,
   VerseStatusBadge,
@@ -13,6 +15,9 @@ type VerseCardProps = {
 };
 
 export function VerseCard({ verse, onToggleFavorite }: VerseCardProps) {
+  const lines = getVerseLines(verse.sanskritCyrillic);
+  const progress = getVerseProgress(verse);
+
   return (
     <article className={styles.card}>
       <header>
@@ -30,24 +35,24 @@ export function VerseCard({ verse, onToggleFavorite }: VerseCardProps) {
 
       <Link className={styles.bodyLink} to={`/verses/${verse.id}`}>
         <p className={styles.sanskrit}>
-          {verse.sanskritCyrillicLines.slice(0, 2).map((line) => (
+          {lines.slice(0, 2).map((line) => (
             <span key={line}>{line}</span>
           ))}
         </p>
         <VerseStatusBadge status={verse.status} />
         <div className={styles.progressMeta}>
-          <strong>{verse.progress}%</strong>
+          <strong>{progress}%</strong>
           <span>Следующее повторение: {getReviewDateLabel(verse.nextReviewAt)}</span>
         </div>
         <div
           className={styles.progressTrack}
           role="progressbar"
-          aria-label={`Прогресс стиха ${verse.sourceTitle} ${verse.reference}`}
+          aria-label={`Прогресс стиха ${verse.bookTitle} ${verse.verseNumber}`}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={verse.progress}
+          aria-valuenow={progress}
         >
-          <span style={{ width: `${verse.progress}%` }} />
+          <span style={{ width: `${progress}%` }} />
         </div>
       </Link>
     </article>

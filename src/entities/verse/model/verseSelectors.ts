@@ -1,45 +1,49 @@
-import type { Verse } from './types';
+import type { UserVerse } from './types';
 
 export const getTodayDateKey = () => {
   const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
 
-  return `${year}-${month}-${day}`;
+  return [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
 };
 
-export const getVerseById = (verses: Verse[], verseId: string | undefined) =>
+export const getVerseById = (verses: UserVerse[], verseId: string | undefined) =>
   verses.find((verse) => verse.id === verseId);
 
-export const getUserVerses = (verses: Verse[], userVerseIds: string[]) =>
-  verses.filter((verse) => userVerseIds.includes(verse.id));
+export const getVerseLines = (value: string) =>
+  value ? value.split('\n') : [];
 
-export const getTodayVerses = (verses: Verse[], userVerseIds: string[]) => {
+export const getVerseProgress = (verse: UserVerse) =>
+  Math.round((verse.sanskritProgress + verse.translationProgress) / 2);
+
+export const getTodayVerses = (verses: UserVerse[]) => {
   const today = getTodayDateKey();
 
-  return getUserVerses(verses, userVerseIds).filter(
+  return verses.filter(
     (verse) =>
       verse.status === 'learning'
+      || verse.status === 'review'
       || verse.status === 'needsReview'
       || Boolean(verse.nextReviewAt && verse.nextReviewAt <= today),
   );
 };
 
-export const getVerseSearchText = (verse: Verse) =>
+export const getVerseSearchText = (verse: UserVerse) =>
   [
-    verse.reference,
-    verse.sourceTitle,
-    verse.chapterTitle,
-    ...verse.sanskritCyrillicLines,
-    ...verse.translationLines,
-    verse.fullTranslation,
+    verse.bookTitle,
+    verse.chapter,
+    verse.verseNumber,
+    verse.sanskritCyrillic,
+    verse.translation,
   ]
     .filter(Boolean)
     .join(' ')
     .toLocaleLowerCase('ru-RU');
 
-export const getReviewDateLabel = (dateKey?: string) => {
+export const getReviewDateLabel = (dateKey: string | null) => {
   if (!dateKey) {
     return 'после первого занятия';
   }

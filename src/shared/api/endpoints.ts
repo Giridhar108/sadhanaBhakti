@@ -14,6 +14,10 @@ export const endpoints = {
     sessions: '/japa/sessions',
     today: '/japa/today',
   },
+  verses: {
+    root: '/me/verses',
+    item: (verseId: string) => `/me/verses/${verseId}`,
+  },
   audio: {
     root: '/audio',
     file: (trackId: string) => `/audio/${trackId}/file`,

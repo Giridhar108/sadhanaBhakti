@@ -1,4 +1,4 @@
-import type { Verse } from '../../../entities/verse';
+import { getVerseLines, type Verse } from '../../../entities/verse';
 import { Card } from '../../../shared/ui/Card/Card';
 import { Icon } from '../../../shared/ui/Icon/Icon';
 import { VerseLines } from '../VerseLines/VerseLines';
@@ -20,21 +20,14 @@ export function VerseLearningIntro({ verse, onStart }: VerseLearningIntroProps) 
 
       <VerseLines
         title="Санскрит русскими буквами"
-        lines={verse.sanskritCyrillicLines}
+        lines={getVerseLines(verse.sanskritCyrillic)}
         variant="sanskrit"
       />
       <VerseLines
         title="Перевод"
-        lines={verse.translationLines}
-        fallback={verse.fullTranslation}
+        lines={getVerseLines(verse.translation)}
         variant="translation"
       />
-
-      {verse.audioUrl ? (
-        <audio className={styles.audio} controls src={verse.audioUrl}>
-          Браузер не поддерживает воспроизведение аудио.
-        </audio>
-      ) : null}
 
       <button className={styles.primaryButton} type="button" onClick={onStart}>
         <Icon name="lotus" />

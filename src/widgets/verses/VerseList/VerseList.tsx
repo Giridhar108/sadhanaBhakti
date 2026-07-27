@@ -13,7 +13,7 @@ export function VerseList({
   verses,
   onToggleFavorite,
   emptyTitle = 'Стихов пока нет',
-  emptyText = 'Добавь стих из каталога, чтобы начать спокойное изучение.',
+  emptyText = 'Добавь свой первый стих, чтобы начать спокойное изучение.',
 }: VerseListProps) {
   if (verses.length === 0) {
     return (

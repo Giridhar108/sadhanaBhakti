@@ -39,6 +39,7 @@ model User {
   refreshTokens RefreshToken[]
   audioTracks   AudioTrack[]
   japaDailyProgress JapaDailyProgress[]
+  userVerses    UserVerse[]
 }
 
 model RefreshToken {
@@ -83,4 +84,27 @@ model JapaDailyProgress {
 
   @@unique([userId, date])
   @@index([userId, date])
+}
+
+model UserVerse {
+  id                  String   @id @default(cuid())
+  userId              String
+  bookTitle           String
+  chapter             String?
+  verseNumber         String
+  sanskritCyrillic    String
+  translation         String
+  status              String   @default("new")
+  sanskritProgress    Int      @default(0)
+  translationProgress Int      @default(0)
+  repetitionLevel     Int      @default(0)
+  nextReviewAt        String?
+  lastReviewedAt      String?
+  isFavorite          Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, nextReviewAt])
 }

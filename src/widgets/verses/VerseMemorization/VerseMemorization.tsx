@@ -3,6 +3,7 @@ import type {
   VerseLearningSession,
   VerseLearningView,
 } from '../../../entities/verse';
+import { getVerseLines } from '../../../entities/verse';
 import { Card } from '../../../shared/ui/Card/Card';
 import { VerseTextSwitcher } from '../VerseTextSwitcher/VerseTextSwitcher';
 import styles from './VerseMemorization.module.css';
@@ -24,13 +25,10 @@ export function VerseMemorization({
   onToggleVisibility,
   onFinish,
 }: VerseMemorizationProps) {
-  const translationLines = verse.translationLines.length > 0
-    ? verse.translationLines
-    : verse.fullTranslation
-      ? [verse.fullTranslation]
-      : [];
+  const translationLines = getVerseLines(verse.translation);
+  const sanskritLines = getVerseLines(verse.sanskritCyrillic);
   const lines = session.activeView === 'sanskrit'
-    ? verse.sanskritCyrillicLines
+    ? sanskritLines
     : translationLines;
   const currentLineIndex = session.activeView === 'sanskrit'
     ? session.progressState.sanskritLineIndex
@@ -40,8 +38,8 @@ export function VerseMemorization({
     : session.progressState.translationHiddenLines;
   const currentLine = lines[currentLineIndex];
   const isHidden = hiddenLines.includes(currentLineIndex);
-  const sanskritComplete = verse.sanskritCyrillicLines.length === 0
-    || session.progressState.sanskritVisitedLines.length >= verse.sanskritCyrillicLines.length;
+  const sanskritComplete = sanskritLines.length === 0
+    || session.progressState.sanskritVisitedLines.length >= sanskritLines.length;
   const translationComplete = translationLines.length === 0
     || session.progressState.translationVisitedLines.length >= translationLines.length;
   const canComplete = sanskritComplete && translationComplete;

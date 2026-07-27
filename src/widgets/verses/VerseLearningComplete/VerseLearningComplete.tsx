@@ -1,5 +1,6 @@
 import {
   getReviewDateLabel,
+  getVerseProgress,
   type Verse,
   type VerseConfidence,
 } from '../../../entities/verse';
@@ -40,7 +41,7 @@ export function VerseLearningComplete({
         <Icon name="lotus" />
       </div>
       <span>Практика завершена</span>
-      <h1>Ты повторил {verse.sourceTitle} {verse.reference}</h1>
+      <h1>Ты повторил {verse.bookTitle} {verse.verseNumber}</h1>
 
       {!confidence ? (
         <>
@@ -63,7 +64,7 @@ export function VerseLearningComplete({
         <div className={styles.result}>
           <div>
             <span>Новый прогресс</span>
-            <strong>{verse.progress}%</strong>
+            <strong>{getVerseProgress(verse)}%</strong>
           </div>
           <p>Следующее повторение — {getReviewDateLabel(verse.nextReviewAt)}</p>
           <button type="button" onClick={onReturn}>

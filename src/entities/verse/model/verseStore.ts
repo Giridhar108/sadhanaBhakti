@@ -1,27 +1,28 @@
 import { create } from 'zustand';
+import { readAuthUser } from '../../user/model/auth';
+import { verseApi, type VerseProgressPatch } from '../api/verseApi';
 import { calculateNextReview } from '../lib/calculateNextReview';
-import { getTodayDateKey } from './verseSelectors';
-import { verseCatalog } from './verseCatalog';
+import { getTodayDateKey, getVerseLines } from './verseSelectors';
 import type {
-  Verse,
+  UserVerse,
   VerseConfidence,
+  VerseEditorValues,
   VerseLearningProgressState,
   VerseLearningSession,
-  VerseLearningStep,
   VerseLearningView,
-  VerseStatus,
   VerseStore,
 } from './types';
 
-const storageKey = 'hare-krishna-verses';
+const storageKey = 'hare-krishna-user-verses';
+const storageOwnerId = readAuthUser()?.id ?? 'preview';
 
-type PersistedVerseState = {
-  verses: Verse[];
-  userVerseIds: string[];
+type PersistedState = {
+  ownerId: string;
+  verses: UserVerse[];
   currentSession: VerseLearningSession | null;
 };
 
-const defaultProgressState: VerseLearningProgressState = {
+const emptyProgressState: VerseLearningProgressState = {
   sanskritLineIndex: 0,
   translationLineIndex: 0,
   sanskritVisitedLines: [],
@@ -30,136 +31,41 @@ const defaultProgressState: VerseLearningProgressState = {
   translationHiddenLines: [],
 };
 
-const statusValues: VerseStatus[] = ['new', 'learning', 'review', 'learned', 'needsReview'];
-const stepValues: VerseLearningStep[] = ['intro', 'memorization', 'complete'];
-const viewValues: VerseLearningView[] = ['sanskrit', 'translation'];
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-
-const isNumberArray = (value: unknown): value is number[] =>
-  Array.isArray(value) && value.every((item) => Number.isInteger(item) && item >= 0);
-
-const isStoredVerse = (value: unknown): value is Verse =>
-  isRecord(value)
-  && typeof value.id === 'string'
-  && statusValues.includes(value.status as VerseStatus)
-  && typeof value.progress === 'number'
-  && value.progress >= 0
-  && value.progress <= 100
-  && typeof value.isFavorite === 'boolean';
-
-const isProgressState = (value: unknown): value is VerseLearningProgressState =>
-  isRecord(value)
-  && Number.isInteger(value.sanskritLineIndex)
-  && Number.isInteger(value.translationLineIndex)
-  && isNumberArray(value.sanskritVisitedLines)
-  && isNumberArray(value.translationVisitedLines)
-  && isNumberArray(value.sanskritHiddenLines)
-  && isNumberArray(value.translationHiddenLines);
-
-const isLearningSession = (value: unknown): value is VerseLearningSession =>
-  isRecord(value)
-  && typeof value.verseId === 'string'
-  && stepValues.includes(value.step as VerseLearningStep)
-  && viewValues.includes(value.activeView as VerseLearningView)
-  && Number.isInteger(value.currentLineIndex)
-  && isNumberArray(value.revealedLineIndexes)
-  && isProgressState(value.progressState);
-
-const mergeWithCatalog = (storedVerses: Verse[]) =>
-  verseCatalog.map((catalogVerse) => {
-    const storedVerse = storedVerses.find((verse) => verse.id === catalogVerse.id);
-
-    if (!storedVerse) {
-      return catalogVerse;
-    }
-
-    return {
-      ...catalogVerse,
-      status: storedVerse.status,
-      progress: Math.min(100, Math.max(0, storedVerse.progress)),
-      nextReviewAt: storedVerse.nextReviewAt,
-      isFavorite: storedVerse.isFavorite,
-    };
-  });
-
-const defaultPersistedState: PersistedVerseState = {
-  verses: verseCatalog,
-  userVerseIds: ['bhagavad-gita-2-27'],
-  currentSession: null,
-};
-
-const readPersistedState = (): PersistedVerseState => {
-  if (typeof window === 'undefined') {
-    return defaultPersistedState;
-  }
+const readPersistedState = (): Pick<VerseStore, 'verses' | 'currentSession'> => {
+  if (typeof window === 'undefined') return { verses: [], currentSession: null };
 
   try {
-    const rawValue = window.localStorage.getItem(storageKey);
-
-    if (!rawValue) {
-      return defaultPersistedState;
+    const parsed = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null') as PersistedState | null;
+    if (!parsed || parsed.ownerId !== storageOwnerId || !Array.isArray(parsed.verses)) {
+      return { verses: [], currentSession: null };
     }
-
-    const parsedValue: unknown = JSON.parse(rawValue);
-
-    if (!isRecord(parsedValue)) {
-      return defaultPersistedState;
-    }
-
-    const storedVerses = Array.isArray(parsedValue.verses)
-      ? parsedValue.verses.filter(isStoredVerse)
-      : [];
-    const knownVerseIds = new Set(verseCatalog.map((verse) => verse.id));
-    const userVerseIds = Array.isArray(parsedValue.userVerseIds)
-      ? parsedValue.userVerseIds.filter(
-        (verseId): verseId is string => typeof verseId === 'string' && knownVerseIds.has(verseId),
-      )
-      : defaultPersistedState.userVerseIds;
-    const currentSession = isLearningSession(parsedValue.currentSession)
-      && knownVerseIds.has(parsedValue.currentSession.verseId)
-      ? parsedValue.currentSession
-      : null;
-
-    return {
-      verses: mergeWithCatalog(storedVerses),
-      userVerseIds,
-      currentSession,
-    };
+    return { verses: parsed.verses, currentSession: parsed.currentSession ?? null };
   } catch {
-    return defaultPersistedState;
+    return { verses: [], currentSession: null };
   }
 };
 
 const writePersistedState = (state: VerseStore) => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
+  if (typeof window === 'undefined') return;
   try {
-    const persistedState: PersistedVerseState = {
+    window.localStorage.setItem(storageKey, JSON.stringify({
+      ownerId: storageOwnerId,
       verses: state.verses,
-      userVerseIds: state.userVerseIds,
       currentSession: state.currentSession,
-    };
-
-    window.localStorage.setItem(storageKey, JSON.stringify(persistedState));
+    } satisfies PersistedState));
   } catch {
-    // Обучение продолжает работать в памяти, если хранилище браузера недоступно.
+    // Состояние продолжает работать в памяти, если хранилище недоступно.
   }
 };
 
 const addUniqueIndex = (indexes: number[], index: number) =>
   indexes.includes(index) ? indexes : [...indexes, index].sort((first, second) => first - second);
-
 const toggleIndex = (indexes: number[], index: number) =>
   indexes.includes(index) ? indexes.filter((item) => item !== index) : [...indexes, index];
 
 const addDays = (dateKey: string, days: number) => {
   const date = new Date(`${dateKey}T12:00:00`);
   date.setDate(date.getDate() + days);
-
   return [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -167,32 +73,27 @@ const addDays = (dateKey: string, days: number) => {
   ].join('-');
 };
 
-const getLinesForView = (verse: Verse, view: VerseLearningView) => {
-  if (view === 'sanskrit') {
-    return verse.sanskritCyrillicLines;
-  }
-
-  return verse.translationLines.length > 0
-    ? verse.translationLines
-    : verse.fullTranslation
-      ? [verse.fullTranslation]
-      : [];
+const buildLocalVerse = (values: VerseEditorValues): UserVerse => {
+  const now = new Date().toISOString();
+  return {
+    id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `verse-${Date.now()}`,
+    userId: storageOwnerId,
+    bookTitle: values.bookTitle,
+    chapter: values.chapter || null,
+    verseNumber: values.verseNumber,
+    sanskritCyrillic: values.sanskritCyrillic,
+    translation: values.translation,
+    status: 'new',
+    sanskritProgress: 0,
+    translationProgress: 0,
+    repetitionLevel: 0,
+    nextReviewAt: null,
+    lastReviewedAt: null,
+    isFavorite: false,
+    createdAt: now,
+    updatedAt: now,
+  };
 };
-
-const getSessionViewState = (
-  progressState: VerseLearningProgressState,
-  view: VerseLearningView,
-) => (
-  view === 'sanskrit'
-    ? {
-        lineIndex: progressState.sanskritLineIndex,
-        visitedLines: progressState.sanskritVisitedLines,
-      }
-    : {
-        lineIndex: progressState.translationLineIndex,
-        visitedLines: progressState.translationVisitedLines,
-      }
-);
 
 const buildSession = (verseId: string): VerseLearningSession => ({
   verseId,
@@ -200,119 +101,125 @@ const buildSession = (verseId: string): VerseLearningSession => ({
   activeView: 'sanskrit',
   currentLineIndex: 0,
   revealedLineIndexes: [],
-  progressState: { ...defaultProgressState },
+  progressState: { ...emptyProgressState },
 });
 
-const getNextProgress = (currentProgress: number, confidence: VerseConfidence) => {
-  const progressChange: Record<VerseConfidence, number> = {
-    forgot: -10,
-    hard: 8,
-    remembered: 18,
-    easy: 28,
-  };
+const getLines = (verse: UserVerse, view: VerseLearningView) =>
+  getVerseLines(view === 'sanskrit' ? verse.sanskritCyrillic : verse.translation);
 
-  return Math.min(100, Math.max(0, currentProgress + progressChange[confidence]));
+const patchRemoteVerse = (verseId: string, patch: VerseProgressPatch) => {
+  if (readAuthUser()) verseApi.update(verseId, patch).catch(() => undefined);
 };
 
-const getNextStatus = (progress: number, confidence: VerseConfidence): VerseStatus => {
-  if (confidence === 'forgot') {
-    return 'needsReview';
-  }
+const initialState = readPersistedState();
 
-  if (progress >= 100) {
-    return 'learned';
-  }
-
-  if (progress >= 75) {
-    return 'review';
-  }
-
-  return 'learning';
-};
-
-const hydratedState = readPersistedState();
-
-export const useVerseStore = create<VerseStore>((set) => {
+export const useVerseStore = create<VerseStore>((set, get) => {
   const updatePersisted = (updater: (state: VerseStore) => VerseStore) => {
     set((state) => {
       const nextState = updater(state);
       writePersistedState(nextState);
-
       return nextState;
     });
   };
 
   return {
-    ...hydratedState,
-    addVerseToLearning: (verseId) => {
-      updatePersisted((state) => {
-        if (!state.verses.some((verse) => verse.id === verseId)) {
-          return state;
-        }
-
-        return {
+    ...initialState,
+    isLoading: false,
+    error: null,
+    loadVerses: () => {
+      if (!readAuthUser()) {
+        set({ isLoading: false, error: null });
+        return Promise.resolve();
+      }
+      set({ isLoading: true, error: null });
+      return verseApi.getAll()
+        .then((verses) => {
+          set((state) => {
+            const nextState = { ...state, verses, isLoading: false, error: null };
+            writePersistedState(nextState);
+            return nextState;
+          });
+        })
+        .catch(() => set({ isLoading: false, error: 'Не удалось загрузить стихи. Попробуй обновить страницу.' }));
+    },
+    createVerse: (values) => {
+      const request = readAuthUser() ? verseApi.create(values) : Promise.resolve(buildLocalVerse(values));
+      return request.then((verse) => {
+        updatePersisted((state) => ({
           ...state,
-          userVerseIds: state.userVerseIds.includes(verseId)
-            ? state.userVerseIds
-            : [...state.userVerseIds, verseId],
-          verses: state.verses.map((verse) =>
-            verse.id === verseId && verse.status === 'new'
-              ? { ...verse, status: 'learning', nextReviewAt: getTodayDateKey() }
-              : verse,
-          ),
-        };
+          verses: [verse, ...state.verses.filter((item) => item.id !== verse.id)],
+        }));
+        return verse;
+      });
+    },
+    updateVerse: (verseId, values) => {
+      const currentVerse = get().verses.find((verse) => verse.id === verseId);
+      if (!currentVerse) return Promise.reject(new Error('Стих не найден'));
+      const request = readAuthUser()
+        ? verseApi.update(verseId, values)
+        : Promise.resolve({
+            ...currentVerse,
+            ...values,
+            chapter: values.chapter || null,
+            updatedAt: new Date().toISOString(),
+          });
+      return request.then((verse) => {
+        updatePersisted((state) => ({
+          ...state,
+          verses: state.verses.map((item) => item.id === verseId ? verse : item),
+        }));
+        return verse;
+      });
+    },
+    deleteVerse: (verseId) => {
+      const request = readAuthUser() ? verseApi.delete(verseId).then(() => undefined) : Promise.resolve();
+      return request.then(() => {
+        updatePersisted((state) => ({
+          ...state,
+          verses: state.verses.filter((verse) => verse.id !== verseId),
+          currentSession: state.currentSession?.verseId === verseId ? null : state.currentSession,
+        }));
       });
     },
     toggleVerseFavorite: (verseId) => {
+      const verse = get().verses.find((item) => item.id === verseId);
+      if (!verse) return;
+      const isFavorite = !verse.isFavorite;
       updatePersisted((state) => ({
         ...state,
-        verses: state.verses.map((verse) =>
-          verse.id === verseId ? { ...verse, isFavorite: !verse.isFavorite } : verse,
-        ),
+        verses: state.verses.map((item) => item.id === verseId ? { ...item, isFavorite } : item),
       }));
+      patchRemoteVerse(verseId, { isFavorite });
     },
     startLearningSession: (verseId) => {
-      updatePersisted((state) => {
-        if (!state.verses.some((verse) => verse.id === verseId)) {
-          return state;
-        }
-
-        return {
-          ...state,
-          userVerseIds: state.userVerseIds.includes(verseId)
-            ? state.userVerseIds
-            : [...state.userVerseIds, verseId],
-          verses: state.verses.map((verse) =>
-            verse.id === verseId && verse.status === 'new'
-              ? { ...verse, status: 'learning', nextReviewAt: getTodayDateKey() }
-              : verse,
-          ),
-          currentSession: buildSession(verseId),
-        };
-      });
+      const verse = get().verses.find((item) => item.id === verseId);
+      if (!verse) return;
+      const status = verse.status === 'new' ? 'learning' : verse.status;
+      updatePersisted((state) => ({
+        ...state,
+        verses: state.verses.map((item) => item.id === verseId ? { ...item, status } : item),
+        currentSession: buildSession(verseId),
+      }));
+      if (status !== verse.status) patchRemoteVerse(verseId, { status });
     },
     setLearningStep: (step) => {
       updatePersisted((state) => {
-        if (!state.currentSession) {
-          return state;
-        }
-
-        const progressState = state.currentSession.progressState;
-        const nextProgressState = step === 'memorization'
+        const session = state.currentSession;
+        if (!session) return state;
+        const progressState = step === 'memorization'
           ? {
-              ...progressState,
-              sanskritVisitedLines: addUniqueIndex(progressState.sanskritVisitedLines, 0),
+              ...session.progressState,
+              sanskritVisitedLines: addUniqueIndex(session.progressState.sanskritVisitedLines, 0),
             }
-          : progressState;
-
+          : session.progressState;
         return {
           ...state,
           currentSession: {
-            ...state.currentSession,
+            ...session,
             step,
-            currentLineIndex: nextProgressState.sanskritLineIndex,
-            revealedLineIndexes: nextProgressState.sanskritVisitedLines,
-            progressState: nextProgressState,
+            currentLineIndex: progressState.sanskritLineIndex,
+            revealedLineIndexes: progressState.sanskritVisitedLines,
+            progressState,
           },
         };
       });
@@ -320,36 +227,20 @@ export const useVerseStore = create<VerseStore>((set) => {
     setLearningView: (view) => {
       updatePersisted((state) => {
         const session = state.currentSession;
-
-        if (!session) {
-          return state;
-        }
-
-        const viewState = getSessionViewState(session.progressState, view);
+        if (!session) return state;
+        const index = view === 'sanskrit'
+          ? session.progressState.sanskritLineIndex
+          : session.progressState.translationLineIndex;
         const progressState = view === 'sanskrit'
-          ? {
-              ...session.progressState,
-              sanskritVisitedLines: addUniqueIndex(
-                session.progressState.sanskritVisitedLines,
-                viewState.lineIndex,
-              ),
-            }
-          : {
-              ...session.progressState,
-              translationVisitedLines: addUniqueIndex(
-                session.progressState.translationVisitedLines,
-                viewState.lineIndex,
-              ),
-            };
-        const nextViewState = getSessionViewState(progressState, view);
-
+          ? { ...session.progressState, sanskritVisitedLines: addUniqueIndex(session.progressState.sanskritVisitedLines, index) }
+          : { ...session.progressState, translationVisitedLines: addUniqueIndex(session.progressState.translationVisitedLines, index) };
         return {
           ...state,
           currentSession: {
             ...session,
             activeView: view,
-            currentLineIndex: nextViewState.lineIndex,
-            revealedLineIndexes: nextViewState.visitedLines,
+            currentLineIndex: index,
+            revealedLineIndexes: view === 'sanskrit' ? progressState.sanskritVisitedLines : progressState.translationVisitedLines,
             progressState,
           },
         };
@@ -359,44 +250,30 @@ export const useVerseStore = create<VerseStore>((set) => {
       updatePersisted((state) => {
         const session = state.currentSession;
         const verse = state.verses.find((item) => item.id === session?.verseId);
-
-        if (!session || !verse) {
-          return state;
-        }
-
-        const lines = getLinesForView(verse, session.activeView);
-        const nextLineIndex = Math.min(Math.max(0, lineIndex), Math.max(0, lines.length - 1));
+        if (!session || !verse) return state;
+        const lines = getLines(verse, session.activeView);
+        const nextIndex = Math.min(Math.max(0, lineIndex), Math.max(0, lines.length - 1));
         const progressState = session.activeView === 'sanskrit'
           ? {
               ...session.progressState,
-              sanskritLineIndex: nextLineIndex,
-              sanskritVisitedLines: addUniqueIndex(
-                session.progressState.sanskritVisitedLines,
-                nextLineIndex,
-              ),
-              sanskritHiddenLines: session.progressState.sanskritHiddenLines.filter(
-                (index) => index !== nextLineIndex,
-              ),
+              sanskritLineIndex: nextIndex,
+              sanskritVisitedLines: addUniqueIndex(session.progressState.sanskritVisitedLines, nextIndex),
+              sanskritHiddenLines: session.progressState.sanskritHiddenLines.filter((index) => index !== nextIndex),
             }
           : {
               ...session.progressState,
-              translationLineIndex: nextLineIndex,
-              translationVisitedLines: addUniqueIndex(
-                session.progressState.translationVisitedLines,
-                nextLineIndex,
-              ),
-              translationHiddenLines: session.progressState.translationHiddenLines.filter(
-                (index) => index !== nextLineIndex,
-              ),
+              translationLineIndex: nextIndex,
+              translationVisitedLines: addUniqueIndex(session.progressState.translationVisitedLines, nextIndex),
+              translationHiddenLines: session.progressState.translationHiddenLines.filter((index) => index !== nextIndex),
             };
-        const viewState = getSessionViewState(progressState, session.activeView);
-
         return {
           ...state,
           currentSession: {
             ...session,
-            currentLineIndex: nextLineIndex,
-            revealedLineIndexes: viewState.visitedLines,
+            currentLineIndex: nextIndex,
+            revealedLineIndexes: session.activeView === 'sanskrit'
+              ? progressState.sanskritVisitedLines
+              : progressState.translationVisitedLines,
             progressState,
           },
         };
@@ -405,97 +282,61 @@ export const useVerseStore = create<VerseStore>((set) => {
     toggleLineVisibility: (lineIndex) => {
       updatePersisted((state) => {
         const session = state.currentSession;
-
-        if (!session) {
-          return state;
-        }
-
+        if (!session) return state;
         return {
           ...state,
           currentSession: {
             ...session,
             progressState: session.activeView === 'sanskrit'
-              ? {
-                  ...session.progressState,
-                  sanskritHiddenLines: toggleIndex(
-                    session.progressState.sanskritHiddenLines,
-                    lineIndex,
-                  ),
-                }
-              : {
-                  ...session.progressState,
-                  translationHiddenLines: toggleIndex(
-                    session.progressState.translationHiddenLines,
-                    lineIndex,
-                  ),
-                },
+              ? { ...session.progressState, sanskritHiddenLines: toggleIndex(session.progressState.sanskritHiddenLines, lineIndex) }
+              : { ...session.progressState, translationHiddenLines: toggleIndex(session.progressState.translationHiddenLines, lineIndex) },
           },
         };
       });
     },
     completeInitialLearning: () => {
-      updatePersisted((state) => {
-        const session = state.currentSession;
-        const verse = state.verses.find((item) => item.id === session?.verseId);
-
-        if (!session || !verse || verse.status !== 'learning' || verse.progress > 0) {
-          return state;
-        }
-
-        return {
-          ...state,
-          verses: state.verses.map((item) =>
-            item.id === verse.id
-              ? {
-                  ...item,
-                  progress: 20,
-                  status: 'learning',
-                  nextReviewAt: addDays(getTodayDateKey(), 1),
-                }
-              : item,
-          ),
-          currentSession: null,
-        };
-      });
-    },
-    completeLearningSession: (confidence) => {
-      updatePersisted((state) => {
-        const session = state.currentSession;
-        const verse = state.verses.find((item) => item.id === session?.verseId);
-
-        if (!session || !verse) {
-          return state;
-        }
-
-        const currentLevel = Math.round(verse.progress / 20);
-        const review = calculateNextReview(confidence, currentLevel);
-        const progress = getNextProgress(verse.progress, confidence);
-
-        return {
-          ...state,
-          verses: state.verses.map((item) =>
-            item.id === verse.id
-              ? {
-                  ...item,
-                  progress,
-                  status: getNextStatus(progress, confidence),
-                  nextReviewAt: addDays(getTodayDateKey(), review.nextReviewInDays),
-                }
-              : item,
-          ),
-          currentSession: {
-            ...session,
-            step: 'complete',
-            confidence,
-          },
-        };
-      });
-    },
-    resetLearningSession: () => {
+      const session = get().currentSession;
+      const verse = get().verses.find((item) => item.id === session?.verseId);
+      if (!session || !verse || verse.sanskritProgress > 0 || verse.translationProgress > 0) return;
+      const patch: VerseProgressPatch = {
+        status: 'learning',
+        sanskritProgress: 20,
+        translationProgress: 20,
+        repetitionLevel: 1,
+        nextReviewAt: addDays(getTodayDateKey(), 1),
+      };
       updatePersisted((state) => ({
         ...state,
+        verses: state.verses.map((item) => item.id === verse.id ? { ...item, ...patch } : item),
         currentSession: null,
       }));
+      patchRemoteVerse(verse.id, patch);
     },
+    completeLearningSession: (confidence: VerseConfidence) => {
+      const session = get().currentSession;
+      const verse = get().verses.find((item) => item.id === session?.verseId);
+      if (!session || !verse) return;
+      const review = calculateNextReview(confidence, verse.repetitionLevel);
+      const delta: Record<VerseConfidence, number> = { forgot: -10, hard: 8, remembered: 18, easy: 28 };
+      const updateProgress = (value: number) => Math.min(100, Math.max(0, value + delta[confidence]));
+      const sanskritProgress = updateProgress(verse.sanskritProgress);
+      const translationProgress = updateProgress(verse.translationProgress);
+      const average = Math.round((sanskritProgress + translationProgress) / 2);
+      const patch: VerseProgressPatch = {
+        sanskritProgress,
+        translationProgress,
+        repetitionLevel: review.nextLevel,
+        status: confidence === 'forgot' ? 'needsReview' : average >= 100 ? 'learned' : average >= 75 ? 'review' : 'learning',
+        nextReviewAt: addDays(getTodayDateKey(), review.nextReviewInDays),
+        lastReviewedAt: new Date().toISOString(),
+      };
+      updatePersisted((state) => ({
+        ...state,
+        verses: state.verses.map((item) => item.id === verse.id ? { ...item, ...patch } : item),
+        currentSession: { ...session, step: 'complete', confidence },
+      }));
+      patchRemoteVerse(verse.id, patch);
+    },
+    resetLearningSession: () => updatePersisted((state) => ({ ...state, currentSession: null })),
   };
 });

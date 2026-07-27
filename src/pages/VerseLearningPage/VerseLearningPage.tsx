@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   getVerseById,
+  getVerseLines,
   type VerseLearningView,
   useVerseStore,
   VerseReference,
@@ -23,7 +24,8 @@ export default function VerseLearningPage() {
   const { verseId } = useParams();
   const navigate = useNavigate();
   const verses = useVerseStore((state) => state.verses);
-  const userVerseIds = useVerseStore((state) => state.userVerseIds);
+  const isLoading = useVerseStore((state) => state.isLoading);
+  const loadVerses = useVerseStore((state) => state.loadVerses);
   const currentSession = useVerseStore((state) => state.currentSession);
   const startLearningSession = useVerseStore((state) => state.startLearningSession);
   const setLearningStep = useVerseStore((state) => state.setLearningStep);
@@ -34,15 +36,18 @@ export default function VerseLearningPage() {
   const completeLearningSession = useVerseStore((state) => state.completeLearningSession);
   const resetLearningSession = useVerseStore((state) => state.resetLearningSession);
   const verse = getVerseById(verses, verseId);
-  const isAdded = Boolean(verseId && userVerseIds.includes(verseId));
   const session = currentSession?.verseId === verseId ? currentSession : null;
   const initializedVerseIdRef = useRef(session?.verseId);
 
   useDocumentTitle(
     verse
-      ? `Изучение: ${verse.sourceTitle} ${verse.reference} — Садхана Бхакти`
+      ? `Изучение: ${verse.bookTitle} ${verse.verseNumber} — Садхана Бхакти`
       : 'Стих не найден — Садхана Бхакти',
   );
+
+  useEffect(() => {
+    if (verses.length === 0) loadVerses();
+  }, [loadVerses, verses.length]);
 
   useEffect(() => {
     if (session) {
@@ -50,11 +55,20 @@ export default function VerseLearningPage() {
       return;
     }
 
-    if (verse && isAdded && initializedVerseIdRef.current !== verse.id) {
+    if (verse && initializedVerseIdRef.current !== verse.id) {
       initializedVerseIdRef.current = verse.id;
       startLearningSession(verse.id);
     }
-  }, [isAdded, session, startLearningSession, verse]);
+  }, [session, startLearningSession, verse]);
+
+  if (!verse && isLoading) {
+    return (
+      <Card className={styles.loadingCard}>
+        <span aria-hidden="true" />
+        <p>Загружаем стих…</p>
+      </Card>
+    );
+  }
 
   if (!verse) {
     return (
@@ -63,22 +77,6 @@ export default function VerseLearningPage() {
         <h1>Стих не найден</h1>
         <p>Возможно, он был удалён или ссылка устарела.</p>
         <Link to="/verses">Вернуться к стихам</Link>
-      </Card>
-    );
-  }
-
-  if (!isAdded) {
-    return (
-      <Card className={styles.stateCard}>
-        <Icon name="lotus" />
-        <h1>Добавь стих перед изучением</h1>
-        <p>Так прогресс и следующая дата повторения сохранятся в твоём списке.</p>
-        <button type="button" onClick={() => startLearningSession(verse.id)}>
-          Добавить и начать
-        </button>
-        <Link className={styles.textLink} to={`/verses/${verse.id}`}>
-          Вернуться к стиху
-        </Link>
       </Card>
     );
   }
@@ -92,14 +90,10 @@ export default function VerseLearningPage() {
     );
   }
 
-  const translationLineCount = verse.translationLines.length > 0
-    ? verse.translationLines.length
-    : verse.fullTranslation
-      ? 1
-      : 0;
+  const translationLineCount = getVerseLines(verse.translation).length;
   const sanskritPercent = getCompletionPercent(
     session.progressState.sanskritVisitedLines.length,
-    verse.sanskritCyrillicLines.length,
+    getVerseLines(verse.sanskritCyrillic).length,
   );
   const translationPercent = getCompletionPercent(
     session.progressState.translationVisitedLines.length,
@@ -121,7 +115,7 @@ export default function VerseLearningPage() {
   };
 
   const finishMemorization = () => {
-    const isInitialLearning = verse.status === 'learning' && verse.progress === 0;
+    const isInitialLearning = verse.sanskritProgress === 0 && verse.translationProgress === 0;
 
     if (isInitialLearning) {
       completeInitialLearning();

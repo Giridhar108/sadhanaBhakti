@@ -3,23 +3,23 @@ export {
   getReviewDateLabel,
   getTodayDateKey,
   getTodayVerses,
-  getUserVerses,
   getVerseById,
+  getVerseLines,
+  getVerseProgress,
   getVerseSearchText,
 } from './model/verseSelectors';
-export { verseCatalog } from './model/verseCatalog';
 export { useVerseStore } from './model/verseStore';
 export { VerseReference } from './ui/VerseReference/VerseReference';
 export { VerseStatus as VerseStatusBadge } from './ui/VerseStatus/VerseStatus';
 export type {
+  UserVerse,
   Verse,
   VerseConfidence,
+  VerseEditorValues,
   VerseLearningProgressState,
   VerseLearningSession,
   VerseLearningStep,
   VerseLearningView,
-  VerseMemorizationProgress,
-  VerseSource,
   VerseStatus,
   VerseStore,
 } from './model/types';

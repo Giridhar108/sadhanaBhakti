@@ -6,6 +6,7 @@ import { AudioModule } from './modules/audio/audio.module';
 import { HealthModule } from './modules/health/health.module';
 import { JapaModule } from './modules/japa/japa.module';
 import { UsersModule } from './modules/users/users.module';
+import { VersesModule } from './modules/verses/verses.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
     AudioModule,
     JapaModule,
     UsersModule,
+    VersesModule,
     HealthModule,
   ],
 })

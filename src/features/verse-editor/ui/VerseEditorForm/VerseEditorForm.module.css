@@ -1,0 +1,224 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.formCard {
+  display: grid;
+  gap: 22px;
+  padding: 26px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.field {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.field label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.field label span,
+.field small,
+.labelRow span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.metadata {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius-md);
+  padding: 13px 15px;
+  color: var(--text);
+  background: var(--surface-soft);
+  outline: none;
+  resize: vertical;
+}
+
+.field input {
+  min-height: 50px;
+}
+
+.field textarea:focus,
+.field input:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(159, 114, 215, 0.14);
+}
+
+.field [aria-invalid='true'] {
+  border-color: #c98279;
+}
+
+.sanskritInput {
+  min-height: 220px;
+  font-family: 'gaura_timesregular', serif;
+  font-size: 21px;
+  line-height: 1.6;
+}
+
+.translationInput {
+  min-height: 180px;
+  font-family: var(--font-family);
+  line-height: 1.6;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field em {
+  min-height: 16px;
+  color: #a94f45;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.actions {
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.4fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.actions button,
+.dialog button {
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 11px 16px;
+  font-weight: 900;
+}
+
+.cancelButton {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.saveButton {
+  color: #fff;
+  background: var(--green);
+}
+
+.saveButton:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.previewColumn {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-width: 0;
+}
+
+.previewColumn > summary {
+  display: none;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(31, 24, 44, 0.28);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  width: min(100%, 480px);
+  padding: 26px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.dialog h2 {
+  margin: 0;
+  color: var(--text);
+}
+
+.dialog p {
+  color: var(--muted);
+}
+
+.dialog > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dangerButton {
+  color: #fff;
+  background: #b55d52;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .previewColumn {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .actions {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .previewColumn > summary {
+    display: block;
+    margin-bottom: 10px;
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    color: var(--violet-dark);
+    background: var(--violet-soft);
+    font-weight: 900;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 560px) {
+  .formCard {
+    padding: 18px 14px;
+  }
+
+  .metadata,
+  .actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .saveButton {
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .dialog > div {
+    display: grid;
+  }
+}

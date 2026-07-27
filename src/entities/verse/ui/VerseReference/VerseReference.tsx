@@ -3,15 +3,15 @@ import type { Verse } from '../../model/types';
 import styles from './VerseReference.module.css';
 
 type VerseReferenceProps = {
-  verse: Pick<Verse, 'id' | 'sourceTitle' | 'reference'>;
+  verse: Pick<Verse, 'id' | 'bookTitle' | 'chapter' | 'verseNumber'>;
   linked?: boolean;
 };
 
 export function VerseReference({ verse, linked = false }: VerseReferenceProps) {
   const content = (
     <>
-      <span>{verse.sourceTitle}</span>
-      <strong>{verse.reference}</strong>
+      <span>{verse.bookTitle}</span>
+      <strong>{verse.chapter ? `${verse.chapter}.` : ''}{verse.verseNumber}</strong>
     </>
   );
 

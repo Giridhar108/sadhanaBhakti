@@ -19,6 +19,8 @@ const MyJapaPage = lazy(() => import('../../pages/MyJapaPage/MyJapaPage'));
 const FocusModePage = lazy(() => import('../../pages/FocusModePage/FocusModePage'));
 const BooksPage = lazy(() => import('../../pages/BooksPage/BooksPage'));
 const VersesPage = lazy(() => import('../../pages/VersesPage/VersesPage'));
+const CreateVersePage = lazy(() => import('../../pages/CreateVersePage/CreateVersePage'));
+const EditVersePage = lazy(() => import('../../pages/EditVersePage/EditVersePage'));
 const VerseDetailsPage = lazy(() => import('../../pages/VerseDetailsPage/VerseDetailsPage'));
 const VerseLearningPage = lazy(() => import('../../pages/VerseLearningPage/VerseLearningPage'));
 const CalendarPage = lazy(() => import('../../pages/CalendarPage/CalendarPage'));
@@ -139,6 +141,8 @@ function RoutedContent() {
           <Route path="/japa" element={<MyJapaPage />} />
           <Route path="/books" element={<BooksPage />} />
           <Route path="/verses" element={<VersesPage />} />
+          <Route path="/verses/new" element={<CreateVersePage />} />
+          <Route path="/verses/:verseId/edit" element={<EditVersePage />} />
           <Route path="/verses/:verseId" element={<VerseDetailsPage />} />
           <Route path="/verses/:verseId/learn" element={<VerseLearningPage />} />
           <Route path="/calendar" element={<CalendarPage />} />

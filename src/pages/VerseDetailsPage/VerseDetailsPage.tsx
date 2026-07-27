@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   getReviewDateLabel,
   getVerseById,
+  getVerseLines,
+  getVerseProgress,
   useVerseStore,
   VerseReference,
   VerseStatusBadge,
@@ -16,18 +19,22 @@ export default function VerseDetailsPage() {
   const { verseId } = useParams();
   const navigate = useNavigate();
   const verses = useVerseStore((state) => state.verses);
-  const userVerseIds = useVerseStore((state) => state.userVerseIds);
+  const isLoading = useVerseStore((state) => state.isLoading);
+  const loadVerses = useVerseStore((state) => state.loadVerses);
   const toggleVerseFavorite = useVerseStore((state) => state.toggleVerseFavorite);
   const startLearningSession = useVerseStore((state) => state.startLearningSession);
+  const deleteVerse = useVerseStore((state) => state.deleteVerse);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const verse = getVerseById(verses, verseId);
-  const isAdded = Boolean(verseId && userVerseIds.includes(verseId));
 
-  useDocumentTitle(
-    verse
-      ? `${verse.sourceTitle} ${verse.reference} — Садхана Бхакти`
-      : 'Стих не найден — Садхана Бхакти',
-  );
+  useDocumentTitle(verse ? `${verse.bookTitle} ${verse.verseNumber} — Садхана Бхакти` : 'Стих не найден');
 
+  useEffect(() => {
+    if (verses.length === 0) loadVerses();
+  }, [loadVerses, verses.length]);
+
+  if (!verse && isLoading) return <Card className={styles.notFound}>Загружаем стих…</Card>;
   if (!verse) {
     return (
       <Card className={styles.notFound}>
@@ -39,76 +46,77 @@ export default function VerseDetailsPage() {
     );
   }
 
+  const progress = getVerseProgress(verse);
   const startLearning = () => {
     startLearningSession(verse.id);
     navigate(`/verses/${verse.id}/learn`);
   };
+  const confirmDelete = () => {
+    setIsDeleting(true);
+    deleteVerse(verse.id)
+      .then(() => navigate('/verses'))
+      .finally(() => setIsDeleting(false));
+  };
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to="/verses">
-        <span aria-hidden="true">←</span>
-        Все стихи
-      </Link>
-
+      <Link className={styles.backLink} to="/verses">← Все стихи</Link>
       <header className={styles.hero}>
         <div className={styles.heroCopy}>
           <VerseReference verse={verse} />
-          <h1>{verse.sourceTitle} {verse.reference}</h1>
-          {verse.chapterTitle ? <p>{verse.chapterTitle}</p> : null}
+          <h1>{verse.bookTitle}</h1>
+          <p>{verse.chapter ? `Глава ${verse.chapter} · ` : ''}Стих {verse.verseNumber}</p>
           <div className={styles.meta}>
             <VerseStatusBadge status={verse.status} />
-            <span>{verse.progress}% изучено</span>
+            <span>{progress}% изучено</span>
             <span>Повторение: {getReviewDateLabel(verse.nextReviewAt)}</span>
           </div>
         </div>
         <div className={styles.heroActions}>
           <button
-            className={`${styles.favoriteButton} ${verse.isFavorite ? styles.favoriteActive : ''}`}
+            className={styles.favoriteButton}
             type="button"
             aria-pressed={verse.isFavorite}
             onClick={() => toggleVerseFavorite(verse.id)}
           >
-            <span aria-hidden="true">{verse.isFavorite ? '♥' : '♡'}</span>
-            {verse.isFavorite ? 'В избранном' : 'В избранное'}
+            {verse.isFavorite ? '♥ В избранном' : '♡ В избранное'}
           </button>
           <button className={styles.primaryButton} type="button" onClick={startLearning}>
-            <Icon name="lotus" />
-            {isAdded ? 'Начать изучение' : 'Добавить и начать'}
+            <Icon name="lotus" />Начать изучение
+          </button>
+          <Link className={styles.editButton} to={`/verses/${verse.id}/edit`}>Редактировать</Link>
+          <button className={styles.deleteButton} type="button" onClick={() => setShowDeleteDialog(true)}>
+            Удалить стих
           </button>
         </div>
       </header>
 
       <Card className={styles.verseCard}>
-        <VerseLines
-          title="Санскрит русскими буквами"
-          lines={verse.sanskritCyrillicLines}
-          variant="sanskrit"
-        />
-        <VerseLines
-          title="Перевод"
-          lines={verse.translationLines}
-          fallback={verse.fullTranslation}
-          variant="translation"
-        />
+        <VerseLines title="Санскрит русскими буквами" lines={getVerseLines(verse.sanskritCyrillic)} variant="sanskrit" />
+        <VerseLines title="Перевод" lines={getVerseLines(verse.translation)} variant="translation" />
       </Card>
 
       <section className={styles.progressSection}>
-        <div>
-          <span>Текущий прогресс</span>
-          <strong>{verse.progress}%</strong>
-        </div>
-        <div
-          className={styles.progressTrack}
-          role="progressbar"
-          aria-label={`Прогресс изучения: ${verse.progress}%`}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={verse.progress}
-        >
-          <span style={{ width: `${verse.progress}%` }} />
+        <div><span>Текущий прогресс</span><strong>{progress}%</strong></div>
+        <div className={styles.progressTrack} role="progressbar" aria-label={`Прогресс изучения: ${progress}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+          <span style={{ width: `${progress}%` }} />
         </div>
       </section>
+
+      {showDeleteDialog ? (
+        <div className={styles.dialogBackdrop}>
+          <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="delete-title">
+            <h2 id="delete-title">Удалить стих?</h2>
+            <p>Стих и весь прогресс его изучения будут удалены. Это действие нельзя отменить.</p>
+            <div>
+              <button type="button" onClick={() => setShowDeleteDialog(false)}>Отмена</button>
+              <button className={styles.confirmDelete} type="button" disabled={isDeleting} onClick={confirmDelete}>
+                {isDeleting ? 'Удаляем…' : 'Удалить'}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }

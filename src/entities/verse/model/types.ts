@@ -5,41 +5,38 @@ export type VerseStatus =
   | 'learned'
   | 'needsReview';
 
-export type VerseSource =
-  | 'bhagavadGita'
-  | 'srimadBhagavatam'
-  | 'other';
-
-export type Verse = {
+export type UserVerse = {
   id: string;
-  source: VerseSource;
-  sourceTitle: string;
-  reference: string;
-  chapterTitle?: string;
-  sanskritCyrillicLines: string[];
-  translationLines: string[];
-  fullTranslation: string;
-  audioUrl?: string;
+  userId: string;
+  bookTitle: string;
+  chapter: string | null;
+  verseNumber: string;
+  sanskritCyrillic: string;
+  translation: string;
   status: VerseStatus;
-  progress: number;
-  nextReviewAt?: string;
+  sanskritProgress: number;
+  translationProgress: number;
+  repetitionLevel: number;
+  nextReviewAt: string | null;
+  lastReviewedAt: string | null;
   isFavorite: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Verse = UserVerse;
+
+export type VerseEditorValues = {
+  bookTitle: string;
+  chapter: string;
+  verseNumber: string;
+  sanskritCyrillic: string;
+  translation: string;
 };
 
 export type VerseLearningView = 'sanskrit' | 'translation';
-
 export type VerseLearningStep = 'intro' | 'memorization' | 'complete';
-
-export type VerseConfidence =
-  | 'forgot'
-  | 'hard'
-  | 'remembered'
-  | 'easy';
-
-export type VerseMemorizationProgress = {
-  sanskritProgress: number;
-  translationProgress: number;
-};
+export type VerseConfidence = 'forgot' | 'hard' | 'remembered' | 'easy';
 
 export type VerseLearningProgressState = {
   sanskritLineIndex: number;
@@ -61,10 +58,14 @@ export type VerseLearningSession = {
 };
 
 export type VerseStore = {
-  verses: Verse[];
-  userVerseIds: string[];
+  verses: UserVerse[];
   currentSession: VerseLearningSession | null;
-  addVerseToLearning: (verseId: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  loadVerses: () => Promise<void>;
+  createVerse: (values: VerseEditorValues) => Promise<UserVerse>;
+  updateVerse: (verseId: string, values: VerseEditorValues) => Promise<UserVerse>;
+  deleteVerse: (verseId: string) => Promise<void>;
   toggleVerseFavorite: (verseId: string) => void;
   startLearningSession: (verseId: string) => void;
   setLearningStep: (step: VerseLearningStep) => void;
