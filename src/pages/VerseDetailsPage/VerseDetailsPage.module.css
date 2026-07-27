@@ -1,6 +1,7 @@
 .page {
   display: grid;
-  gap: 14px;
+  gap: 16px;
+  margin-top: 14px;
 }
 
 .backLink {
@@ -8,10 +9,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   color: var(--violet-dark);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .backLink:focus-visible,
@@ -26,20 +27,21 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 24px;
   align-items: center;
-  padding: 24px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
   background:
-    radial-gradient(circle at 90% 5%, rgba(245, 237, 249, 0.92), transparent 34%),
-    var(--surface);
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at 90% 5%, rgba(245, 237, 249, 0.5), transparent 34%),
+    rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .hero h1 {
   margin: 8px 0 0;
-  color: var(--text);
-  font-size: clamp(28px, 3vw, 38px);
+  color: #2c2641;
+  font-size: clamp(28px, 3vw, 34px);
   line-height: 1.1;
+  font-weight: 800;
 }
 
 .heroCopy > p {
@@ -71,10 +73,11 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border: 0;
-  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-radius: 8px;
   padding: 10px 16px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .editButton {
@@ -82,21 +85,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md);
+  border: 2px solid rgba(145, 99, 216, 0.72);
+  border-radius: 8px;
   padding: 10px 16px;
-  color: var(--violet-dark);
-  background: var(--violet-soft);
-  font-weight: 900;
+  color: #8f61d5;
+  background: rgba(255, 255, 255, 0.72);
+  font-weight: 800;
 }
 
 .deleteButton {
+  border-color: rgba(181, 93, 82, 0.16);
   color: #9b4d45;
   background: #fff0ec;
 }
 
 .favoriteButton {
-  color: var(--violet-dark);
-  background: var(--violet-soft);
+  border-color: rgba(159, 114, 215, 0.14);
+  color: #8c61d6;
+  background: rgba(248, 239, 248, 0.68);
 }
 
 .favoriteButton span {
@@ -109,7 +115,8 @@
 
 .primaryButton {
   color: #fff;
-  background: var(--green);
+  background: #8556d8;
+  box-shadow: 0 12px 22px rgba(137, 87, 210, 0.18);
 }
 
 .primaryButton svg {
@@ -121,9 +128,12 @@
   max-width: 900px;
   width: 100%;
   display: grid;
-  gap: 14px;
+  gap: 16px;
   justify-self: center;
-  padding: 18px;
+  padding: 16px;
+  border-color: rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .progressSection {
@@ -133,9 +143,10 @@
   gap: 9px;
   justify-self: center;
   padding: 18px 22px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-lg);
-  background: rgba(255, 254, 250, 0.82);
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.06);
 }
 
 .progressSection > div:first-child {
@@ -200,11 +211,11 @@
 
 .notFound a {
   margin-top: 8px;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   padding: 11px 16px;
   color: #fff;
-  background: var(--green);
-  font-weight: 900;
+  background: #8556d8;
+  font-weight: 800;
 }
 
 .dialogBackdrop {
@@ -220,11 +231,11 @@
 
 .dialog {
   width: min(100%, 500px);
-  padding: 26px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.98);
+  box-shadow: 0 12px 32px rgba(73, 50, 35, 0.14);
 }
 
 .dialog h2 {
@@ -245,10 +256,10 @@
 
 .dialog button {
   min-height: 44px;
-  border: 0;
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(159, 114, 215, 0.14);
+  border-radius: 8px;
   padding: 10px 16px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .dialog .confirmDelete {
@@ -268,6 +279,13 @@
   }
 
   .verseCard {
-    padding: 10px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page {
+    gap: 12px;
+    margin-top: 8px;
   }
 }

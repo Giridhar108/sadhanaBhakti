@@ -5,7 +5,11 @@
   overflow: hidden;
   display: grid;
   gap: 16px;
-  padding: 28px 32px;
+  padding: 24px 28px;
+  border-color: rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .heading {
@@ -23,8 +27,10 @@
 
 .heading h1 {
   margin: 6px 0 0;
-  color: var(--text);
-  font-size: clamp(26px, 3vw, 34px);
+  color: #2c2641;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.15;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 
@@ -74,26 +80,27 @@
 .lineCard {
   min-width: 0;
   max-width: 100%;
-  min-height: 330px;
+  min-height: 320px;
   display: grid;
   place-items: center;
   align-content: center;
   gap: 24px;
   padding: 28px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.05);
 }
 
 .sanskrit {
   background:
-    radial-gradient(circle at 50% 10%, rgba(245, 237, 249, 0.9), transparent 36%),
-    var(--surface);
+    radial-gradient(circle at 50% 10%, rgba(245, 237, 249, 0.48), transparent 36%),
+    rgba(255, 254, 250, 0.96);
 }
 
 .translation {
   background:
-    radial-gradient(circle at 50% 10%, rgba(242, 250, 238, 0.92), transparent 36%),
-    var(--surface);
+    radial-gradient(circle at 50% 10%, rgba(242, 250, 238, 0.54), transparent 36%),
+    rgba(255, 254, 250, 0.96);
 }
 
 .counter {
@@ -102,6 +109,15 @@
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.memoryContent {
+  width: 100%;
+  height: 144px;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
 
 .lineText {
@@ -121,9 +137,9 @@
 
 .translation .lineText {
   font-family: var(--font-family);
-  font-size: clamp(19px, 2.3vw, 27px);
+  font-size: clamp(16px, 1.8vw, 22px);
   font-weight: 700;
-  line-height: 1.65;
+  line-height: 1.45;
 }
 
 .hiddenPrompt {
@@ -149,11 +165,11 @@
 .visibilityButton {
   min-height: 42px;
   border: 1px solid rgba(159, 114, 215, 0.2);
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   padding: 9px 16px;
-  color: var(--violet-dark);
-  background: var(--violet-soft);
-  font-weight: 900;
+  color: #8a5bd0;
+  background: rgba(248, 239, 248, 0.78);
+  font-weight: 800;
 }
 
 .helper {
@@ -172,27 +188,32 @@
 }
 
 .actions button {
-  min-height: 48px;
-  border: 0;
-  border-radius: var(--radius-md);
-  padding: 11px 16px;
-  font-weight: 900;
+  min-height: 46px;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .secondaryButton {
-  color: var(--violet-dark);
-  background: var(--violet-soft);
+  border: 2px solid rgba(145, 99, 216, 0.72);
+  color: #8f61d5;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .primaryButton {
+  border: 0;
   color: #fff;
-  background: var(--green);
+  background: #8556d8;
+  box-shadow: 0 12px 22px rgba(137, 87, 210, 0.18);
 }
 
 .actions button:disabled {
   cursor: default;
+  border-color: transparent;
   color: var(--muted-2);
   background: var(--surface-soft);
+  box-shadow: none;
 }
 
 .actions button:focus-visible,
@@ -203,12 +224,12 @@
 
 @media (max-width: 600px) {
   .card {
-    padding: 20px 14px;
+    padding: 18px 16px;
   }
 
   .lineCard {
     min-height: 300px;
-    padding: 20px 14px;
+    padding: 20px 16px;
   }
 
   .modeProgress {
@@ -221,8 +242,8 @@
     bottom: 8px;
     z-index: 2;
     padding: 8px;
-    border: 1px solid var(--stroke);
-    border-radius: var(--radius-lg);
+    border: 1px solid rgba(226, 194, 151, 0.5);
+    border-radius: 14px;
     background: rgba(255, 254, 250, 0.94);
     backdrop-filter: blur(10px);
   }

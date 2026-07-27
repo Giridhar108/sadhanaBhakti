@@ -2,7 +2,8 @@
   min-width: 0;
   max-width: 100%;
   display: grid;
-  gap: 14px;
+  gap: 16px;
+  margin-top: 14px;
 }
 
 .sessionHeader {
@@ -15,11 +16,11 @@
   gap: 14px;
   align-items: center;
   justify-self: center;
-  padding: 14px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
-  background: rgba(255, 254, 250, 0.9);
-  box-shadow: var(--shadow-soft);
+  padding: 14px 16px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .sessionIdentity {
@@ -33,10 +34,10 @@
   height: 44px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--stroke);
-  border-radius: 50%;
-  color: var(--violet-dark);
-  background: var(--surface);
+  border: 1px solid rgba(159, 114, 215, 0.14);
+  border-radius: 8px;
+  color: #8c61d6;
+  background: rgba(248, 239, 248, 0.58);
   font-size: 22px;
   font-weight: 800;
 }
@@ -64,6 +65,10 @@
   align-content: center;
   gap: 10px;
   padding: 28px;
+  border-color: rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
   text-align: center;
 }
 
@@ -91,11 +96,11 @@
   min-height: 46px;
   margin-top: 8px;
   border: 0;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   padding: 11px 18px;
   color: #fff;
-  background: var(--green);
-  font-weight: 900;
+  background: #8556d8;
+  font-weight: 800;
 }
 
 .textLink {
@@ -137,11 +142,18 @@
     grid-template-columns: 40px minmax(0, 1fr) 40px;
     gap: 9px;
     padding: 10px;
-    border-radius: var(--radius-lg);
+    border-radius: 14px;
   }
 
   .iconButton {
     width: 40px;
     height: 40px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page {
+    gap: 12px;
+    margin-top: 8px;
   }
 }

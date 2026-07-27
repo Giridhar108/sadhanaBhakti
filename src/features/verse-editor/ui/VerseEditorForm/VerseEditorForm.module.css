@@ -1,18 +1,18 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
-  gap: 18px;
+  gap: 16px;
   align-items: start;
 }
 
 .formCard {
   display: grid;
-  gap: 22px;
-  padding: 26px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-  box-shadow: var(--shadow-soft);
+  gap: 20px;
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .field {
@@ -22,9 +22,9 @@
 }
 
 .field label {
-  color: var(--text);
+  color: #2c2641;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .field label span,
@@ -44,23 +44,23 @@
 .field input,
 .field textarea {
   width: 100%;
-  border: 1px solid var(--stroke-strong);
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(157, 109, 219, 0.24);
+  border-radius: 10px;
   padding: 13px 15px;
   color: var(--text);
-  background: var(--surface-soft);
+  background: rgba(255, 255, 255, 0.72);
   outline: none;
   resize: vertical;
 }
 
 .field input {
-  min-height: 50px;
+  min-height: 46px;
 }
 
 .field textarea:focus,
 .field input:focus {
-  border-color: var(--violet);
-  box-shadow: 0 0 0 3px rgba(159, 114, 215, 0.14);
+  border-color: rgba(133, 86, 216, 0.72);
+  box-shadow: 0 0 0 3px rgba(133, 86, 216, 0.12);
 }
 
 .field [aria-invalid='true'] {
@@ -104,21 +104,25 @@
 
 .actions button,
 .dialog button {
-  min-height: 48px;
-  border: 0;
-  border-radius: var(--radius-md);
-  padding: 11px 16px;
-  font-weight: 900;
+  min-height: 46px;
+  border: 1px solid rgba(159, 114, 215, 0.14);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .cancelButton {
-  color: var(--violet-dark);
-  background: var(--violet-soft);
+  border: 2px solid rgba(145, 99, 216, 0.78);
+  color: #8f61d5;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .saveButton {
+  border: 0;
   color: #fff;
-  background: var(--green);
+  background: #8556d8;
+  box-shadow: 0 12px 22px rgba(137, 87, 210, 0.18);
 }
 
 .saveButton:disabled {
@@ -149,11 +153,11 @@
 
 .dialog {
   width: min(100%, 480px);
-  padding: 26px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.98);
+  box-shadow: 0 12px 32px rgba(73, 50, 35, 0.14);
 }
 
 .dialog h2 {
@@ -172,6 +176,7 @@
 }
 
 .dangerButton {
+  border: 0;
   color: #fff;
   background: #b55d52;
 }
@@ -194,18 +199,19 @@
   .previewColumn > summary {
     display: block;
     margin-bottom: 10px;
-    border-radius: var(--radius-md);
+    border: 1px solid rgba(145, 94, 226, 0.18);
+    border-radius: 8px;
     padding: 12px 16px;
-    color: var(--violet-dark);
-    background: var(--violet-soft);
-    font-weight: 900;
+    color: #7455ac;
+    background: rgba(249, 245, 253, 0.9);
+    font-weight: 800;
     cursor: pointer;
   }
 }
 
 @media (max-width: 560px) {
   .formCard {
-    padding: 18px 14px;
+    padding: 18px 16px;
   }
 
   .metadata,

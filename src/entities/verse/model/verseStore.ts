@@ -107,8 +107,65 @@ const buildSession = (verseId: string): VerseLearningSession => ({
 const getLines = (verse: UserVerse, view: VerseLearningView) =>
   getVerseLines(view === 'sanskrit' ? verse.sanskritCyrillic : verse.translation);
 
-const patchRemoteVerse = (verseId: string, patch: VerseProgressPatch) => {
-  if (readAuthUser()) verseApi.update(verseId, patch).catch(() => undefined);
+const pendingRemotePatches = new Map<string, VerseProgressPatch>();
+const pendingRemoteWrites = new Map<string, Promise<void>>();
+
+const queueRemoteVersePatch = (verseId: string, patch: VerseProgressPatch): Promise<void> => {
+  if (!readAuthUser()) return Promise.resolve();
+
+  pendingRemotePatches.set(verseId, {
+    ...pendingRemotePatches.get(verseId),
+    ...patch,
+  });
+
+  const activeWrite = pendingRemoteWrites.get(verseId);
+  if (activeWrite) return activeWrite;
+
+  const flushPatches = async () => {
+    while (pendingRemotePatches.has(verseId)) {
+      const nextPatch = pendingRemotePatches.get(verseId);
+      if (!nextPatch) return;
+
+      pendingRemotePatches.delete(verseId);
+
+      try {
+        await verseApi.update(verseId, nextPatch);
+      } catch (error) {
+        pendingRemotePatches.set(verseId, {
+          ...nextPatch,
+          ...pendingRemotePatches.get(verseId),
+        });
+        throw error;
+      }
+    }
+  };
+
+  let writeFailed = false;
+  const write = flushPatches()
+    .catch(() => {
+      writeFailed = true;
+    })
+    .finally(() => {
+      pendingRemoteWrites.delete(verseId);
+
+      const nextPatch = pendingRemotePatches.get(verseId);
+      if (!writeFailed && nextPatch) {
+        void queueRemoteVersePatch(verseId, nextPatch);
+      }
+    });
+
+  pendingRemoteWrites.set(verseId, write);
+  return write;
+};
+
+const flushPendingRemotePatches = () => {
+  pendingRemotePatches.forEach((patch, verseId) => {
+    if (!pendingRemoteWrites.has(verseId)) {
+      void queueRemoteVersePatch(verseId, patch);
+    }
+  });
+
+  return Promise.all([...pendingRemoteWrites.values()]).then(() => undefined);
 };
 
 const initialState = readPersistedState();
@@ -132,15 +189,33 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         return Promise.resolve();
       }
       set({ isLoading: true, error: null });
-      return verseApi.getAll()
+      return flushPendingRemotePatches()
+        .then(() => verseApi.getAll())
         .then((verses) => {
           set((state) => {
-            const nextState = { ...state, verses, isLoading: false, error: null };
+            const nextVerses = verses.map((verse) => {
+              const pendingPatch = pendingRemotePatches.get(verse.id);
+
+              return pendingPatch ? { ...verse, ...pendingPatch } : verse;
+            });
+            const nextState = {
+              ...state,
+              verses: nextVerses,
+              isLoading: false,
+              error: null,
+            };
             writePersistedState(nextState);
             return nextState;
           });
         })
-        .catch(() => set({ isLoading: false, error: 'Не удалось загрузить стихи. Попробуй обновить страницу.' }));
+        .catch(() => {
+          set((state) => ({
+            isLoading: false,
+            error: state.verses.length === 0
+              ? 'Не удалось загрузить стихи. Попробуй обновить страницу.'
+              : null,
+          }));
+        });
     },
     createVerse: (values) => {
       const request = readAuthUser() ? verseApi.create(values) : Promise.resolve(buildLocalVerse(values));
@@ -189,7 +264,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         ...state,
         verses: state.verses.map((item) => item.id === verseId ? { ...item, isFavorite } : item),
       }));
-      patchRemoteVerse(verseId, { isFavorite });
+      void queueRemoteVersePatch(verseId, { isFavorite });
     },
     startLearningSession: (verseId) => {
       const verse = get().verses.find((item) => item.id === verseId);
@@ -200,7 +275,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         verses: state.verses.map((item) => item.id === verseId ? { ...item, status } : item),
         currentSession: buildSession(verseId),
       }));
-      if (status !== verse.status) patchRemoteVerse(verseId, { status });
+      if (status !== verse.status) void queueRemoteVersePatch(verseId, { status });
     },
     setLearningStep: (step) => {
       updatePersisted((state) => {
@@ -310,7 +385,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         verses: state.verses.map((item) => item.id === verse.id ? { ...item, ...patch } : item),
         currentSession: null,
       }));
-      patchRemoteVerse(verse.id, patch);
+      void queueRemoteVersePatch(verse.id, patch);
     },
     completeLearningSession: (confidence: VerseConfidence) => {
       const session = get().currentSession;
@@ -335,7 +410,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         verses: state.verses.map((item) => item.id === verse.id ? { ...item, ...patch } : item),
         currentSession: { ...session, step: 'complete', confidence },
       }));
-      patchRemoteVerse(verse.id, patch);
+      void queueRemoteVersePatch(verse.id, patch);
     },
     resetLearningSession: () => updatePersisted((state) => ({ ...state, currentSession: null })),
   };

@@ -3,24 +3,24 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
   padding: 5px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-lg);
-  background: var(--surface-soft);
+  border: 1px solid rgba(159, 114, 215, 0.14);
+  border-radius: 10px;
+  background: rgba(248, 239, 248, 0.58);
 }
 
 .switcher button {
   min-height: 42px;
   border: 0;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
   color: var(--muted);
   background: transparent;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .switcher .active {
-  color: var(--violet-dark);
-  background: var(--surface);
-  box-shadow: var(--shadow-soft);
+  color: #7455ac;
+  background: rgba(255, 254, 250, 0.98);
+  box-shadow: 0 3px 10px rgba(113, 78, 41, 0.08);
 }
 
 .switcher button:focus-visible {

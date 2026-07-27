@@ -73,21 +73,23 @@ export function VerseMemorization({
           {itemLabel} {progressCount} из {lines.length}
         </span>
 
-        {currentLine ? (
-          isHidden ? (
-            <div className={styles.hiddenPrompt}>
-              <strong>{itemLabel} скрыт{session.activeView === 'translation' ? '' : 'а'}</strong>
-              <p>Попробуй произнести {session.activeView === 'sanskrit' ? 'её' : 'его'} по памяти</p>
-            </div>
+        <div className={styles.memoryContent}>
+          {currentLine ? (
+            isHidden ? (
+              <div className={styles.hiddenPrompt}>
+                <strong>{itemLabel} скрыт{session.activeView === 'translation' ? '' : 'а'}</strong>
+                <p>Попробуй произнести {session.activeView === 'sanskrit' ? 'её' : 'его'} по памяти</p>
+              </div>
+            ) : (
+              <p className={styles.lineText}>{currentLine}</p>
+            )
           ) : (
-            <p className={styles.lineText}>{currentLine}</p>
-          )
-        ) : (
-          <div className={styles.hiddenPrompt}>
-            <strong>Текст пока отсутствует</strong>
-            <p>Можно перейти к другому варианту или завершить знакомство.</p>
-          </div>
-        )}
+            <div className={styles.hiddenPrompt}>
+              <strong>Текст пока отсутствует</strong>
+              <p>Можно перейти к другому варианту или завершить знакомство.</p>
+            </div>
+          )}
+        </div>
 
         {currentLine ? (
           <button

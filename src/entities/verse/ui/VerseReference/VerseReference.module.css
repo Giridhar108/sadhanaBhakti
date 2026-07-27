@@ -5,7 +5,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
-  color: var(--violet-dark);
+  color: #8e61d4;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }

@@ -1,7 +1,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .empty {
@@ -11,10 +11,10 @@
   align-content: center;
   gap: 8px;
   padding: 28px;
-  border: 1px dashed var(--stroke-strong);
-  border-radius: var(--radius-xl);
+  border: 1px dashed rgba(226, 194, 151, 0.72);
+  border-radius: 14px;
   color: var(--muted);
-  background: rgba(255, 254, 250, 0.72);
+  background: rgba(255, 254, 250, 0.86);
   text-align: center;
 }
 

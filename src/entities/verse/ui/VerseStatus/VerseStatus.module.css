@@ -5,7 +5,8 @@
   width: max-content;
   min-height: 28px;
   padding: 5px 10px;
-  border-radius: 999px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 900;
 }
@@ -19,25 +20,30 @@
 
 .new {
   color: var(--violet-dark);
-  background: var(--violet-soft);
+  border-color: rgba(145, 94, 226, 0.14);
+  background: rgba(249, 245, 253, 0.78);
 }
 
 .learning {
   color: var(--gold-dark);
-  background: var(--gold-soft);
+  border-color: rgba(222, 168, 79, 0.16);
+  background: rgba(255, 245, 228, 0.86);
 }
 
 .review {
   color: var(--violet-dark);
-  background: var(--violet-soft);
+  border-color: rgba(145, 94, 226, 0.14);
+  background: rgba(249, 245, 253, 0.78);
 }
 
 .learned {
   color: var(--green-dark);
-  background: var(--green-soft);
+  border-color: rgba(120, 181, 111, 0.16);
+  background: rgba(242, 250, 238, 0.86);
 }
 
 .needsReview {
   color: #b75e2f;
-  background: var(--surface-warm);
+  border-color: rgba(226, 194, 151, 0.24);
+  background: rgba(255, 243, 223, 0.9);
 }

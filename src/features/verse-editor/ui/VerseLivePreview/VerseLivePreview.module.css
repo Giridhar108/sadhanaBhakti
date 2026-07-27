@@ -2,14 +2,14 @@
   position: sticky;
   top: 18px;
   display: grid;
-  gap: 18px;
-  padding: 26px;
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius-xl);
+  gap: 16px;
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
   background:
-    radial-gradient(circle at 90% 5%, rgba(245, 237, 249, 0.9), transparent 34%),
-    var(--surface);
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at 90% 5%, rgba(245, 237, 249, 0.5), transparent 34%),
+    rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
 }
 
 .eyebrow {
@@ -22,23 +22,26 @@
 
 .preview h2 {
   margin: -8px 0 2px;
-  color: var(--text);
-  font-size: 22px;
+  color: #2c2641;
+  font-size: 20px;
   line-height: 1.25;
+  font-weight: 800;
 }
 
 .preview section {
   min-width: 0;
-  padding: 18px;
-  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid rgba(159, 114, 215, 0.1);
+  border-radius: 10px;
 }
 
 .sanskrit {
-  background: var(--violet-soft);
+  background: rgba(248, 239, 248, 0.58);
 }
 
 .translation {
-  background: var(--green-soft);
+  border-color: rgba(120, 181, 111, 0.12);
+  background: rgba(242, 250, 238, 0.66);
 }
 
 .preview h3 {
