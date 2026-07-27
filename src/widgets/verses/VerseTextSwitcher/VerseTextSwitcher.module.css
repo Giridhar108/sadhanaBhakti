@@ -1,0 +1,29 @@
+.switcher {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+}
+
+.switcher button {
+  min-height: 42px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  background: transparent;
+  font-weight: 900;
+}
+
+.switcher .active {
+  color: var(--violet-dark);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.switcher button:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 2px;
+}

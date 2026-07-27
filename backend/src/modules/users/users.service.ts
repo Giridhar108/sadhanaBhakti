@@ -87,6 +87,7 @@ export class UsersService {
       where: { id: userId },
       data: {
         name: input.name,
+        lastName: input.lastName,
         spiritualName: input.spiritualName,
         avatarUrl: input.avatarUrl,
         birthDate: input.birthDate,

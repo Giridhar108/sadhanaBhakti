@@ -178,6 +178,7 @@ function RegisterView() {
   } = useForm<RegisterForm>({
     defaultValues: {
       name: readAuthDraft().name ?? '',
+      lastName: readAuthDraft().lastName ?? '',
       email: readAuthDraft().email ?? '',
       password: '',
       confirmPassword: '',
@@ -191,7 +192,13 @@ function RegisterView() {
       result.error.issues.forEach((issue) => {
         const field = issue.path[0];
 
-        if (field === 'name' || field === 'email' || field === 'password' || field === 'confirmPassword') {
+        if (
+          field === 'name'
+          || field === 'lastName'
+          || field === 'email'
+          || field === 'password'
+          || field === 'confirmPassword'
+        ) {
           setError(field, { message: issue.message });
         }
       });
@@ -217,11 +224,23 @@ function RegisterView() {
       </div>
 
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-        <label className={`${styles.field} ${errors.name ? styles.invalid : ''}`}>
-          <LineIcon name="user" />
-          <input placeholder="Имя" {...register('name')} />
-        </label>
-        <FieldError message={errors.name?.message} />
+        <div className={styles.nameFields}>
+          <div className={styles.nameFieldGroup}>
+            <label className={`${styles.field} ${errors.name ? styles.invalid : ''}`}>
+              <LineIcon name="user" />
+              <input placeholder="Имя" {...register('name')} />
+            </label>
+            <FieldError message={errors.name?.message} />
+          </div>
+
+          <div className={styles.nameFieldGroup}>
+            <label className={`${styles.field} ${errors.lastName ? styles.invalid : ''}`}>
+              <LineIcon name="user" />
+              <input placeholder="Фамилия" {...register('lastName')} />
+            </label>
+            <FieldError message={errors.lastName?.message} />
+          </div>
+        </div>
 
         <label className={`${styles.field} ${errors.email ? styles.invalid : ''}`}>
           <LineIcon name="mail" />
@@ -410,6 +429,8 @@ function PracticeStepView() {
 
 function GoalStepView() {
   const navigate = useNavigate();
+  const selectedPractices = readAuthDraft().practices ?? defaultPractices;
+  const visibleGoalCards = goalCards.filter((goal) => selectedPractices.includes(goal.practice));
   const [goals, setGoals] = useState<AuthGoals>(() => readAuthDraft().goals ?? defaultGoals);
   const [formMessage, setFormMessage] = useState('');
 
@@ -447,7 +468,7 @@ function GoalStepView() {
       </div>
 
       <div className={styles.goalList}>
-        {goalCards.map((goal) => (
+        {visibleGoalCards.map((goal) => (
           <article className={styles.goalOption} key={goal.key}>
             <FeatureIcon icon={goal.icon} tone={goal.tone} />
             <div className={styles.goalTitle}>

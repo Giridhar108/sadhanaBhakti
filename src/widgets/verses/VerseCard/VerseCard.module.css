@@ -1,0 +1,113 @@
+.card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 100% 0, rgba(245, 237, 249, 0.72), transparent 34%),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.favorite {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid var(--stroke);
+  border-radius: 50%;
+  color: var(--muted);
+  background: rgba(255, 254, 250, 0.88);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.favoriteActive {
+  border-color: rgba(159, 114, 215, 0.26);
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.bodyLink {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+  border-radius: var(--radius-md);
+}
+
+.bodyLink:focus-visible,
+.favorite:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+.sanskrit {
+  display: grid;
+  gap: 2px;
+  min-height: 64px;
+  margin: 0;
+  color: var(--text);
+  font-family: 'gaura_timesregular', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.sanskrit span {
+  display: block;
+}
+
+.progressMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progressMeta strong {
+  color: var(--violet-dark);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.progressMeta span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.progressTrack {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--violet-soft);
+}
+
+.progressTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--violet), var(--green));
+}
+
+@media (max-width: 520px) {
+  .card {
+    padding: 16px;
+  }
+
+  .progressMeta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .progressMeta span {
+    text-align: left;
+  }
+}

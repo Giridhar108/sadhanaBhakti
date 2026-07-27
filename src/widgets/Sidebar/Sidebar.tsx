@@ -41,6 +41,9 @@ const baseNavItems: NavItem[] = [
   { label: 'Настройки', image: settingsIcon, href: '/settings' },
 ];
 
+const isNavItemActive = (pathname: string, href: string) =>
+  pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
+
 export function Sidebar({ isStatic = false }: SidebarProps) {
   const location = useLocation();
   const [authUser, setAuthUser] = useState(() => readAuthUser());
@@ -115,7 +118,7 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
 
       <nav className={styles.nav} aria-label="Основная навигация">
         {navItems.map((item) => (
-          <Link key={item.label} className={`${styles.navItem} ${location.pathname === item.href ? styles.active : ''}`} to={item.href}>
+          <Link key={item.label} className={`${styles.navItem} ${isNavItemActive(location.pathname, item.href) ? styles.active : ''}`} to={item.href}>
             {item.image ? <img className={styles.navIcon} src={item.image} alt="" /> : <Icon name={item.icon ?? 'home'} />}
             <span>{item.label}</span>
           </Link>
@@ -166,13 +169,13 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
                   {featuredMenuItems.map((item) => (
                     <Link
                       key={item.label}
-                      className={`${styles.menuFeatureTile} ${location.pathname === item.href ? styles.menuTileActive : ''}`}
+                      className={`${styles.menuFeatureTile} ${isNavItemActive(location.pathname, item.href) ? styles.menuTileActive : ''}`}
                       to={item.href}
                       onClick={closeMenu}
                     >
                       {item.image ? <img src={item.image} alt="" /> : <Icon name={item.icon ?? 'home'} />}
                       <span>{item.label}</span>
-                      {location.pathname === item.href ? <i aria-hidden="true">✓</i> : null}
+                      {isNavItemActive(location.pathname, item.href) ? <i aria-hidden="true">✓</i> : null}
                     </Link>
                   ))}
                 </nav>
@@ -181,7 +184,7 @@ export function Sidebar({ isStatic = false }: SidebarProps) {
                   {compactMenuItems.map((item) => (
                     <Link
                       key={item.label}
-                      className={`${styles.menuTile} ${item.href === '/settings' ? styles.menuTileWide : ''} ${location.pathname === item.href ? styles.menuTileActive : ''}`}
+                      className={`${styles.menuTile} ${item.href === '/settings' ? styles.menuTileWide : ''} ${isNavItemActive(location.pathname, item.href) ? styles.menuTileActive : ''}`}
                       to={item.href}
                       onClick={closeMenu}
                     >

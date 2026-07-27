@@ -1,0 +1,170 @@
+.card {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(242, 250, 238, 0.96), transparent 34%),
+    var(--surface);
+  text-align: center;
+}
+
+.successIcon {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+
+.successIcon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.card > span {
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card h1 {
+  max-width: 620px;
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: clamp(27px, 3vw, 36px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.card > p {
+  margin: 14px 0 6px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.confidenceGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.confidenceGrid button {
+  min-height: 84px;
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  color: var(--text);
+  background: var(--surface);
+  text-align: left;
+}
+
+.confidenceGrid strong {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.confidenceGrid small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.confidenceGrid .forgot {
+  background: var(--surface-warm);
+}
+
+.confidenceGrid .hard {
+  background: var(--gold-soft);
+}
+
+.confidenceGrid .remembered {
+  background: var(--violet-soft);
+}
+
+.confidenceGrid .easy {
+  background: var(--green-soft);
+}
+
+.confidenceGrid button:focus-visible,
+.result button:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+.result {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 18px;
+  margin-top: 14px;
+  padding: 22px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 254, 250, 0.86);
+}
+
+.result > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.result span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.result strong {
+  color: var(--green-dark);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.result p {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.result button {
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: #fff;
+  background: var(--green);
+  font-weight: 900;
+}
+
+@media (max-width: 600px) {
+  .card {
+    min-height: 500px;
+    padding: 24px 16px;
+  }
+
+  .confidenceGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .confidenceGrid button {
+    min-height: 72px;
+  }
+}

@@ -21,6 +21,7 @@ const japaGoalHistoryEntrySchema = z.object({
 
 export const updateMeSchema = z.object({
   name: z.string().trim().min(2).optional(),
+  lastName: z.string().trim().min(2).optional(),
   spiritualName: z.string().trim().optional(),
   avatarUrl: z.string().max(2_000_000).nullable().optional(),
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),

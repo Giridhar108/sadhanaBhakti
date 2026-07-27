@@ -1,0 +1,43 @@
+.progress {
+  display: grid;
+  gap: 7px;
+}
+
+.progress > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress span,
+.progress strong {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.progress strong {
+  color: var(--violet-dark);
+}
+
+.track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--violet-soft);
+}
+
+.track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--violet), var(--green));
+  transition: width 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track span {
+    transition: none;
+  }
+}

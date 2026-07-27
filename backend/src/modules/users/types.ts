@@ -25,6 +25,7 @@ export type JapaGoalHistoryEntryDto = {
 export type AuthUserDto = {
   id: string;
   name: string;
+  lastName: string;
   spiritualName: string;
   birthDate: string | null;
   gender: 'male' | 'female' | null;
@@ -70,6 +71,7 @@ export function toAuthUserDto(user: User): AuthUserDto {
   return {
     id: user.id,
     name: user.name,
+    lastName: user.lastName,
     spiritualName: user.spiritualName,
     birthDate: user.birthDate,
     gender: user.gender as AuthUserDto['gender'],

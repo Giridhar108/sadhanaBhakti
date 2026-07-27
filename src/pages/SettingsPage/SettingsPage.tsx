@@ -1,12 +1,20 @@
 import { type ChangeEvent, type PointerEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useUiStore } from '../../app/store/useUiStore';
 import { audioApi } from '../../entities/audio/api/audioApi';
 import { audioTracksQueryKey, useAudioTracks } from '../../entities/audio/model/audioQueries';
 import { maxUserAudioFileSize, maxUserAudioTracks } from '../../entities/audio/model/defaultAudioTracks';
 import type { AudioTrack } from '../../entities/audio/model/types';
-import { defaultGoals, defaultSettings, readAuthUser, writeAuthUser } from '../../entities/user/model/auth';
+import {
+  clearAuthDraft,
+  clearAuthUser,
+  defaultGoals,
+  defaultSettings,
+  readAuthUser,
+  writeAuthUser,
+} from '../../entities/user/model/auth';
 import type { AuthUser } from '../../entities/user/model/types';
 import { endpoints } from '../../shared/api/endpoints';
 import { httpClient } from '../../shared/api/httpClient';
@@ -57,6 +65,7 @@ export default function SettingsPage() {
   const theme = useUiStore((state) => state.theme);
   const setTheme = useUiStore((state) => state.setTheme);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [events, setEvents] = useState<CalendarEvent[]>(() => readCalendarEvents());
   const [dailyVerses, setDailyVerses] = useState<DailyVerse[]>(() => readDailyVerses());
   const [authUser, setAuthUser] = useState(() => readAuthUser());
@@ -73,6 +82,7 @@ export default function SettingsPage() {
   const [audioDrafts, setAudioDrafts] = useState<AudioUploadDraft[]>([]);
   const [audioStatus, setAudioStatus] = useState<string | null>(null);
   const [isAudioUploading, setIsAudioUploading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { data: audioTracks = [], isError: isAudioTracksError } = useAudioTracks();
   const userAudioTracks = audioTracks.filter((track) => !track.isDefault);
   const remainingAudioSlots = Math.max(0, maxUserAudioTracks - userAudioTracks.length - audioDrafts.length);
@@ -246,6 +256,21 @@ export default function SettingsPage() {
   const saveTheme = async (nextTheme: 'light' | 'soft') => {
     setTheme(nextTheme);
     await saveSettingsPatch({ theme: nextTheme });
+  };
+
+  const logout = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      await httpClient.post(endpoints.auth.logout);
+    } catch {
+      // Локальный выход должен оставаться доступным, даже если backend временно недоступен.
+    } finally {
+      queryClient.clear();
+      clearAuthDraft();
+      clearAuthUser();
+      navigate('/auth/login', { replace: true });
+    }
   };
 
   const onEventSubmit = (data: EventForm) => {
@@ -918,6 +943,30 @@ export default function SettingsPage() {
             >
               <span>Светлая</span>
               <small>Чище и нейтральнее для ежедневной работы.</small>
+            </button>
+          </div>
+        </article>
+
+        <article className={`${styles.settingsCard} ${styles.accountCard} ${styles.wideCard}`}>
+          <SettingsCardHeader
+            icon="users"
+            title="Аккаунт"
+            description="Заверши текущую сессию на этом устройстве."
+            tone="violet"
+          />
+          <img className={styles.cardLotus} src={lotusSoft} alt="" aria-hidden="true" />
+          <div className={styles.accountRow}>
+            <div className={styles.accountIdentity}>
+              <strong>{authUser?.spiritualName || authUser?.name || 'Практикующий'}</strong>
+              {authUser?.email ? <small>{authUser.email}</small> : null}
+            </div>
+            <button
+              className={styles.logoutButton}
+              type="button"
+              disabled={isLoggingOut}
+              onClick={() => void logout()}
+            >
+              {isLoggingOut ? 'Выходим…' : 'Выйти из профиля'}
             </button>
           </div>
         </article>

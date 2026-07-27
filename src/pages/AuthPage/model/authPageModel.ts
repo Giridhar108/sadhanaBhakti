@@ -16,6 +16,7 @@ export type PracticeCard = {
 };
 
 export type GoalCard = {
+  practice: AuthPractice;
   key: keyof AuthGoals;
   title: string;
   label: string;
@@ -30,6 +31,7 @@ export type GoalCard = {
 export const registerSchema = z
   .object({
     name: z.string().trim().min(2, '\u041d\u0430\u043f\u0438\u0448\u0438 \u0438\u043c\u044f, \u0447\u0442\u043e\u0431\u044b \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0440\u0430\u043a\u0442\u0438\u043a\u0443.'),
+    lastName: z.string().trim().min(2, '\u041d\u0430\u043f\u0438\u0448\u0438 \u0444\u0430\u043c\u0438\u043b\u0438\u044e.'),
     email: z.string().trim().email('\u0423\u043a\u0430\u0436\u0438 \u043a\u043e\u0440\u0440\u0435\u043a\u0442\u043d\u044b\u0439 email.'),
     password: z.string().min(8, '\u041c\u0438\u043d\u0438\u043c\u0443\u043c 8 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432.'),
     confirmPassword: z.string().min(1, '\u041f\u043e\u0432\u0442\u043e\u0440\u0438 \u043f\u0430\u0440\u043e\u043b\u044c.'),
@@ -84,6 +86,7 @@ export const practiceCards: PracticeCard[] = [
 
 export const goalCards: GoalCard[] = [
   {
+    practice: 'japa',
     key: 'japaRounds',
     title: '\u0414\u0436\u0430\u043f\u0430',
     label: '\u0426\u0435\u043b\u044c \u043d\u0430 \u0434\u0435\u043d\u044c',
@@ -95,6 +98,7 @@ export const goalCards: GoalCard[] = [
     max: 64,
   },
   {
+    practice: 'books',
     key: 'readingPages',
     title: '\u0427\u0442\u0435\u043d\u0438\u0435 \u043a\u043d\u0438\u0433',
     label: '\u0426\u0435\u043b\u044c \u043d\u0430 \u0434\u0435\u043d\u044c',
@@ -106,6 +110,7 @@ export const goalCards: GoalCard[] = [
     max: 200,
   },
   {
+    practice: 'verses',
     key: 'versesPerWeek',
     title: '\u0418\u0437\u0443\u0447\u0435\u043d\u0438\u0435 \u0441\u0442\u0438\u0445\u043e\u0432',
     label: '\u0426\u0435\u043b\u044c \u043d\u0430 \u043d\u0435\u0434\u0435\u043b\u044e',

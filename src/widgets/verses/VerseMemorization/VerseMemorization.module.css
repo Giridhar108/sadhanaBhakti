@@ -1,0 +1,229 @@
+.card {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: grid;
+  gap: 16px;
+  padding: 28px 32px;
+}
+
+.heading {
+  min-width: 0;
+  text-align: center;
+}
+
+.heading > span {
+  color: var(--violet-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heading h1 {
+  margin: 6px 0 0;
+  color: var(--text);
+  font-size: clamp(26px, 3vw, 34px);
+  overflow-wrap: anywhere;
+}
+
+.heading p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.modeProgress {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.modeProgress span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modeProgress i {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--stroke-strong);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.modeProgress .complete {
+  color: var(--green-dark);
+}
+
+.modeProgress .complete i {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.lineCard {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 330px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 24px;
+  padding: 28px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+}
+
+.sanskrit {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(245, 237, 249, 0.9), transparent 36%),
+    var(--surface);
+}
+
+.translation {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(242, 250, 238, 0.92), transparent 36%),
+    var(--surface);
+}
+
+.counter {
+  color: var(--violet-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lineText {
+  min-width: 0;
+  max-width: 680px;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.sanskrit .lineText {
+  font-family: 'gaura_timesregular', Georgia, serif;
+}
+
+.translation .lineText {
+  font-family: var(--font-family);
+  font-size: clamp(19px, 2.3vw, 27px);
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.hiddenPrompt {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.hiddenPrompt strong {
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.hiddenPrompt p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.visibilityButton {
+  min-height: 42px;
+  border: 1px solid rgba(159, 114, 215, 0.2);
+  border-radius: var(--radius-md);
+  padding: 9px 16px;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-weight: 900;
+}
+
+.helper {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.42fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.actions button {
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 11px 16px;
+  font-weight: 900;
+}
+
+.secondaryButton {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.primaryButton {
+  color: #fff;
+  background: var(--green);
+}
+
+.actions button:disabled {
+  cursor: default;
+  color: var(--muted-2);
+  background: var(--surface-soft);
+}
+
+.actions button:focus-visible,
+.visibilityButton:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 20px 14px;
+  }
+
+  .lineCard {
+    min-height: 300px;
+    padding: 20px 14px;
+  }
+
+  .modeProgress {
+    gap: 12px;
+  }
+
+  .actions {
+    grid-template-columns: minmax(0, 1fr);
+    position: sticky;
+    bottom: 8px;
+    z-index: 2;
+    padding: 8px;
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 254, 250, 0.94);
+    backdrop-filter: blur(10px);
+  }
+}

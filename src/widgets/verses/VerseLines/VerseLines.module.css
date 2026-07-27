@@ -1,0 +1,95 @@
+.block {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+}
+
+.sanskrit {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(245, 237, 249, 0.86), transparent 32%),
+    rgba(255, 254, 250, 0.92);
+}
+
+.translation {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(242, 250, 238, 0.9), transparent 32%),
+    rgba(255, 254, 250, 0.92);
+}
+
+.block header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.block header span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-size: 17px;
+}
+
+.translation header span {
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+
+.block h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.lines {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.lines p {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.sanskrit .lines {
+  color: var(--text);
+  font-family: 'gaura_timesregular', Georgia, serif;
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.65;
+  text-align: center;
+}
+
+.translation .lines {
+  color: var(--text);
+  font-size: clamp(17px, 1.8vw, 21px);
+  font-weight: 650;
+  line-height: 1.7;
+}
+
+.missing {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .block {
+    padding: 18px;
+  }
+
+  .block header {
+    margin-bottom: 16px;
+  }
+}

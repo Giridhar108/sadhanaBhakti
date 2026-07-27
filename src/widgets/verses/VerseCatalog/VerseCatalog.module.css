@@ -1,0 +1,130 @@
+.groups {
+  display: grid;
+  gap: 18px;
+}
+
+.group {
+  overflow: hidden;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.group > header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--stroke);
+  background: linear-gradient(135deg, var(--violet-soft), rgba(255, 254, 250, 0.86));
+}
+
+.group header span {
+  color: var(--violet-dark);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.group h2 {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.group header small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.list {
+  display: grid;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  padding: 20px;
+}
+
+.item + .item {
+  border-top: 1px solid var(--stroke);
+}
+
+.itemCopy {
+  min-width: 0;
+}
+
+.sanskrit {
+  margin: 10px 0 0;
+  color: var(--text);
+  font-family: 'gaura_timesregular', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.translation {
+  max-width: 760px;
+  margin: 6px 0 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemActions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.primaryButton {
+  color: #fff;
+  background: var(--green);
+}
+
+.secondaryButton {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .itemActions {
+    justify-items: stretch;
+  }
+
+  .translation {
+    white-space: normal;
+  }
+}

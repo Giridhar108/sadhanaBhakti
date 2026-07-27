@@ -1,6 +1,7 @@
 export type User = {
   id: string;
   name: string;
+  lastName: string;
   email: string;
   avatarUrl?: string;
 };
@@ -58,6 +59,7 @@ export type AuthUser = User & {
 
 export type AuthDraft = {
   name?: string;
+  lastName?: string;
   spiritualName?: string;
   email?: string;
   passwordLength?: number;
@@ -68,6 +70,7 @@ export type AuthDraft = {
 
 export type RegisterAccountInput = {
   name: string;
+  lastName: string;
   email: string;
   password: string;
 };

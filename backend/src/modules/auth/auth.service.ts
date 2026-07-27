@@ -69,6 +69,7 @@ export class AuthService {
       data: {
         email,
         name: input.name.trim(),
+        lastName: input.lastName.trim(),
         passwordHash: await hashPassword(input.password),
         provider: AuthProvider.EMAIL,
       },

@@ -79,6 +79,7 @@ function getErrorMessage(error: unknown, fallback: string) {
 function writeDraftFromUser(user: AuthUser, passwordLength?: number) {
   writeAuthDraft({
     name: user.name,
+    lastName: user.lastName,
     spiritualName: user.spiritualName,
     email: user.email,
     passwordLength,
@@ -99,6 +100,7 @@ function normalizeAuthUser(user: AuthUser | null) {
 
   return {
     ...user,
+    lastName: user.lastName ?? '',
     birthDate: user.birthDate ?? null,
     gender: user.gender ?? null,
     settings: {
@@ -151,6 +153,7 @@ export async function startEmailRegistration(input: RegisterAccountInput) {
   try {
     const user = await httpClient.post<AuthUser>(endpoints.auth.register, {
       name: input.name.trim(),
+      lastName: input.lastName.trim(),
       email: input.email.trim().toLowerCase(),
       password: input.password,
     });

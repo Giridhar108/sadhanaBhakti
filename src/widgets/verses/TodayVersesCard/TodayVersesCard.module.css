@@ -1,0 +1,197 @@
+.card,
+.emptyCard {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(310px, 0.72fr);
+  gap: 24px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(245, 237, 249, 0.94), transparent 34%),
+    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(248, 253, 246, 0.94));
+}
+
+.copy {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+}
+
+.copy > span,
+.emptyCard > span {
+  color: var(--violet-dark);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.copy h2,
+.emptyCard h2 {
+  margin: 8px 0 0;
+  color: var(--text);
+  font-size: clamp(27px, 3vw, 38px);
+  line-height: 1.1;
+}
+
+.copy p,
+.emptyCard p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 11px 18px;
+  font-weight: 900;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 22px;
+  color: #fff;
+  background: var(--green);
+}
+
+.primaryButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.secondaryButton {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-self: center;
+  overflow: hidden;
+  border: 1px solid rgba(159, 114, 215, 0.16);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 254, 250, 0.7);
+}
+
+.summary div {
+  min-height: 112px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  padding: 12px;
+  text-align: center;
+}
+
+.summary div + div {
+  border-left: 1px solid var(--stroke);
+}
+
+.summary strong {
+  color: var(--violet-dark);
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.emptyCard {
+  min-height: 330px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(242, 250, 238, 0.98), transparent 30%),
+    var(--surface);
+}
+
+.lotus {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+
+.lotus svg {
+  width: 28px;
+  height: 28px;
+}
+
+.emptyCard h2 {
+  max-width: 620px;
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.emptyCard p {
+  max-width: 520px;
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.actions .primaryButton {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .card,
+  .emptyCard {
+    padding: 20px;
+  }
+
+  .summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .summary div {
+    min-height: 74px;
+  }
+
+  .summary div + div {
+    border-top: 1px solid var(--stroke);
+    border-left: 0;
+  }
+
+  .actions,
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}

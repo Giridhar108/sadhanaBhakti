@@ -1,0 +1,43 @@
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: max-content;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.new {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.learning {
+  color: var(--gold-dark);
+  background: var(--gold-soft);
+}
+
+.review {
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+}
+
+.learned {
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+
+.needsReview {
+  color: #b75e2f;
+  background: var(--surface-warm);
+}
