@@ -238,7 +238,8 @@
 }
 
 .emptyIcon svg {
-  width: 36px;
+  width: 40px;
+  height: 40px;
 }
 
 .empty h2 {

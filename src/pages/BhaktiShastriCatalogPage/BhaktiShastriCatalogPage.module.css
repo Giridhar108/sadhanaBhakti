@@ -7,10 +7,18 @@
 
 .backLink {
   width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border-radius: 8px;
   color: var(--violet-dark);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 800;
+}
+
+.backLink span {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .backLink:focus-visible,

@@ -86,7 +86,10 @@ export default function BhaktiShastriCatalogPage() {
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to="/verses">← Все стихи</Link>
+      <Link className={styles.backLink} to="/verses">
+        <span aria-hidden="true">←</span>
+        Все стихи
+      </Link>
 
       <header className={styles.hero}>
         <div className={styles.heroIcon} aria-hidden="true">
