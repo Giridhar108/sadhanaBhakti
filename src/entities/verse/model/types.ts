@@ -1,3 +1,5 @@
+import type { PrayerVerseProgress } from '../../prayer/model/prayer.types';
+
 export type VerseStatus =
   | 'new'
   | 'learning'
@@ -62,6 +64,7 @@ export type VerseLearningSession = {
 
 export type VerseStore = {
   verses: UserVerse[];
+  prayerProgress: Record<string, PrayerVerseProgress>;
   currentSession: VerseLearningSession | null;
   reviewQueue: string[];
   isLoading: boolean;
@@ -82,4 +85,7 @@ export type VerseStore = {
   completeInitialLearning: () => void;
   completeLearningSession: (confidence: VerseConfidence) => void;
   resetLearningSession: () => void;
+  startPrayerVerse: (prayerId: string, verseId: string) => void;
+  markPrayerVerseAsLearned: (prayerId: string, verseId: string) => void;
+  markPrayerVerseForReview: (prayerId: string, verseId: string) => void;
 };

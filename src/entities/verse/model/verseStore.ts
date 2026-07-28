@@ -20,6 +20,7 @@ const storageOwnerId = readAuthUser()?.id ?? 'preview';
 type PersistedState = {
   ownerId: string;
   verses: UserVerse[];
+  prayerProgress: VerseStore['prayerProgress'];
   currentSession: VerseLearningSession | null;
   reviewQueue: string[];
 };
@@ -33,21 +34,34 @@ const emptyProgressState: VerseLearningProgressState = {
   translationHiddenLines: [],
 };
 
-const readPersistedState = (): Pick<VerseStore, 'verses' | 'currentSession' | 'reviewQueue'> => {
-  if (typeof window === 'undefined') return { verses: [], currentSession: null, reviewQueue: [] };
+const emptyPersistedState = {
+  verses: [],
+  prayerProgress: {},
+  currentSession: null,
+  reviewQueue: [],
+} satisfies Pick<VerseStore, 'verses' | 'prayerProgress' | 'currentSession' | 'reviewQueue'>;
+
+const readPersistedState = (): Pick<
+  VerseStore,
+  'verses' | 'prayerProgress' | 'currentSession' | 'reviewQueue'
+> => {
+  if (typeof window === 'undefined') return emptyPersistedState;
 
   try {
     const parsed = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null') as PersistedState | null;
     if (!parsed || parsed.ownerId !== storageOwnerId || !Array.isArray(parsed.verses)) {
-      return { verses: [], currentSession: null, reviewQueue: [] };
+      return emptyPersistedState;
     }
     return {
       verses: parsed.verses,
+      prayerProgress: parsed.prayerProgress && typeof parsed.prayerProgress === 'object'
+        ? parsed.prayerProgress
+        : {},
       currentSession: parsed.currentSession ?? null,
       reviewQueue: Array.isArray(parsed.reviewQueue) ? parsed.reviewQueue : [],
     };
   } catch {
-    return { verses: [], currentSession: null, reviewQueue: [] };
+    return emptyPersistedState;
   }
 };
 
@@ -57,6 +71,7 @@ const writePersistedState = (state: VerseStore) => {
     window.localStorage.setItem(storageKey, JSON.stringify({
       ownerId: storageOwnerId,
       verses: state.verses,
+      prayerProgress: state.prayerProgress,
       currentSession: state.currentSession,
       reviewQueue: state.reviewQueue,
     } satisfies PersistedState));
@@ -493,5 +508,67 @@ export const useVerseStore = create<VerseStore>((set, get) => {
       currentSession: null,
       reviewQueue: [],
     })),
+    startPrayerVerse: (prayerId, verseId) => {
+      updatePersisted((state) => {
+        const current = state.prayerProgress[verseId];
+
+        return {
+          ...state,
+          prayerProgress: {
+            ...state.prayerProgress,
+            [verseId]: {
+              prayerId,
+              verseId,
+              status: current?.status === 'learned' ? 'learned' : 'learning',
+              successfulRepetitions: current?.successfulRepetitions ?? 0,
+              lastReviewedAt: current?.lastReviewedAt,
+              nextReviewAt: current?.nextReviewAt,
+            },
+          },
+        };
+      });
+    },
+    markPrayerVerseAsLearned: (prayerId, verseId) => {
+      updatePersisted((state) => {
+        const current = state.prayerProgress[verseId];
+        const lastReviewedAt = new Date().toISOString();
+        const nextReviewAt = addDays(getTodayDateKey(), 3);
+
+        return {
+          ...state,
+          prayerProgress: {
+            ...state.prayerProgress,
+            [verseId]: {
+              prayerId,
+              verseId,
+              status: 'learned',
+              successfulRepetitions: (current?.successfulRepetitions ?? 0) + 1,
+              lastReviewedAt,
+              nextReviewAt,
+            },
+          },
+        };
+      });
+    },
+    markPrayerVerseForReview: (prayerId, verseId) => {
+      updatePersisted((state) => {
+        const current = state.prayerProgress[verseId];
+
+        return {
+          ...state,
+          prayerProgress: {
+            ...state.prayerProgress,
+            [verseId]: {
+              prayerId,
+              verseId,
+              status: 'learning',
+              successfulRepetitions: current?.successfulRepetitions ?? 0,
+              lastReviewedAt: new Date().toISOString(),
+              nextReviewAt: getTodayDateKey(),
+            },
+          },
+        };
+      });
+    },
   };
 });

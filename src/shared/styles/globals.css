@@ -43,3 +43,9 @@ svg {
 img {
   max-width: 100%;
 }
+
+@media (max-width: 1280px) {
+  html {
+    scrollbar-gutter: auto;
+  }
+}

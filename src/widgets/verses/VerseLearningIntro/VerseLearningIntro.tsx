@@ -7,15 +7,22 @@ import styles from './VerseLearningIntro.module.css';
 type VerseLearningIntroProps = {
   verse: Verse;
   onStart: () => void;
+  heading?: string;
+  description?: string;
 };
 
-export function VerseLearningIntro({ verse, onStart }: VerseLearningIntroProps) {
+export function VerseLearningIntro({
+  verse,
+  onStart,
+  heading = 'Познакомься со стихом',
+  description = 'Сначала спокойно прочитай санскрит и перевод целиком.',
+}: VerseLearningIntroProps) {
   return (
     <Card className={styles.card}>
       <div className={styles.heading}>
         <span>Шаг 1</span>
-        <h1>Познакомься со стихом</h1>
-        <p>Сначала спокойно прочитай санскрит и перевод целиком.</p>
+        <h1>{heading}</h1>
+        <p>{description}</p>
       </div>
 
       <VerseLines

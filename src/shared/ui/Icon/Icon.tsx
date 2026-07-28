@@ -19,6 +19,7 @@ export type IconName =
   | 'scroll'
   | 'clock'
   | 'music'
+  | 'back'
   | 'lotus';
 
 type IconProps = {
@@ -44,6 +45,7 @@ const paths: Record<Exclude<IconName, 'lotus'>, ReactNode> = {
   scroll: <><path d="M8 4h8a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Z" /><path d="M8 8h7" /><path d="M8 12h8" /><path d="M8 16h6" /></>,
   clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
   music: <><path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" /></>,
+  back: <><path d="m10.5 7-5 5 5 5" /><path d="M6 12h12.5" /></>,
 };
 
 export function Icon({ name, className, title }: IconProps) {

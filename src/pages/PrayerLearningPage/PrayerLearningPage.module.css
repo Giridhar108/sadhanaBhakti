@@ -1,0 +1,31 @@
+.prayerReference {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.prayerReference strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prayerReference span {
+  flex: 0 0 auto;
+  color: var(--violet-dark);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@media (max-width: 520px) {
+  .prayerReference {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1px;
+  }
+}

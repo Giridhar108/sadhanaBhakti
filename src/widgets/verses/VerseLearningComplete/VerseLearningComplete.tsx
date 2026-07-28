@@ -28,6 +28,11 @@ type VerseLearningCompleteProps = {
   remainingInQueue?: number;
   onSelectConfidence: (confidence: VerseConfidence) => void;
   onReturn: () => void;
+  completionTitle?: string;
+  question?: string;
+  returnLabel?: string;
+  nextLabel?: string;
+  queueCompleteLabel?: string;
 };
 
 export function VerseLearningComplete({
@@ -36,6 +41,11 @@ export function VerseLearningComplete({
   remainingInQueue,
   onSelectConfidence,
   onReturn,
+  completionTitle,
+  question = 'Насколько легко удалось вспомнить стих?',
+  returnLabel,
+  nextLabel = 'Следующий стих',
+  queueCompleteLabel = 'Завершить повторение',
 }: VerseLearningCompleteProps) {
   const verseReference = `${verse.chapter ? `${verse.chapter}.` : ''}${verse.verseNumber}`;
 
@@ -45,11 +55,11 @@ export function VerseLearningComplete({
         <Icon name="lotus" />
       </div>
       <span>Практика завершена</span>
-      <h1>Ты повторил {verse.bookTitle} {verseReference}</h1>
+      <h1>{completionTitle ?? `Ты повторил ${verse.bookTitle} ${verseReference}`}</h1>
 
       {!confidence ? (
         <>
-          <p>Насколько легко удалось вспомнить стих?</p>
+          <p>{question}</p>
           <div className={styles.confidenceGrid}>
             {(Object.keys(confidenceLabels) as VerseConfidence[]).map((value) => (
               <button
@@ -80,10 +90,10 @@ export function VerseLearningComplete({
           ) : null}
           <button type="button" onClick={onReturn}>
             {remainingInQueue === undefined
-              ? 'Вернуться к стихам'
+              ? returnLabel ?? 'Вернуться к стихам'
               : remainingInQueue > 0
-                ? 'Следующий стих'
-                : 'Завершить повторение'}
+                ? nextLabel
+                : queueCompleteLabel}
           </button>
         </div>
       )}

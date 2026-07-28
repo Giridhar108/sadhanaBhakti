@@ -32,6 +32,9 @@ const CreateVersePage = lazy(() => import('../../pages/CreateVersePage/CreateVer
 const EditVersePage = lazy(() => import('../../pages/EditVersePage/EditVersePage'));
 const VerseDetailsPage = lazy(() => import('../../pages/VerseDetailsPage/VerseDetailsPage'));
 const VerseLearningPage = lazy(() => import('../../pages/VerseLearningPage/VerseLearningPage'));
+const PrayerDetailsPage = lazy(() => import('../../pages/PrayerDetailsPage/PrayerDetailsPage'));
+const PrayerVersePage = lazy(() => import('../../pages/PrayerVersePage/PrayerVersePage'));
+const PrayerLearningPage = lazy(() => import('../../pages/PrayerLearningPage/PrayerLearningPage'));
 const CalendarPage = lazy(() => import('../../pages/CalendarPage/CalendarPage'));
 const StatisticsPage = lazy(() => import('../../pages/StatisticsPage/StatisticsPage'));
 const ProfilePage = lazy(() => import('../../pages/ProfilePage/ProfilePage'));
@@ -169,6 +172,9 @@ function RoutedContent() {
           <Route path="/verses" element={<VersesPage />} />
           <Route path="/verses/bhakti-shastri" element={<BhaktiShastriCatalogPage />} />
           <Route path="/verses/new" element={<CreateVersePage />} />
+          <Route path="/verses/prayers/:prayerSlug" element={<PrayerDetailsPage />} />
+          <Route path="/verses/prayers/:prayerSlug/:prayerVerseId" element={<PrayerVersePage />} />
+          <Route path="/verses/prayers/:prayerSlug/:prayerVerseId/learn" element={<PrayerLearningPage />} />
           <Route path="/verses/:verseId/edit" element={<EditVersePage />} />
           <Route path="/verses/:verseId" element={<VerseDetailsPage />} />
           <Route path="/verses/:verseId/learn" element={<VerseLearningPage />} />

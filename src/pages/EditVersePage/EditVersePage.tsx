@@ -4,6 +4,7 @@ import { getVerseById, type VerseEditorValues, useVerseStore } from '../../entit
 import { VerseEditorForm } from '../../features/verse-editor/ui/VerseEditorForm/VerseEditorForm';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { Card } from '../../shared/ui/Card/Card';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './EditVersePage.module.css';
 
 export default function EditVersePage() {
@@ -64,7 +65,10 @@ export default function EditVersePage() {
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to={`/verses/${verse.id}`}>← Назад к стиху</Link>
+      <Link className={styles.backLink} to={`/verses/${verse.id}`}>
+        <Icon name="back" />
+        Назад к стиху
+      </Link>
       <header>
         <span>Общая коллекция</span>
         <h1>Редактировать стих</h1>

@@ -42,6 +42,12 @@
   font-weight: 800;
 }
 
+.iconButton svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
 .iconButton:focus-visible,
 .stateCard a:focus-visible,
 .stateCard button:focus-visible {

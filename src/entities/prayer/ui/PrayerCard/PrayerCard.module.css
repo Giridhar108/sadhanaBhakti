@@ -1,0 +1,196 @@
+.card {
+  position: relative;
+  min-width: 0;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px;
+  border-color: rgba(226, 194, 151, 0.44);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 102% -4%, rgba(239, 228, 248, 0.68), transparent 34%),
+    linear-gradient(rgba(255, 254, 250, 0.95), rgba(255, 253, 247, 0.95)),
+    repeating-linear-gradient(0deg, transparent 0 5px, rgba(121, 94, 72, 0.018) 5px 6px);
+  box-shadow: 0 7px 20px rgba(91, 67, 54, 0.07);
+}
+
+.ornament {
+  position: absolute;
+  top: 54px;
+  right: 18px;
+  width: 64px;
+  height: 64px;
+  color: rgba(132, 90, 171, 0.1);
+  transform: rotate(7deg);
+}
+
+.ornament svg {
+  width: 100%;
+  height: 100%;
+}
+
+.topline {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.category {
+  max-width: 70%;
+  color: var(--violet-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.status {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #5e7956;
+  background: rgba(232, 245, 227, 0.88);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.card h2 {
+  position: relative;
+  max-width: calc(100% - 42px);
+  margin: 22px 0 0;
+  color: var(--text);
+  font-size: 21px;
+  line-height: 1.22;
+}
+
+.opening {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 2px 3px;
+  margin: 8px 0 0;
+  color: var(--violet-dark);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: rgba(126, 79, 184, 0.46);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.opening:hover {
+  color: #7444b3;
+  background: rgba(239, 228, 248, 0.72);
+}
+
+.opening:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.24);
+  outline-offset: 2px;
+  background: var(--violet-soft);
+}
+
+.opening:disabled {
+  color: var(--muted);
+  text-decoration-color: transparent;
+  cursor: default;
+}
+
+.meta {
+  margin: 14px 0 18px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.progressCopy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.progressCopy strong {
+  color: var(--green-dark);
+}
+
+.reviewDate {
+  margin: 8px 0 0;
+  color: var(--muted-2);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.actions button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(127, 83, 192, 0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.primaryAction {
+  color: #fff;
+  background: #8556c6;
+}
+
+.actions button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.actions button:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.25);
+  outline-offset: 3px;
+}
+
+.unavailable {
+  background:
+    radial-gradient(circle at 102% -4%, rgba(235, 231, 225, 0.64), transparent 34%),
+    rgba(255, 254, 250, 0.9);
+}
+
+.unavailable .status {
+  color: #837462;
+  background: rgba(244, 235, 220, 0.9);
+}
+
+.unavailable .actions button {
+  color: #8a7f8b;
+  background: #eee9ec;
+  cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+  .card {
+    min-height: 310px;
+    padding: 20px;
+  }
+
+}

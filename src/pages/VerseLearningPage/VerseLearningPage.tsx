@@ -148,7 +148,7 @@ export default function VerseLearningPage() {
     <section className={styles.page}>
       <header className={styles.sessionHeader}>
         <button className={styles.iconButton} type="button" aria-label="Назад" onClick={goBack}>
-          ←
+          <Icon name="back" />
         </button>
         <div className={styles.sessionIdentity}>
           <VerseReference verse={verse} />

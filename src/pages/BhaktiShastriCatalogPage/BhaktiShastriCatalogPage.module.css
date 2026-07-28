@@ -16,9 +16,9 @@
   font-weight: 800;
 }
 
-.backLink span {
-  font-size: 22px;
-  line-height: 1;
+.backLink svg {
+  width: 19px;
+  height: 19px;
 }
 
 .backLink:focus-visible,

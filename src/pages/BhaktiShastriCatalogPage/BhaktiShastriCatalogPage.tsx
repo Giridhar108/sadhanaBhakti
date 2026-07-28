@@ -87,7 +87,7 @@ export default function BhaktiShastriCatalogPage() {
   return (
     <section className={styles.page}>
       <Link className={styles.backLink} to="/verses">
-        <span aria-hidden="true">←</span>
+        <Icon name="back" />
         Все стихи
       </Link>
 

@@ -4,6 +4,7 @@ import type { VerseEditorValues } from '../../entities/verse';
 import { useVerseStore } from '../../entities/verse';
 import { VerseEditorForm } from '../../features/verse-editor/ui/VerseEditorForm/VerseEditorForm';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
+import { Icon } from '../../shared/ui/Icon/Icon';
 import styles from './CreateVersePage.module.css';
 
 export default function CreateVersePage() {
@@ -27,7 +28,10 @@ export default function CreateVersePage() {
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to="/verses">← Назад к стихам</Link>
+      <Link className={styles.backLink} to="/verses">
+        <Icon name="back" />
+        Назад к стихам
+      </Link>
       <header>
         <span>Общая коллекция</span>
         <h1>Добавить стих</h1>

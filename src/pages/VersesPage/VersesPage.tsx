@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { getTodayVerses, getVerseSearchText, useVerseStore, type Verse } from '../../entities/verse';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { Icon } from '../../shared/ui/Icon/Icon';
+import { SegmentedControl } from '../../shared/ui/SegmentedControl/SegmentedControl';
+import { PrayerCatalog } from '../../widgets/prayers/PrayerCatalog/PrayerCatalog';
 import { VerseList } from '../../widgets/verses/VerseList/VerseList';
 import { VerseReviewQueue } from '../../widgets/verses/VerseReviewQueue/VerseReviewQueue';
 import styles from './VersesPage.module.css';
@@ -17,7 +19,9 @@ const filters: { id: VerseFilter; label: string }[] = [
 ];
 
 export default function VersesPage() {
-  useDocumentTitle('Стихи — Садхана Бхакти');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const section = searchParams.get('section') === 'prayers' ? 'prayers' : 'verses';
+  useDocumentTitle(`${section === 'prayers' ? 'Молитвы' : 'Стихи'} — Садхана Бхакти`);
   const navigate = useNavigate();
   const verses = useVerseStore((state) => state.verses);
   const isLoading = useVerseStore((state) => state.isLoading);
@@ -33,8 +37,10 @@ export default function VersesPage() {
   const [removeError, setRemoveError] = useState('');
 
   useEffect(() => {
-    loadVerses();
-  }, [loadVerses]);
+    if (section === 'verses') {
+      loadVerses();
+    }
+  }, [loadVerses, section]);
 
   const communityVerses = useMemo(
     () => verses.filter((verse) => !verse.catalog),
@@ -85,16 +91,53 @@ export default function VersesPage() {
     }
   };
 
+  const changeSection = (value: string) => {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('section', value === 'prayers' ? 'prayers' : 'verses');
+    setSearchParams(nextSearchParams);
+  };
+
+  const sectionTabs = (
+    <SegmentedControl
+      className={styles.sectionTabs}
+      value={section}
+      ariaLabel="Разделы учебного центра"
+      options={[
+        { value: 'verses', label: 'Стихи' },
+        { value: 'prayers', label: 'Молитвы' },
+      ]}
+      onChange={changeSection}
+    />
+  );
+
+  if (section === 'prayers') {
+    return (
+      <section className={styles.page}>
+        <header className={styles.hero}>
+          <div>
+            <span>Единый учебный центр</span>
+            <h1>Изучение</h1>
+            <p>Осваивайте вайшнавские молитвы</p>
+          </div>
+          <div className={styles.heroLotus} aria-hidden="true"><Icon name="lotus" /></div>
+        </header>
+        {sectionTabs}
+        <PrayerCatalog />
+      </section>
+    );
+  }
+
   return (
     <section className={styles.page}>
       <header className={styles.hero}>
         <div>
-          <span>Общая коллекция</span>
-          <h1>Стихи</h1>
+          <span>Единый учебный центр</span>
+          <h1>Изучение</h1>
           <p>Добавляй стихи для всей общины и изучай каждый в удобном для себя темпе.</p>
         </div>
         <Link className={styles.addButton} to="/verses/new">+ Добавить стих</Link>
       </header>
+      {sectionTabs}
 
       {error ? <div className={styles.error} role="alert">{error}</div> : null}
 

@@ -6,10 +6,18 @@
 
 .backLink {
   width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   border-radius: 8px;
   color: var(--violet-dark);
   font-size: 13px;
   font-weight: 800;
+}
+
+.backLink svg {
+  width: 18px;
+  height: 18px;
 }
 
 .page > header {
