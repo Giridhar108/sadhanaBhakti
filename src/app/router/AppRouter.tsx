@@ -2,7 +2,13 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useUiStore } from '../store/useUiStore';
 import { AudioTracksPreloader } from '../../entities/audio/model/AudioTracksPreloader';
-import { loadAuthSession, readAuthUser, subscribeToAuthUserChange } from '../../entities/user/model/auth';
+import {
+  clearAuthUser,
+  loadAuthSession,
+  readAuthUser,
+  subscribeToAuthUserChange,
+} from '../../entities/user/model/auth';
+import { subscribeToAuthSessionExpired } from '../../shared/api/authSessionEvents';
 import { AppShell } from '../layout/AppShell';
 import { YesterdayJapaPrompt } from '../../widgets/YesterdayJapaPrompt/YesterdayJapaPrompt';
 import styles from './AppRouter.module.css';
@@ -65,6 +71,7 @@ function RoutedContent() {
   const requestedAppPreview = previewMode === 'app' && canUseAppPreview;
   const appPreview = requestedAppPreview || (previewMode !== 'off' && canUseAppPreview && readAppPreviewFlag());
   const [authUser, setAuthUser] = useState(() => readAuthUser());
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(!legacyPreview && !appPreview);
   const setTheme = useUiStore((state) => state.setTheme);
   const isAuthRoute = location.pathname.startsWith('/auth') || location.pathname === '/login' || location.pathname === '/register';
@@ -104,7 +111,23 @@ function RoutedContent() {
     };
   }, [appPreview, legacyPreview]);
 
-  useEffect(() => subscribeToAuthUserChange(() => setAuthUser(readAuthUser())), []);
+  useEffect(() => subscribeToAuthUserChange(() => {
+    const nextUser = readAuthUser();
+
+    setAuthUser(nextUser);
+    if (nextUser) {
+      setSessionExpired(false);
+    }
+  }), []);
+
+  useEffect(() => subscribeToAuthSessionExpired(() => {
+    if (!readAuthUser()) {
+      return;
+    }
+
+    setSessionExpired(true);
+    clearAuthUser();
+  }), []);
 
   useEffect(() => {
     if (authUser?.settings.theme) {
@@ -121,7 +144,7 @@ function RoutedContent() {
   }
 
   if (!appPreview && !authUser?.isOnboarded && !isAuthRoute) {
-    return <Navigate to="/auth/register" replace />;
+    return <Navigate to={sessionExpired ? '/auth/login' : '/auth/register'} replace />;
   }
 
   if (!appPreview && authUser?.isOnboarded && isAuthRoute) {

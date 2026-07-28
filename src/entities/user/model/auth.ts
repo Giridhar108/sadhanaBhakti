@@ -220,18 +220,7 @@ export async function loadAuthSession() {
 
     return user;
   } catch {
-    try {
-      await httpClient.post(endpoints.auth.refresh);
-      const user = await httpClient.get<AuthUser>(endpoints.users.me);
-
-      writeAuthUser(user);
-
-      return user;
-    } catch {
-      clearAuthUser();
-
-      return null;
-    }
+    return readAuthUser();
   }
 }
 
