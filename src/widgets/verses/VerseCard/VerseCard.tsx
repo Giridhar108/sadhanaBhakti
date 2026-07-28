@@ -12,25 +12,50 @@ import styles from './VerseCard.module.css';
 type VerseCardProps = {
   verse: Verse;
   onToggleFavorite: (verseId: string) => void;
+  onRemoveFromLearning?: (verse: Verse) => void;
 };
 
-export function VerseCard({ verse, onToggleFavorite }: VerseCardProps) {
+export function VerseCard({ verse, onToggleFavorite, onRemoveFromLearning }: VerseCardProps) {
   const lines = getVerseLines(verse.sanskritCyrillic);
   const progress = getVerseProgress(verse);
+  const canRemoveFromLearning = verse.catalog === 'bhakti-shastri'
+    && verse.status !== 'new'
+    && onRemoveFromLearning;
 
   return (
     <article className={styles.card}>
       <header>
-        <VerseReference verse={verse} linked />
-        <button
-          className={`${styles.favorite} ${verse.isFavorite ? styles.favoriteActive : ''}`}
-          type="button"
-          aria-label={verse.isFavorite ? 'Убрать стих из избранного' : 'Добавить стих в избранное'}
-          aria-pressed={verse.isFavorite}
-          onClick={() => onToggleFavorite(verse.id)}
-        >
-          {verse.isFavorite ? '♥' : '♡'}
-        </button>
+        <div className={styles.reference}>
+          <VerseReference verse={verse} linked />
+          {verse.catalog === 'bhakti-shastri' ? <span>Каталог Бхакти-шастры</span> : null}
+        </div>
+        <div className={styles.actions}>
+          {canRemoveFromLearning ? (
+            <button
+              className={styles.remove}
+              type="button"
+              aria-label="Убрать стих из изучаемых"
+              title="Убрать из изучаемых"
+              onClick={() => onRemoveFromLearning(verse)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 6h18" />
+                <path d="M8 6V4h8v2" />
+                <path d="M19 6l-1 15H6L5 6" />
+                <path d="M10 11v6M14 11v6" />
+              </svg>
+            </button>
+          ) : null}
+          <button
+            className={`${styles.favorite} ${verse.isFavorite ? styles.favoriteActive : ''}`}
+            type="button"
+            aria-label={verse.isFavorite ? 'Убрать стих из избранного' : 'Добавить стих в избранное'}
+            aria-pressed={verse.isFavorite}
+            onClick={() => onToggleFavorite(verse.id)}
+          >
+            {verse.isFavorite ? '♥' : '♡'}
+          </button>
+        </div>
       </header>
 
       <Link className={styles.bodyLink} to={`/verses/${verse.id}`}>

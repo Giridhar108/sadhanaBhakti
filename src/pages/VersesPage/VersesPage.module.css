@@ -57,6 +57,101 @@
   font-weight: 800;
 }
 
+.catalogCard {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  padding: 20px 22px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 88% 0, rgba(231, 246, 227, 0.78), transparent 30%),
+    linear-gradient(115deg, rgba(248, 240, 251, 0.66), rgba(255, 254, 250, 0.96));
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.08);
+}
+
+.catalogCard:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
+.catalogIcon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #7455ac;
+  background: rgba(241, 231, 249, 0.9);
+}
+
+.catalogIcon svg {
+  width: 27px;
+  height: 27px;
+}
+
+.catalogCard > div:nth-child(2) > span {
+  color: var(--violet-dark);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.catalogCard h2 {
+  margin: 3px 0 0;
+  color: #2c2641;
+  font-size: 21px;
+  line-height: 1.15;
+}
+
+.catalogCard p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.catalogBooks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.catalogBooks i {
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: #716987;
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.catalogCard > strong {
+  display: grid;
+  justify-items: center;
+  color: #5f9658;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.catalogCard > strong small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.catalogCard > svg {
+  width: 20px;
+  height: 20px;
+  color: #8c61d6;
+}
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -174,6 +269,75 @@
   font-weight: 800;
 }
 
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(31, 24, 44, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  width: min(100%, 500px);
+  padding: 24px 28px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background: rgba(255, 254, 250, 0.98);
+  box-shadow: 0 12px 32px rgba(73, 50, 35, 0.14);
+}
+
+.dialog h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 22px;
+}
+
+.dialog p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.dialog > span {
+  display: block;
+  margin-top: 10px;
+  color: #9b4d45;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dialog > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dialog button {
+  min-height: 44px;
+  border: 1px solid rgba(159, 114, 215, 0.18);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--text);
+  background: rgba(248, 239, 248, 0.58);
+  font-weight: 800;
+}
+
+.dialog .confirmRemove {
+  border-color: rgba(181, 93, 82, 0.16);
+  color: #fff;
+  background: #a55d53;
+}
+
+.dialog button:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
 @media (max-width: 760px) {
   .hero,
   .toolbar {
@@ -189,6 +353,14 @@
   .search {
     width: 100%;
   }
+
+  .catalogCard {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .catalogCard > strong {
+    display: none;
+  }
 }
 
 @media (max-width: 650px) {
@@ -199,5 +371,18 @@
 
   .toolbar {
     padding: 10px;
+  }
+
+  .catalogCard {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 18px;
+  }
+
+  .catalogIcon {
+    display: none;
+  }
+
+  .catalogBooks {
+    display: none;
   }
 }

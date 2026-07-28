@@ -91,6 +91,8 @@ const buildLocalVerse = (values: VerseEditorValues): UserVerse => {
     verseNumber: values.verseNumber,
     sanskritCyrillic: values.sanskritCyrillic,
     translation: values.translation,
+    catalog: null,
+    catalogOrder: null,
     status: 'new',
     sanskritProgress: 0,
     translationProgress: 0,
@@ -260,6 +262,36 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         updatePersisted((state) => ({
           ...state,
           verses: state.verses.filter((verse) => verse.id !== verseId),
+          currentSession: state.currentSession?.verseId === verseId ? null : state.currentSession,
+          reviewQueue: state.reviewQueue.filter((item) => item !== verseId),
+        }));
+      });
+    },
+    removeVerseFromLearning: (verseId) => {
+      const currentVerse = get().verses.find((verse) => verse.id === verseId);
+      if (!currentVerse) return Promise.reject(new Error('Стих не найден'));
+
+      const resetPatch: VerseProgressPatch = {
+        status: 'new',
+        sanskritProgress: 0,
+        translationProgress: 0,
+        repetitionLevel: 0,
+        nextReviewAt: null,
+        lastReviewedAt: null,
+      };
+
+      const request = readAuthUser()
+        ? (async () => {
+            await pendingRemoteWrites.get(verseId);
+            pendingRemotePatches.delete(verseId);
+            return verseApi.update(verseId, resetPatch);
+          })()
+        : Promise.resolve({ ...currentVerse, ...resetPatch });
+
+      return request.then((verse) => {
+        updatePersisted((state) => ({
+          ...state,
+          verses: state.verses.map((item) => item.id === verseId ? verse : item),
           currentSession: state.currentSession?.verseId === verseId ? null : state.currentSession,
           reviewQueue: state.reviewQueue.filter((item) => item !== verseId),
         }));

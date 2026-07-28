@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getTodayVerses, getVerseSearchText, useVerseStore } from '../../entities/verse';
+import { getTodayVerses, getVerseSearchText, useVerseStore, type Verse } from '../../entities/verse';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { Icon } from '../../shared/ui/Icon/Icon';
 import { VerseList } from '../../widgets/verses/VerseList/VerseList';
@@ -24,30 +24,64 @@ export default function VersesPage() {
   const error = useVerseStore((state) => state.error);
   const loadVerses = useVerseStore((state) => state.loadVerses);
   const toggleVerseFavorite = useVerseStore((state) => state.toggleVerseFavorite);
+  const removeVerseFromLearning = useVerseStore((state) => state.removeVerseFromLearning);
   const startReviewQueue = useVerseStore((state) => state.startReviewQueue);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<VerseFilter>('all');
+  const [verseToRemove, setVerseToRemove] = useState<Verse | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState('');
 
   useEffect(() => {
     loadVerses();
   }, [loadVerses]);
 
+  const communityVerses = useMemo(
+    () => verses.filter((verse) => !verse.catalog),
+    [verses],
+  );
+  const bhaktiShastriVerses = useMemo(
+    () => verses.filter((verse) => verse.catalog === 'bhakti-shastri'),
+    [verses],
+  );
+  const personalVerses = useMemo(
+    () => [
+      ...communityVerses,
+      ...bhaktiShastriVerses.filter((verse) => verse.status !== 'new'),
+    ],
+    [bhaktiShastriVerses, communityVerses],
+  );
   const filteredVerses = useMemo(() => {
     const query = search.trim().toLocaleLowerCase('ru-RU');
-    return verses.filter((verse) => {
+    return personalVerses.filter((verse) => {
       if (query && !getVerseSearchText(verse).includes(query)) return false;
       if (filter === 'learning') return ['learning', 'review', 'needsReview'].includes(verse.status);
       if (filter === 'learned') return verse.status === 'learned';
       if (filter === 'favorites') return verse.isFavorite;
       return true;
     });
-  }, [filter, search, verses]);
+  }, [filter, personalVerses, search]);
   const reviewQueue = useMemo(() => getTodayVerses(verses), [verses]);
   const beginReviewQueue = () => {
     const firstVerseId = startReviewQueue(reviewQueue.map((verse) => verse.id));
 
     if (firstVerseId) {
       navigate(`/verses/${firstVerseId}/learn`);
+    }
+  };
+  const confirmRemoveFromLearning = async () => {
+    if (!verseToRemove) return;
+
+    setIsRemoving(true);
+    setRemoveError('');
+
+    try {
+      await removeVerseFromLearning(verseToRemove.id);
+      setVerseToRemove(null);
+    } catch {
+      setRemoveError('Не удалось убрать стих из изучаемых. Попробуй ещё раз.');
+    } finally {
+      setIsRemoving(false);
     }
   };
 
@@ -68,7 +102,30 @@ export default function VersesPage() {
         <div className={styles.loading}><span aria-hidden="true" />Загружаем стихи…</div>
       ) : null}
 
-      {!isLoading && verses.length === 0 ? (
+      {verses.length > 0 ? (
+        <VerseReviewQueue verses={reviewQueue} onStart={beginReviewQueue} />
+      ) : null}
+
+      {bhaktiShastriVerses.length > 0 ? (
+        <Link className={styles.catalogCard} to="/verses/bhakti-shastri">
+          <div className={styles.catalogIcon} aria-hidden="true"><Icon name="book" /></div>
+          <div>
+            <span>Учебный каталог</span>
+            <h2>Стихи Бхакти-шастры</h2>
+            <p>45 обязательных стихов, собранных по четырём книгам.</p>
+            <div className={styles.catalogBooks}>
+              <i>Бхагавад-гита</i>
+              <i>Бхакти-расамрита-синдху</i>
+              <i>Шри Ишопанишад</i>
+              <i>Нектар наставлений</i>
+            </div>
+          </div>
+          <strong>{bhaktiShastriVerses.length}<small>стихов</small></strong>
+          <Icon name="chevron" />
+        </Link>
+      ) : null}
+
+      {!isLoading && personalVerses.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}><Icon name="lotus" /></div>
           <h2>Общая коллекция пока пуста</h2>
@@ -77,16 +134,15 @@ export default function VersesPage() {
         </div>
       ) : null}
 
-      {verses.length > 0 ? (
+      {personalVerses.length > 0 ? (
         <>
-          <VerseReviewQueue verses={reviewQueue} onStart={beginReviewQueue} />
           <div className={styles.toolbar}>
             <label className={styles.search}>
               <Icon name="search" />
               <input
                 value={search}
-                placeholder="Найти стих в общей коллекции"
-                aria-label="Поиск по общей коллекции стихов"
+                placeholder="Найти стих в своих стихах"
+                aria-label="Поиск по стихам пользователя"
                 onChange={(event) => setSearch(event.target.value)}
               />
             </label>
@@ -107,10 +163,33 @@ export default function VersesPage() {
           <VerseList
             verses={filteredVerses}
             onToggleFavorite={toggleVerseFavorite}
+            onRemoveFromLearning={(verse) => {
+              setRemoveError('');
+              setVerseToRemove(verse);
+            }}
             emptyTitle="Ничего не найдено"
             emptyText="Измени поисковый запрос или выбери другой фильтр."
           />
         </>
+      ) : null}
+
+      {verseToRemove ? (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="remove-learning-title">
+            <h2 id="remove-learning-title">Убрать стих из изучаемых?</h2>
+            <p>
+              Личный прогресс по стиху «{verseToRemove.bookTitle} {verseToRemove.chapter ? `${verseToRemove.chapter}.` : ''}{verseToRemove.verseNumber}»
+              будет сброшен. Сам стих останется в каталоге, а отметка «Избранное» сохранится.
+            </p>
+            {removeError ? <span role="alert">{removeError}</span> : null}
+            <div>
+              <button type="button" disabled={isRemoving} onClick={() => setVerseToRemove(null)}>Отмена</button>
+              <button className={styles.confirmRemove} type="button" disabled={isRemoving} onClick={confirmRemoveFromLearning}>
+                {isRemoving ? 'Убираем…' : 'Убрать из изучаемых'}
+              </button>
+            </div>
+          </section>
+        </div>
       ) : null}
     </section>
   );

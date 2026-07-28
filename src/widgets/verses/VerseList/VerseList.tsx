@@ -5,6 +5,7 @@ import styles from './VerseList.module.css';
 type VerseListProps = {
   verses: Verse[];
   onToggleFavorite: (verseId: string) => void;
+  onRemoveFromLearning?: (verse: Verse) => void;
   emptyTitle?: string;
   emptyText?: string;
 };
@@ -12,6 +13,7 @@ type VerseListProps = {
 export function VerseList({
   verses,
   onToggleFavorite,
+  onRemoveFromLearning,
   emptyTitle = 'Стихов пока нет',
   emptyText = 'Добавь свой первый стих, чтобы начать спокойное изучение.',
 }: VerseListProps) {
@@ -32,6 +34,7 @@ export function VerseList({
           key={verse.id}
           verse={verse}
           onToggleFavorite={onToggleFavorite}
+          onRemoveFromLearning={onRemoveFromLearning}
         />
       ))}
     </div>

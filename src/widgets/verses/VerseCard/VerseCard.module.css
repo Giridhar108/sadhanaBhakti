@@ -17,6 +17,29 @@
   gap: 12px;
 }
 
+.reference {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.reference > span {
+  border-radius: 999px;
+  padding: 4px 7px;
+  color: #5f9658;
+  background: rgba(235, 247, 231, 0.82);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .favorite {
   width: 40px;
   height: 40px;
@@ -27,6 +50,28 @@
   background: rgba(248, 239, 248, 0.58);
   font-size: 20px;
   line-height: 1;
+}
+
+.remove {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0;
+  color: #9b5b52;
+  background: transparent;
+}
+
+.remove svg {
+  width: 17px;
+  height: 17px;
+}
+
+.remove:hover {
+  background: rgba(255, 240, 236, 0.82);
 }
 
 .favoriteActive {
@@ -43,7 +88,8 @@
 }
 
 .bodyLink:focus-visible,
-.favorite:focus-visible {
+.favorite:focus-visible,
+.remove:focus-visible {
   outline: 3px solid rgba(159, 114, 215, 0.2);
   outline-offset: 3px;
 }

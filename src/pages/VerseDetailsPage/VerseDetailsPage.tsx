@@ -77,6 +77,9 @@ export default function VerseDetailsPage() {
   }
 
   const progress = getVerseProgress(verse);
+  const backLink = verse.catalog === 'bhakti-shastri'
+    ? { to: '/verses/bhakti-shastri', label: '← Каталог Бхакти-шастры' }
+    : { to: '/verses', label: '← Все стихи' };
   const startLearning = () => {
     startLearningSession(verse.id);
     navigate(`/verses/${verse.id}/learn`);
@@ -90,7 +93,7 @@ export default function VerseDetailsPage() {
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to="/verses">← Все стихи</Link>
+      <Link className={styles.backLink} to={backLink.to}>{backLink.label}</Link>
       <header className={styles.hero}>
         <div className={styles.heroCopy}>
           <VerseReference verse={verse} />

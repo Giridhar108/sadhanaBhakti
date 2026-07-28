@@ -7,13 +7,15 @@ export type VerseStatus =
 
 export type UserVerse = {
   id: string;
-  createdById: string;
+  createdById: string | null;
   isOwner: boolean;
   bookTitle: string;
   chapter: string | null;
   verseNumber: string;
   sanskritCyrillic: string;
   translation: string;
+  catalog: string | null;
+  catalogOrder: number | null;
   status: VerseStatus;
   sanskritProgress: number;
   translationProgress: number;
@@ -68,6 +70,7 @@ export type VerseStore = {
   createVerse: (values: VerseEditorValues) => Promise<UserVerse>;
   updateVerse: (verseId: string, values: VerseEditorValues) => Promise<UserVerse>;
   deleteVerse: (verseId: string) => Promise<void>;
+  removeVerseFromLearning: (verseId: string) => Promise<void>;
   toggleVerseFavorite: (verseId: string) => void;
   startLearningSession: (verseId: string) => void;
   startReviewQueue: (verseIds: string[]) => string | null;

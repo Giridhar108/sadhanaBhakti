@@ -64,6 +64,8 @@ const serializeVerse = (verse: VerseWithProgress, userId: string) => {
     verseNumber: verse.verseNumber,
     sanskritCyrillic: verse.sanskritCyrillic,
     translation: verse.translation,
+    catalog: verse.catalog,
+    catalogOrder: verse.catalogOrder,
     status: personalProgress?.status ?? defaultProgress.status,
     sanskritProgress: personalProgress?.sanskritProgress ?? defaultProgress.sanskritProgress,
     translationProgress: personalProgress?.translationProgress ?? defaultProgress.translationProgress,
@@ -88,7 +90,11 @@ export class VersesService {
           take: 1,
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { catalog: { sort: 'asc', nulls: 'first' } },
+        { catalogOrder: { sort: 'asc', nulls: 'last' } },
+        { createdAt: 'desc' },
+      ],
     });
 
     return verses.map((verse) => serializeVerse(verse, userId));

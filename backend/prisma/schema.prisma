@@ -89,18 +89,21 @@ model JapaDailyProgress {
 
 model Verse {
   id               String              @id @default(cuid())
-  createdById      String
+  createdById      String?
   bookTitle        String
   chapter          String?
   verseNumber      String
   sanskritCyrillic String
   translation      String
+  catalog          String?
+  catalogOrder     Int?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
-  createdBy        User                @relation("VerseCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy        User?               @relation("VerseCreator", fields: [createdById], references: [id], onDelete: SetNull)
   progress         UserVerseProgress[]
 
   @@index([createdById, createdAt])
+  @@index([catalog, catalogOrder])
 }
 
 model UserVerseProgress {
