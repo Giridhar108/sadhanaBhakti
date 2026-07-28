@@ -21,6 +21,17 @@ export function SegmentedControl({
   onChange,
   className,
 }: SegmentedControlProps) {
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((option) => option.value === value),
+  );
+  const segmentCount = Math.max(1, options.length);
+  const gap = 4;
+  const horizontalPadding = 8;
+  const indicatorWidthCorrection = (
+    horizontalPadding + gap * (segmentCount - 1)
+  ) / segmentCount;
+
   const selectAdjacent = (
     event: KeyboardEvent<HTMLButtonElement>,
     optionIndex: number,
@@ -52,6 +63,14 @@ export function SegmentedControl({
       role="tablist"
       aria-label={ariaLabel}
     >
+      <span
+        className={styles.indicator}
+        aria-hidden="true"
+        style={{
+          width: `calc(${100 / segmentCount}% - ${indicatorWidthCorrection}px)`,
+          transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * gap}px))`,
+        }}
+      />
       {options.map((option, optionIndex) => {
         const isActive = option.value === value;
 

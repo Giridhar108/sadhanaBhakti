@@ -6,6 +6,7 @@ import {
   prayerCategoryLabels,
   usePrayers,
 } from '../../entities/prayer';
+import { PrayerWordByWord } from '../../entities/prayer/ui/PrayerWordByWord/PrayerWordByWord';
 import { useVerseStore } from '../../entities/verse';
 import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle';
 import { Card } from '../../shared/ui/Card/Card';
@@ -44,7 +45,10 @@ export default function PrayerDetailsPage() {
   const lastStartedVerse = [...orderedVerses]
     .reverse()
     .find((verse) => Boolean(prayerProgress[verse.id]));
-  const startVerse = lastStartedVerse ?? orderedVerses[0];
+  const isPrayerCycleComplete = progress.learnedVerses === prayer.totalVerses;
+  const startVerse = isPrayerCycleComplete
+    ? orderedVerses[0]
+    : lastStartedVerse ?? orderedVerses[0];
   const startLearning = () => {
     if (startVerse) {
       navigate(`/verses/prayers/${prayer.slug}/${startVerse.id}/learn?sequence=1`);
@@ -100,9 +104,7 @@ export default function PrayerDetailsPage() {
               <article className={styles.fullTextVerse} key={verse.id}>
                 <div className={styles.fullTextNumber}>{verse.order}</div>
                 <div>
-                  <span>Санскрит</span>
-                  <p className={styles.sanskritText}>{verse.russianPronunciation}</p>
-                  <span>Перевод</span>
+                  <PrayerWordByWord verse={verse} />
                   <p className={styles.translationText}>{verse.translation}</p>
                 </div>
               </article>
@@ -132,12 +134,18 @@ export default function PrayerDetailsPage() {
 
             return (
               <Card className={styles.verseCard} key={verse.id}>
-                <div className={styles.verseNumber}>{verse.order}</div>
-                <div>
-                  <span>{status}</span>
-                  <h3>Строфа {verse.order}</h3>
-                  <p>{verse.transliteration.split('\n')[0]}</p>
-                </div>
+                <Link
+                  className={styles.verseMainLink}
+                  to={`/verses/prayers/${prayer.slug}/${verse.id}`}
+                  aria-label={`Открыть строфу ${verse.order}: санскрит и переводы`}
+                >
+                  <div className={styles.verseNumber}>{verse.order}</div>
+                  <div>
+                    <span>{status}</span>
+                    <h3>Строфа {verse.order}</h3>
+                    <p>{verse.transliteration.split('\n')[0]}</p>
+                  </div>
+                </Link>
                 <div className={styles.verseActions}>
                   <Link className={styles.learnLink} to={`/verses/prayers/${prayer.slug}/${verse.id}/learn`}>
                     Изучать

@@ -12,6 +12,7 @@ type PrayerVerseSource = {
   transliteration: string[];
   russianPronunciation: string[];
   words: PrayerWordSource[];
+  phraseTranslations: string[];
   translation: string;
   explanation?: string;
 };
@@ -33,6 +34,7 @@ const buildVerse = (source: PrayerVerseSource): PrayerVerse => ({
   transliteration: source.transliteration.join('\n'),
   russianPronunciation: source.russianPronunciation.join('\n'),
   words: source.words.map((word, wordIndex) => buildWord(source.order, wordIndex, word)),
+  phraseTranslations: source.phraseTranslations,
   translation: source.translation,
   explanation: source.explanation,
 });
@@ -106,6 +108,12 @@ const verseSources: PrayerVerseSource[] = [
       ['guroḥ', 'гурох', 'духовного учителя'],
       ['śrī-caraṇa-aravindam', 'шри-чарана-аравиндам', 'прекрасным лотосным стопам'],
     ],
+    phraseTranslations: [
+      'мир, охваченный лесным пожаром материального существования',
+      'ради спасения — милостиво приняв облик густой дождевой тучи',
+      'обретшего качества океана всего благоприятного',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation:
       'Духовный учитель, подобно туче, проливающей дождь милости, гасит лесной пожар материального существования и спасает людей, охваченных его пламенем. Он — океан благоприятных качеств. Я в глубоком почтении склоняюсь к лотосным стопам моего духовного учителя.',
     explanation:
@@ -121,6 +129,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'воспеванием, танцем и пением Господа Чайтаньи Махапрабху',
+      'чей ум опьянён духовным вкусом игры на музыкальных инструментах',
+      'охваченного волнами экстаза: волосы дыбом, дрожь и слёзы',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -133,6 +147,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'ежедневным разнообразным поклонением прекрасному образу Божества',
+      'украшением Божества, уборкой Его храма и другим служением',
+      'занятого этим и также привлекающего к служению преданных',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -145,6 +165,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'четырьмя видами вкусного прасада Верховного Господа',
+      'удовлетворив собрания преданных Господа Хари',
+      'всегда испытывающего от этого удовлетворение',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -157,6 +183,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'Шримати Радхики и Шри Мадхавы — безграничной',
+      'сладости Их игр, качеств, образов и имён',
+      'страстно желающего вкушать её каждое мгновение',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -169,6 +201,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'для совершенства любовных игр юной Божественной Четы в уединённых рощах',
+      'какие бы приготовления подруг Шримати Радхарани ни требовались',
+      'чрезвычайно дорогого Им благодаря великому искусству в этом',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -181,6 +219,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'всеми писаниями провозглашённого непосредственным представителем Господа Хари',
+      'и потому несомненно почитаемого святыми преданными',
+      'однако воистину являющегося дорогим слугой Господа',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
   {
@@ -193,6 +237,12 @@ const verseSources: PrayerVerseSource[] = [
     ],
     russianPronunciation: [],
     words: [],
+    phraseTranslations: [
+      'по чьей милости обретается милость Верховного Господа',
+      'без чьей милости нигде нет пути и духовного продвижения',
+      'размышляя о нём и прославляя его трижды в день',
+      'я поклоняюсь прекрасным лотосным стопам духовного учителя',
+    ],
     translation: '',
   },
 ];

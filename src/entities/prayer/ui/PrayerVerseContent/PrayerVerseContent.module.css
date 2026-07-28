@@ -5,25 +5,14 @@
 }
 
 .pronunciationBlock,
+.wordsBlock,
 .translationBlock {
   min-width: 0;
-  padding: 20px 22px;
-  border: 1px solid rgba(226, 194, 151, 0.36);
-  border-radius: 15px;
-  background: rgba(255, 254, 250, 0.72);
-}
-
-.pronunciationBlock > span,
-.translationBlock > span {
-  color: var(--violet-dark);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  padding: 4px 0;
 }
 
 .pronunciation {
-  margin: 9px 0 0;
+  margin: 0;
   color: #62566f;
   font-size: clamp(16px, 1.7vw, 20px);
   font-weight: 750;
@@ -33,7 +22,7 @@
 }
 
 .translationBlock > p {
-  margin: 9px 0 0;
+  margin: 0;
   color: var(--text);
   font-size: 16px;
   font-weight: 700;
@@ -42,7 +31,8 @@
 
 @media (max-width: 620px) {
   .pronunciationBlock,
+  .wordsBlock,
   .translationBlock {
-    padding: 17px;
+    padding-block: 2px;
   }
 }

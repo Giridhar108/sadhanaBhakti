@@ -21,6 +21,7 @@ export type PrayerVerse = {
   transliteration: string;
   russianPronunciation: string;
   words: PrayerWord[];
+  phraseTranslations: string[];
   translation: string;
   explanation?: string;
 };

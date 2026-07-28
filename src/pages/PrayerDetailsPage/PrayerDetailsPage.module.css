@@ -24,6 +24,7 @@
 .hero button:focus-visible,
 .sectionHeading a:focus-visible,
 .fullTextHeading a:focus-visible,
+.verseMainLink:focus-visible,
 .verseActions a:focus-visible,
 .state a:focus-visible {
   outline: 3px solid rgba(159, 114, 215, 0.24);
@@ -160,8 +161,7 @@
   padding: 6px 4px;
 }
 
-.fullTextHeading span,
-.fullTextVerse span {
+.fullTextHeading span {
   color: var(--violet-dark);
   font-size: 10px;
   font-weight: 900;
@@ -193,6 +193,7 @@
 }
 
 .fullTextVerse {
+  position: relative;
   min-width: 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -215,19 +216,8 @@
   font-weight: 900;
 }
 
-.sanskritText {
-  margin: 6px 0 18px;
-  color: var(--text);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.75;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-}
-
 .translationText {
-  margin: 6px 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: 15px;
   font-weight: 700;
@@ -251,11 +241,34 @@
 .verseCard {
   min-width: 0;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
   padding: 18px 20px;
   border-radius: 15px;
+}
+
+.verseMainLink {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  border-radius: 12px;
+  color: inherit;
+}
+
+.verseMainLink h3,
+.verseMainLink p {
+  transition: color 160ms ease;
+}
+
+.verseMainLink:hover h3 {
+  color: var(--violet-dark);
+}
+
+.verseMainLink:hover p {
+  color: #665978;
 }
 
 .verseNumber {
@@ -381,11 +394,11 @@
   }
 
   .verseCard {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .verseActions {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 
   .verseActions a {
@@ -409,17 +422,32 @@
   }
 
   .fullTextVerse {
-    gap: 12px;
+    display: block;
     padding: 18px 16px;
   }
 
-  .fullTextNumber {
-    width: 36px;
-    height: 36px;
+  .fullTextVerse > div:last-child {
+    position: relative;
+    z-index: 1;
   }
 
-  .sanskritText {
-    font-size: 16px;
-    line-height: 1.65;
+  .fullTextNumber {
+    position: absolute;
+    z-index: 0;
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: auto;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    color: rgba(103, 67, 157, 0.075);
+    background: transparent;
+    box-shadow: none;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(92px, 28vw, 120px);
+    line-height: 0.8;
+    pointer-events: none;
   }
+
 }

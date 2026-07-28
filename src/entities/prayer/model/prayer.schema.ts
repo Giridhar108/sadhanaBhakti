@@ -24,6 +24,7 @@ export const prayerVerseSchema = z.object({
   transliteration: z.string(),
   russianPronunciation: z.string(),
   words: z.array(prayerWordSchema),
+  phraseTranslations: z.array(z.string()),
   translation: z.string(),
   explanation: z.string().optional(),
 });
