@@ -12,34 +12,35 @@ enum AuthProvider {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  name          String
-  lastName      String        @default("")
-  spiritualName String        @default("")
-  avatarUrl     String?
-  birthDate     String?
-  gender        String?
-  provider      AuthProvider  @default(EMAIL)
-  passwordHash  String?
-  practices     String[]      @default(["japa", "books", "verses"])
-  japaRounds    Int           @default(16)
-  readingPages  Int           @default(10)
-  versesPerWeek Int           @default(1)
-  dailyReminder String        @default("05:30")
-  japaStartDate String?
-  theme         String        @default("soft")
-  calendarEvents Json         @default("[]")
-  dailyVerses   Json          @default("[{\"id\":\"default-daily-verse\",\"text\":\"Мой дорогой ум, ты избрал путь самосознания, однако, в своем безрассудстве ты считаешь, что купание в претенциозности, обмане и придирчивости, которые сродни ослиной моче, очень очищает.<br> Так ты губишь и себя, и меня. Прошу тебя, остановись! <br>Лучше давай погрузимся в океан нектара любовного служения лотосным стопам Шри&nbsp;Шри&nbsp;Гандхарвики&nbsp;Гиридхари и так принесем нам обоим нескончаемое счастье.\",\"source\":\"Манах Шикша. Стих 6\"}]")
-  japaGoalHistory Json        @default("[]")
-  isOnboarded   Boolean       @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  lastLoginAt   DateTime      @default(now())
-  refreshTokens RefreshToken[]
-  audioTracks   AudioTrack[]
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String
+  lastName          String              @default("")
+  spiritualName     String              @default("")
+  avatarUrl         String?
+  birthDate         String?
+  gender            String?
+  provider          AuthProvider        @default(EMAIL)
+  passwordHash      String?
+  practices         String[]            @default(["japa", "books", "verses"])
+  japaRounds        Int                 @default(16)
+  readingPages      Int                 @default(10)
+  versesPerWeek     Int                 @default(1)
+  dailyReminder     String              @default("05:30")
+  japaStartDate     String?
+  theme             String              @default("soft")
+  calendarEvents    Json                @default("[]")
+  dailyVerses       Json                @default("[{\"id\":\"default-daily-verse\",\"text\":\"Мой дорогой ум, ты избрал путь самосознания, однако, в своем безрассудстве ты считаешь, что купание в претенциозности, обмане и придирчивости, которые сродни ослиной моче, очень очищает.<br> Так ты губишь и себя, и меня. Прошу тебя, остановись! <br>Лучше давай погрузимся в океан нектара любовного служения лотосным стопам Шри&nbsp;Шри&nbsp;Гандхарвики&nbsp;Гиридхари и так принесем нам обоим нескончаемое счастье.\",\"source\":\"Манах Шикша. Стих 6\"}]")
+  japaGoalHistory   Json                @default("[]")
+  isOnboarded       Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  lastLoginAt       DateTime            @default(now())
+  refreshTokens     RefreshToken[]
+  audioTracks       AudioTrack[]
   japaDailyProgress JapaDailyProgress[]
-  userVerses    UserVerse[]
+  createdVerses     Verse[]             @relation("VerseCreator")
+  verseProgress     UserVerseProgress[]
 }
 
 model RefreshToken {
@@ -73,27 +74,39 @@ model AudioTrack {
 }
 
 model JapaDailyProgress {
-  id        String   @id @default(cuid())
-  userId    String
-  date      String
-  rounds    Int      @default(0)
+  id         String   @id @default(cuid())
+  userId     String
+  date       String
+  rounds     Int      @default(0)
   goalRounds Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([userId, date])
 }
 
-model UserVerse {
+model Verse {
+  id               String              @id @default(cuid())
+  createdById      String
+  bookTitle        String
+  chapter          String?
+  verseNumber      String
+  sanskritCyrillic String
+  translation      String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  createdBy        User                @relation("VerseCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  progress         UserVerseProgress[]
+
+  @@index([createdById, createdAt])
+}
+
+model UserVerseProgress {
   id                  String   @id @default(cuid())
   userId              String
-  bookTitle           String
-  chapter             String?
-  verseNumber         String
-  sanskritCyrillic    String
-  translation         String
+  verseId             String
   status              String   @default("new")
   sanskritProgress    Int      @default(0)
   translationProgress Int      @default(0)
@@ -104,7 +117,8 @@ model UserVerse {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse               Verse    @relation(fields: [verseId], references: [id], onDelete: Cascade)
 
-  @@index([userId, createdAt])
+  @@unique([userId, verseId])
   @@index([userId, nextReviewAt])
 }

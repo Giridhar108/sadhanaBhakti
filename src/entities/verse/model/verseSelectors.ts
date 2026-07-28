@@ -1,13 +1,23 @@
 import type { UserVerse } from './types';
 
-export const getTodayDateKey = () => {
-  const today = new Date();
-
+export const getTodayDateKey = (today = new Date()) => {
   return [
     today.getFullYear(),
     String(today.getMonth() + 1).padStart(2, '0'),
     String(today.getDate()).padStart(2, '0'),
   ].join('-');
+};
+
+const getCurrentDateTimeKey = () => {
+  const now = new Date();
+
+  return [
+    getTodayDateKey(now),
+    [
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0'),
+    ].join(':'),
+  ].join('T');
 };
 
 export const getVerseById = (verses: UserVerse[], verseId: string | undefined) =>
@@ -21,14 +31,41 @@ export const getVerseProgress = (verse: UserVerse) =>
 
 export const getTodayVerses = (verses: UserVerse[]) => {
   const today = getTodayDateKey();
+  const currentDateTime = getCurrentDateTimeKey();
+  const statusPriority: Record<UserVerse['status'], number> = {
+    needsReview: 0,
+    review: 1,
+    learning: 2,
+    learned: 3,
+    new: 4,
+  };
 
-  return verses.filter(
-    (verse) =>
-      verse.status === 'learning'
-      || verse.status === 'review'
-      || verse.status === 'needsReview'
-      || Boolean(verse.nextReviewAt && verse.nextReviewAt <= today),
-  );
+  return verses
+    .filter((verse) => {
+      if (!verse.nextReviewAt) {
+        return false;
+      }
+
+      return verse.nextReviewAt.includes('T')
+        ? verse.nextReviewAt <= currentDateTime
+        : verse.nextReviewAt <= today;
+    })
+    .sort((first, second) => {
+      const dateOrder = first.nextReviewAt!.localeCompare(second.nextReviewAt!);
+
+      if (dateOrder !== 0) {
+        return dateOrder;
+      }
+
+      const statusOrder = statusPriority[first.status] - statusPriority[second.status];
+
+      if (statusOrder !== 0) {
+        return statusOrder;
+      }
+
+      return (first.lastReviewedAt ?? first.createdAt)
+        .localeCompare(second.lastReviewedAt ?? second.createdAt);
+    });
 };
 
 export const getVerseSearchText = (verse: UserVerse) =>
@@ -49,6 +86,7 @@ export const getReviewDateLabel = (dateKey: string | null) => {
   }
 
   const today = getTodayDateKey();
+  const [reviewDate, reviewTime] = dateKey.split('T');
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowKey = [
@@ -57,16 +95,34 @@ export const getReviewDateLabel = (dateKey: string | null) => {
     String(tomorrow.getDate()).padStart(2, '0'),
   ].join('-');
 
-  if (dateKey <= today) {
+  if (reviewDate <= today) {
+    if (reviewDate === today && reviewTime === '19:00') {
+      return 'сегодня вечером, в 19:00';
+    }
+
+    if (reviewDate === today && reviewTime) {
+      return `сегодня, в ${reviewTime}`;
+    }
+
     return 'сегодня';
   }
 
-  if (dateKey === tomorrowKey) {
+  if (reviewDate === tomorrowKey) {
+    if (reviewTime === '08:00') {
+      return 'завтра утром, в 08:00';
+    }
+
+    if (reviewTime) {
+      return `завтра, в ${reviewTime}`;
+    }
+
     return 'завтра';
   }
 
-  return new Intl.DateTimeFormat('ru-RU', {
+  const formattedDate = new Intl.DateTimeFormat('ru-RU', {
     day: 'numeric',
     month: 'long',
-  }).format(new Date(`${dateKey}T12:00:00`));
+  }).format(new Date(`${reviewDate}T12:00:00`));
+
+  return reviewTime ? `${formattedDate}, в ${reviewTime}` : formattedDate;
 };

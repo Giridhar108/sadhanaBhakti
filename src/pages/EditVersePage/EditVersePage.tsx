@@ -40,6 +40,16 @@ export default function EditVersePage() {
     );
   }
 
+  if (!verse.isOwner) {
+    return (
+      <Card className={styles.state}>
+        <h1>Редактирование недоступно</h1>
+        <p>Изменять общий стих может только пользователь, который его добавил.</p>
+        <Link to={`/verses/${verse.id}`}>Вернуться к стиху</Link>
+      </Card>
+    );
+  }
+
   const saveVerse = (values: VerseEditorValues) => {
     setIsSubmitting(true);
     setMessage('');
@@ -56,11 +66,13 @@ export default function EditVersePage() {
     <section className={styles.page}>
       <Link className={styles.backLink} to={`/verses/${verse.id}`}>← Назад к стиху</Link>
       <header>
-        <span>Личная коллекция</span>
+        <span>Общая коллекция</span>
         <h1>Редактировать стих</h1>
         <p>Учебный прогресс сохранится после изменения текста.</p>
       </header>
-      <div className={styles.announcement} role="status" aria-live="polite">{message}</div>
+      {message ? (
+        <div className={styles.announcement} role="status" aria-live="polite">{message}</div>
+      ) : null}
       <VerseEditorForm
         mode="edit"
         initialValues={initialValues}

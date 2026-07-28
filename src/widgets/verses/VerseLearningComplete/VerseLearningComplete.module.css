@@ -150,6 +150,12 @@
   font-weight: 900;
 }
 
+.result .queueHint {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .result button {
   min-height: 46px;
   border: 0;

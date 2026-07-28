@@ -44,8 +44,21 @@ export function VerseMemorization({
     || session.progressState.translationVisitedLines.length >= translationLines.length;
   const canComplete = sanskritComplete && translationComplete;
   const isLastLine = currentLineIndex >= Math.max(0, lines.length - 1);
+  const shouldContinueToTranslation = session.activeView === 'sanskrit'
+    && isLastLine
+    && !translationComplete;
+  const canGoBack = currentLineIndex > 0
+    || (session.activeView === 'translation' && sanskritLines.length > 0);
   const itemLabel = session.activeView === 'sanskrit' ? 'Строка' : 'Фрагмент';
   const progressCount = lines.length > 0 ? currentLineIndex + 1 : 0;
+  const goBack = () => {
+    if (session.activeView === 'translation' && currentLineIndex === 0) {
+      onChangeView('sanskrit');
+      return;
+    }
+
+    onChangeLine(currentLineIndex - 1);
+  };
 
   return (
     <Card className={styles.card}>
@@ -102,7 +115,7 @@ export function VerseMemorization({
         ) : null}
       </section>
 
-      {!canComplete && isLastLine ? (
+      {!canComplete && isLastLine && !shouldContinueToTranslation ? (
         <p className={styles.helper}>
           Просмотри все строки санскрита и перевода — после этого можно завершить запоминание.
         </p>
@@ -112,12 +125,20 @@ export function VerseMemorization({
         <button
           className={styles.secondaryButton}
           type="button"
-          disabled={currentLineIndex === 0 || lines.length === 0}
-          onClick={() => onChangeLine(currentLineIndex - 1)}
+          disabled={!canGoBack || lines.length === 0}
+          onClick={goBack}
         >
           Назад
         </button>
-        {isLastLine ? (
+        {shouldContinueToTranslation ? (
+          <button
+            className={styles.primaryButton}
+            type="button"
+            onClick={() => onChangeView('translation')}
+          >
+            Перейти к переводу
+          </button>
+        ) : isLastLine ? (
           <button
             className={styles.primaryButton}
             type="button"

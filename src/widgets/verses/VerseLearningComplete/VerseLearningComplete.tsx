@@ -25,6 +25,7 @@ const confidenceHints: Record<VerseConfidence, string> = {
 type VerseLearningCompleteProps = {
   verse: Verse;
   confidence?: VerseConfidence;
+  remainingInQueue?: number;
   onSelectConfidence: (confidence: VerseConfidence) => void;
   onReturn: () => void;
 };
@@ -32,16 +33,19 @@ type VerseLearningCompleteProps = {
 export function VerseLearningComplete({
   verse,
   confidence,
+  remainingInQueue,
   onSelectConfidence,
   onReturn,
 }: VerseLearningCompleteProps) {
+  const verseReference = `${verse.chapter ? `${verse.chapter}.` : ''}${verse.verseNumber}`;
+
   return (
     <Card className={styles.card}>
       <div className={styles.successIcon}>
         <Icon name="lotus" />
       </div>
       <span>Практика завершена</span>
-      <h1>Ты повторил {verse.bookTitle} {verse.verseNumber}</h1>
+      <h1>Ты повторил {verse.bookTitle} {verseReference}</h1>
 
       {!confidence ? (
         <>
@@ -67,8 +71,19 @@ export function VerseLearningComplete({
             <strong>{getVerseProgress(verse)}%</strong>
           </div>
           <p>Следующее повторение — {getReviewDateLabel(verse.nextReviewAt)}</p>
+          {remainingInQueue !== undefined ? (
+            <small className={styles.queueHint}>
+              {remainingInQueue > 0
+                ? `В очереди осталось: ${remainingInQueue}`
+                : 'Очередь повторения завершена'}
+            </small>
+          ) : null}
           <button type="button" onClick={onReturn}>
-            Вернуться к стихам
+            {remainingInQueue === undefined
+              ? 'Вернуться к стихам'
+              : remainingInQueue > 0
+                ? 'Следующий стих'
+                : 'Завершить повторение'}
           </button>
         </div>
       )}

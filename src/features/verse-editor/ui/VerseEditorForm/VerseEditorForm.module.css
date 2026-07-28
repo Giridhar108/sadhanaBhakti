@@ -7,7 +7,7 @@
 
 .formCard {
   display: grid;
-  gap: 20px;
+  gap: 0;
   padding: 24px 28px;
   border: 1px solid rgba(226, 194, 151, 0.5);
   border-radius: 14px;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { readAuthUser } from '../../user/model/auth';
 import { verseApi, type VerseProgressPatch } from '../api/verseApi';
+import { calculateInitialReviewAt } from '../lib/calculateInitialReviewAt';
 import { calculateNextReview } from '../lib/calculateNextReview';
 import { getTodayDateKey, getVerseLines } from './verseSelectors';
 import type {
@@ -20,6 +21,7 @@ type PersistedState = {
   ownerId: string;
   verses: UserVerse[];
   currentSession: VerseLearningSession | null;
+  reviewQueue: string[];
 };
 
 const emptyProgressState: VerseLearningProgressState = {
@@ -31,17 +33,21 @@ const emptyProgressState: VerseLearningProgressState = {
   translationHiddenLines: [],
 };
 
-const readPersistedState = (): Pick<VerseStore, 'verses' | 'currentSession'> => {
-  if (typeof window === 'undefined') return { verses: [], currentSession: null };
+const readPersistedState = (): Pick<VerseStore, 'verses' | 'currentSession' | 'reviewQueue'> => {
+  if (typeof window === 'undefined') return { verses: [], currentSession: null, reviewQueue: [] };
 
   try {
     const parsed = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null') as PersistedState | null;
     if (!parsed || parsed.ownerId !== storageOwnerId || !Array.isArray(parsed.verses)) {
-      return { verses: [], currentSession: null };
+      return { verses: [], currentSession: null, reviewQueue: [] };
     }
-    return { verses: parsed.verses, currentSession: parsed.currentSession ?? null };
+    return {
+      verses: parsed.verses,
+      currentSession: parsed.currentSession ?? null,
+      reviewQueue: Array.isArray(parsed.reviewQueue) ? parsed.reviewQueue : [],
+    };
   } catch {
-    return { verses: [], currentSession: null };
+    return { verses: [], currentSession: null, reviewQueue: [] };
   }
 };
 
@@ -52,6 +58,7 @@ const writePersistedState = (state: VerseStore) => {
       ownerId: storageOwnerId,
       verses: state.verses,
       currentSession: state.currentSession,
+      reviewQueue: state.reviewQueue,
     } satisfies PersistedState));
   } catch {
     // Состояние продолжает работать в памяти, если хранилище недоступно.
@@ -77,7 +84,8 @@ const buildLocalVerse = (values: VerseEditorValues): UserVerse => {
   const now = new Date().toISOString();
   return {
     id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `verse-${Date.now()}`,
-    userId: storageOwnerId,
+    createdById: storageOwnerId,
+    isOwner: true,
     bookTitle: values.bookTitle,
     chapter: values.chapter || null,
     verseNumber: values.verseNumber,
@@ -253,6 +261,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
           ...state,
           verses: state.verses.filter((verse) => verse.id !== verseId),
           currentSession: state.currentSession?.verseId === verseId ? null : state.currentSession,
+          reviewQueue: state.reviewQueue.filter((item) => item !== verseId),
         }));
       });
     },
@@ -274,8 +283,43 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         ...state,
         verses: state.verses.map((item) => item.id === verseId ? { ...item, status } : item),
         currentSession: buildSession(verseId),
+        reviewQueue: [],
       }));
       if (status !== verse.status) void queueRemoteVersePatch(verseId, { status });
+    },
+    startReviewQueue: (verseIds) => {
+      const availableVerseIds = new Set(get().verses.map((verse) => verse.id));
+      const queue = [...new Set(verseIds)].filter((verseId) => availableVerseIds.has(verseId));
+      const firstVerseId = queue[0];
+
+      if (!firstVerseId) {
+        return null;
+      }
+
+      updatePersisted((state) => ({
+        ...state,
+        currentSession: buildSession(firstVerseId),
+        reviewQueue: queue,
+      }));
+
+      return firstVerseId;
+    },
+    advanceReviewQueue: () => {
+      const state = get();
+      const currentVerseId = state.currentSession?.verseId;
+      const currentIndex = currentVerseId ? state.reviewQueue.indexOf(currentVerseId) : -1;
+      const remainingQueue = state.reviewQueue
+        .slice(currentIndex >= 0 ? currentIndex + 1 : 0)
+        .filter((verseId) => state.verses.some((verse) => verse.id === verseId));
+      const nextVerseId = remainingQueue[0] ?? null;
+
+      updatePersisted((currentState) => ({
+        ...currentState,
+        currentSession: nextVerseId ? buildSession(nextVerseId) : null,
+        reviewQueue: remainingQueue,
+      }));
+
+      return nextVerseId;
     },
     setLearningStep: (step) => {
       updatePersisted((state) => {
@@ -378,7 +422,7 @@ export const useVerseStore = create<VerseStore>((set, get) => {
         sanskritProgress: 20,
         translationProgress: 20,
         repetitionLevel: 1,
-        nextReviewAt: addDays(getTodayDateKey(), 1),
+        nextReviewAt: calculateInitialReviewAt(),
       };
       updatePersisted((state) => ({
         ...state,
@@ -412,6 +456,10 @@ export const useVerseStore = create<VerseStore>((set, get) => {
       }));
       void queueRemoteVersePatch(verse.id, patch);
     },
-    resetLearningSession: () => updatePersisted((state) => ({ ...state, currentSession: null })),
+    resetLearningSession: () => updatePersisted((state) => ({
+      ...state,
+      currentSession: null,
+      reviewQueue: [],
+    })),
   };
 });

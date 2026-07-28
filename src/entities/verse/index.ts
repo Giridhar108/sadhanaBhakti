@@ -1,4 +1,5 @@
 export { calculateNextReview } from './lib/calculateNextReview';
+export { calculateInitialReviewAt } from './lib/calculateInitialReviewAt';
 export {
   getReviewDateLabel,
   getTodayDateKey,

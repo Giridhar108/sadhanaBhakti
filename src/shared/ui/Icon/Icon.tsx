@@ -1,5 +1,6 @@
 import styles from './Icon.module.css';
 import type { ReactNode } from 'react';
+import lotusIconUrl from '../../assets/images/lotus.svg?no-inline';
 
 export type IconName =
   | 'home'
@@ -26,7 +27,7 @@ type IconProps = {
   title?: string;
 };
 
-const paths: Record<IconName, ReactNode> = {
+const paths: Record<Exclude<IconName, 'lotus'>, ReactNode> = {
   home: <><path d="M4 11.5 12 4l8 7.5" /><path d="M6.5 10.5V20h11v-9.5" /><path d="M10 20v-5h4v5" /></>,
   mala: <><path d="M12 4c3.2 2.1 5.7 5.3 5.7 9.1a5.7 5.7 0 0 1-11.4 0C6.3 9.3 8.8 6.1 12 4Z" /><path d="M9 13c.8 1.4 1.8 2.2 3 2.2s2.2-.8 3-2.2" /><path d="M12 3v3" /></>,
   book: <><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H20v16H7.5A2.5 2.5 0 0 0 5 21.5Z" /><path d="M5 5.5v16" /><path d="M8 7h8" /><path d="M8 10h7" /></>,
@@ -43,10 +44,24 @@ const paths: Record<IconName, ReactNode> = {
   scroll: <><path d="M8 4h8a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Z" /><path d="M8 8h7" /><path d="M8 12h8" /><path d="M8 16h6" /></>,
   clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
   music: <><path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" /></>,
-  lotus: <><path d="M12 5c2.4 2.1 3.6 4.2 3.6 6.3S14.4 15.4 12 17c-2.4-1.6-3.6-3.5-3.6-5.7S9.6 7.1 12 5Z" /><path d="M7.6 9.2C4.8 9.7 3 11 2.5 13.2c1.7.6 3.6.6 5.4 0" /><path d="M16.4 9.2c2.8.5 4.6 1.8 5.1 4-1.7.6-3.6.6-5.4 0" /><path d="M5 17c4.4 2.2 9.6 2.2 14 0" /></>,
 };
 
 export function Icon({ name, className, title }: IconProps) {
+  if (name === 'lotus') {
+    return (
+      <svg
+        className={`${styles.icon} ${className ?? ''}`}
+        viewBox="0 0 233.61 233.61"
+        fill="currentColor"
+        aria-hidden={title ? undefined : true}
+        role={title ? 'img' : undefined}
+      >
+        {title ? <title>{title}</title> : null}
+        <use href={`${lotusIconUrl}#lotus-shape`} />
+      </svg>
+    );
+  }
+
   return (
     <svg className={`${styles.icon} ${className ?? ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden={title ? undefined : true} role={title ? 'img' : undefined}>
       {title ? <title>{title}</title> : null}

@@ -44,6 +44,27 @@
   font-weight: 700;
 }
 
+.page header .sourceHint {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.sourceHint a {
+  border-bottom: 1px solid rgba(116, 85, 172, 0.34);
+  color: var(--violet-dark);
+  font-weight: 900;
+}
+
+.sourceHint a:hover {
+  border-bottom-color: currentColor;
+}
+
+.sourceHint a:focus-visible {
+  border-radius: 3px;
+  outline: 3px solid rgba(159, 114, 215, 0.2);
+  outline-offset: 3px;
+}
+
 .announcement {
   min-height: 20px;
   color: var(--green-dark);

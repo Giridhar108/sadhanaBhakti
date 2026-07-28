@@ -1,0 +1,259 @@
+.queue {
+  display: grid;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid rgba(226, 194, 151, 0.5);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 96% 4%, rgba(242, 250, 238, 0.72), transparent 30%),
+    rgba(255, 254, 250, 0.96);
+  box-shadow: 0 3px 12px rgba(113, 78, 41, 0.07);
+}
+
+.header,
+.heading,
+.referenceRow,
+.meta,
+.completed,
+.list li {
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.heading {
+  min-width: 0;
+  gap: 14px;
+}
+
+.heading > div {
+  min-width: 0;
+}
+
+.icon,
+.completed > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: var(--green-dark);
+  background: rgba(238, 248, 234, 0.92);
+}
+
+.icon {
+  width: 46px;
+  height: 46px;
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.eyebrow {
+  color: var(--green-dark);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header h2 {
+  margin: 2px 0 0;
+  color: #2c2641;
+  font-size: 21px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.header p,
+.completed p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.count {
+  min-width: 44px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(120, 181, 111, 0.2);
+  border-radius: 8px;
+  color: var(--green-dark);
+  background: rgba(242, 250, 238, 0.9);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.completed {
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(120, 181, 111, 0.14);
+  border-radius: 10px;
+  background: rgba(248, 252, 246, 0.72);
+}
+
+.completed > span {
+  width: 38px;
+  height: 38px;
+}
+
+.completed svg {
+  width: 20px;
+  height: 20px;
+}
+
+.completed strong {
+  color: #3f6d3a;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  min-width: 0;
+  gap: 14px;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid rgba(159, 114, 215, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.position {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  color: var(--violet-dark);
+  background: var(--violet-soft);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.details {
+  min-width: 0;
+  display: grid;
+  flex: 1;
+  gap: 7px;
+}
+
+.referenceRow {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.today,
+.overdue {
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.today {
+  color: var(--green-dark);
+  background: rgba(238, 248, 234, 0.9);
+}
+
+.overdue {
+  color: #a35329;
+  background: rgba(255, 239, 218, 0.9);
+}
+
+.meta {
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.meta > span:last-child {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.startButton {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 13px;
+  color: #fff;
+  background: #8556d8;
+  box-shadow: 0 8px 16px rgba(137, 87, 210, 0.16);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.startButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.startButton:focus-visible {
+  outline: 3px solid rgba(159, 114, 215, 0.22);
+  outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+  .queue {
+    padding: 18px 16px;
+  }
+
+  .heading {
+    align-items: flex-start;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+
+  .actions {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .header p {
+    display: none;
+  }
+
+  .list li {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .details {
+    width: calc(100% - 44px);
+  }
+
+}

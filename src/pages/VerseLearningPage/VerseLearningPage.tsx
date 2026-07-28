@@ -27,7 +27,9 @@ export default function VerseLearningPage() {
   const isLoading = useVerseStore((state) => state.isLoading);
   const loadVerses = useVerseStore((state) => state.loadVerses);
   const currentSession = useVerseStore((state) => state.currentSession);
+  const reviewQueue = useVerseStore((state) => state.reviewQueue);
   const startLearningSession = useVerseStore((state) => state.startLearningSession);
+  const advanceReviewQueue = useVerseStore((state) => state.advanceReviewQueue);
   const setLearningStep = useVerseStore((state) => state.setLearningStep);
   const setLearningView = useVerseStore((state) => state.setLearningView);
   const setCurrentLine = useVerseStore((state) => state.setCurrentLine);
@@ -100,6 +102,10 @@ export default function VerseLearningPage() {
     translationLineCount,
   );
   const memorizationPercent = Math.round((sanskritPercent + translationPercent) / 2);
+  const queueIndex = reviewQueue.indexOf(verse.id);
+  const remainingInQueue = queueIndex >= 0
+    ? Math.max(0, reviewQueue.length - queueIndex - 1)
+    : undefined;
 
   const goBack = () => {
     if (session.step === 'memorization') {
@@ -124,6 +130,18 @@ export default function VerseLearningPage() {
     }
 
     setLearningStep('complete');
+  };
+
+  const finishCompletedVerse = () => {
+    if (remainingInQueue !== undefined) {
+      const nextVerseId = advanceReviewQueue();
+
+      navigate(nextVerseId ? `/verses/${nextVerseId}/learn` : '/verses');
+      return;
+    }
+
+    resetLearningSession();
+    navigate('/verses');
   };
 
   return (
@@ -171,11 +189,9 @@ export default function VerseLearningPage() {
           <VerseLearningComplete
             verse={verse}
             confidence={session.confidence}
+            remainingInQueue={remainingInQueue}
             onSelectConfidence={completeLearningSession}
-            onReturn={() => {
-              resetLearningSession();
-              navigate('/verses');
-            }}
+            onReturn={finishCompletedVerse}
           />
         ) : null}
       </main>

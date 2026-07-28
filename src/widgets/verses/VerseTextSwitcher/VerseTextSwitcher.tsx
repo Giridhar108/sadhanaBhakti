@@ -8,7 +8,12 @@ type VerseTextSwitcherProps = {
 
 export function VerseTextSwitcher({ activeView, onChange }: VerseTextSwitcherProps) {
   return (
-    <div className={styles.switcher} role="group" aria-label="Вариант текста для запоминания">
+    <div
+      className={`${styles.switcher} ${activeView === 'translation' ? styles.translation : ''}`}
+      role="group"
+      aria-label="Вариант текста для запоминания"
+    >
+      <span className={styles.indicator} aria-hidden="true" />
       <button
         className={activeView === 'sanskrit' ? styles.active : ''}
         type="button"

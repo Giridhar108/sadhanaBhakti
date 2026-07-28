@@ -7,7 +7,8 @@ export type VerseStatus =
 
 export type UserVerse = {
   id: string;
-  userId: string;
+  createdById: string;
+  isOwner: boolean;
   bookTitle: string;
   chapter: string | null;
   verseNumber: string;
@@ -60,6 +61,7 @@ export type VerseLearningSession = {
 export type VerseStore = {
   verses: UserVerse[];
   currentSession: VerseLearningSession | null;
+  reviewQueue: string[];
   isLoading: boolean;
   error: string | null;
   loadVerses: () => Promise<void>;
@@ -68,6 +70,8 @@ export type VerseStore = {
   deleteVerse: (verseId: string) => Promise<void>;
   toggleVerseFavorite: (verseId: string) => void;
   startLearningSession: (verseId: string) => void;
+  startReviewQueue: (verseIds: string[]) => string | null;
+  advanceReviewQueue: () => string | null;
   setLearningStep: (step: VerseLearningStep) => void;
   setLearningView: (view: VerseLearningView) => void;
   setCurrentLine: (lineIndex: number) => void;

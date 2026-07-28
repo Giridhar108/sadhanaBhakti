@@ -15,6 +15,36 @@ import { Icon } from '../../shared/ui/Icon/Icon';
 import { VerseLines } from '../../widgets/verses/VerseLines/VerseLines';
 import styles from './VerseDetailsPage.module.css';
 
+type ActionIconName = 'favorite' | 'edit' | 'delete';
+
+function ActionIcon({ name, filled = false }: { name: ActionIconName; filled?: boolean }) {
+  if (name === 'favorite') {
+    return (
+      <svg viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+      </svg>
+    );
+  }
+
+  if (name === 'edit') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 6h18" />
+      <path d="M8 6V4h8v2" />
+      <path d="M19 6l-1 15H6L5 6" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
+}
+
 export default function VerseDetailsPage() {
   const { verseId } = useParams();
   const navigate = useNavigate();
@@ -73,20 +103,41 @@ export default function VerseDetailsPage() {
           </div>
         </div>
         <div className={styles.heroActions}>
-          <button
-            className={styles.favoriteButton}
-            type="button"
-            aria-pressed={verse.isFavorite}
-            onClick={() => toggleVerseFavorite(verse.id)}
-          >
-            {verse.isFavorite ? '♥ В избранном' : '♡ В избранное'}
-          </button>
+          <div className={styles.secondaryActions}>
+            <button
+              className={styles.favoriteButton}
+              type="button"
+              aria-pressed={verse.isFavorite}
+              aria-label={verse.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+              title={verse.isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+              onClick={() => toggleVerseFavorite(verse.id)}
+            >
+              <ActionIcon name="favorite" filled={verse.isFavorite} />
+            </button>
+            {verse.isOwner ? (
+              <>
+                <Link
+                  className={styles.editButton}
+                  to={`/verses/${verse.id}/edit`}
+                  aria-label="Редактировать стих"
+                  title="Редактировать стих"
+                >
+                  <ActionIcon name="edit" />
+                </Link>
+                <button
+                  className={styles.deleteButton}
+                  type="button"
+                  aria-label="Удалить стих"
+                  title="Удалить стих"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <ActionIcon name="delete" />
+                </button>
+              </>
+            ) : null}
+          </div>
           <button className={styles.primaryButton} type="button" onClick={startLearning}>
             <Icon name="lotus" />Начать изучение
-          </button>
-          <Link className={styles.editButton} to={`/verses/${verse.id}/edit`}>Редактировать</Link>
-          <button className={styles.deleteButton} type="button" onClick={() => setShowDeleteDialog(true)}>
-            Удалить стих
           </button>
         </div>
       </header>
@@ -107,7 +158,7 @@ export default function VerseDetailsPage() {
         <div className={styles.dialogBackdrop}>
           <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="delete-title">
             <h2 id="delete-title">Удалить стих?</h2>
-            <p>Стих и весь прогресс его изучения будут удалены. Это действие нельзя отменить.</p>
+            <p>Стих станет недоступен всем пользователям, а их прогресс изучения будет удалён. Это действие нельзя отменить.</p>
             <div>
               <button type="button" onClick={() => setShowDeleteDialog(false)}>Отмена</button>
               <button className={styles.confirmDelete} type="button" disabled={isDeleting} onClick={confirmDelete}>

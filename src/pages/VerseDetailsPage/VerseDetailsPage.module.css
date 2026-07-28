@@ -17,6 +17,7 @@
 
 .backLink:focus-visible,
 .heroActions button:focus-visible,
+.heroActions a:focus-visible,
 .notFound a:focus-visible {
   outline: 3px solid rgba(159, 114, 215, 0.2);
   outline-offset: 3px;
@@ -26,7 +27,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 24px;
-  align-items: center;
+  align-items: stretch;
   padding: 24px 28px;
   border: 1px solid rgba(226, 194, 151, 0.5);
   border-radius: 14px;
@@ -50,6 +51,10 @@
   font-weight: 700;
 }
 
+.heroCopy {
+  align-self: center;
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -62,9 +67,12 @@
 }
 
 .heroActions {
-  display: grid;
-  min-width: 210px;
-  gap: 10px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
 }
 
 .heroActions button {
@@ -80,40 +88,53 @@
   font-weight: 800;
 }
 
-.editButton {
-  min-height: 46px;
-  display: inline-flex;
+.secondaryActions {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(145, 99, 216, 0.72);
-  border-radius: 8px;
-  padding: 10px 16px;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.secondaryActions > button,
+.secondaryActions > a {
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.editButton {
   color: #8f61d5;
-  background: rgba(255, 255, 255, 0.72);
-  font-weight: 800;
 }
 
 .deleteButton {
-  border-color: rgba(181, 93, 82, 0.16);
   color: #9b4d45;
-  background: #fff0ec;
 }
 
 .favoriteButton {
-  border-color: rgba(159, 114, 215, 0.14);
   color: #8c61d6;
-  background: rgba(248, 239, 248, 0.68);
 }
 
-.favoriteButton span {
-  font-size: 18px;
+.favoriteButton svg,
+.editButton svg,
+.deleteButton svg {
+  width: 17px;
+  height: 17px;
 }
 
-.favoriteActive {
-  box-shadow: inset 0 0 0 1px rgba(159, 114, 215, 0.2);
+.favoriteButton[aria-pressed="true"] {
+  color: #8556d8;
 }
 
 .primaryButton {
+  min-width: 240px;
+  align-self: flex-end;
   color: #fff;
   background: #8556d8;
   box-shadow: 0 12px 22px rgba(137, 87, 210, 0.18);
@@ -275,6 +296,10 @@
 
   .heroActions {
     min-width: 0;
+    width: 100%;
+  }
+
+  .primaryButton {
     width: 100%;
   }
 

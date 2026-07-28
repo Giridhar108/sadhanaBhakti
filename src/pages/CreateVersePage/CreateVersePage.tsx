@@ -29,11 +29,20 @@ export default function CreateVersePage() {
     <section className={styles.page}>
       <Link className={styles.backLink} to="/verses">← Назад к стихам</Link>
       <header>
-        <span>Личная коллекция</span>
+        <span>Общая коллекция</span>
         <h1>Добавить стих</h1>
-        <p>Вставь текст стиха и перевод. Их всегда можно будет изменить позже.</p>
+        <p>Вставь текст стиха и перевод. После сохранения стих станет доступен всем пользователям.</p>
+        <p className={styles.sourceHint}>
+          Санскрит лучше копировать с{' '}
+          <a href="https://vedabase.io/ru/" target="_blank" rel="noreferrer">
+            Vedabase.io
+          </a>
+          .
+        </p>
       </header>
-      <div className={styles.announcement} role="status" aria-live="polite">{message}</div>
+      {message ? (
+        <div className={styles.announcement} role="status" aria-live="polite">{message}</div>
+      ) : null}
       <VerseEditorForm
         mode="create"
         onSubmit={saveVerse}
