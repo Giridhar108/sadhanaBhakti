@@ -106,6 +106,7 @@ export default function VerseLearningPage() {
   const remainingInQueue = queueIndex >= 0
     ? Math.max(0, reviewQueue.length - queueIndex - 1)
     : undefined;
+  const versesPath = verse.catalog === 'bhakti-shastri' ? '/verses/bhakti-shastri' : '/verses';
 
   const goBack = () => {
     if (session.step === 'memorization') {
@@ -113,7 +114,7 @@ export default function VerseLearningPage() {
       return;
     }
 
-    navigate(`/verses/${verse.id}`);
+    navigate(versesPath);
   };
 
   const changeView = (view: VerseLearningView) => {
@@ -159,7 +160,7 @@ export default function VerseLearningPage() {
         </div>
         <Link
           className={styles.iconButton}
-          to={`/verses/${verse.id}`}
+          to={versesPath}
           aria-label="Закрыть обучение"
         >
           ×

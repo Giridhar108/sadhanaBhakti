@@ -16,7 +16,7 @@ export function VerseReference({ verse, linked = false }: VerseReferenceProps) {
   );
 
   return linked ? (
-    <Link className={styles.reference} to={`/verses/${verse.id}`}>
+    <Link className={styles.reference} to={`/verses/${verse.id}/learn`}>
       {content}
     </Link>
   ) : (

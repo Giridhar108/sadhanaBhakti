@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { useUiStore } from '../store/useUiStore';
 import { AudioTracksPreloader } from '../../entities/audio/model/AudioTracksPreloader';
 import {
@@ -30,10 +30,8 @@ const BhaktiShastriCatalogPage = lazy(() =>
 );
 const CreateVersePage = lazy(() => import('../../pages/CreateVersePage/CreateVersePage'));
 const EditVersePage = lazy(() => import('../../pages/EditVersePage/EditVersePage'));
-const VerseDetailsPage = lazy(() => import('../../pages/VerseDetailsPage/VerseDetailsPage'));
 const VerseLearningPage = lazy(() => import('../../pages/VerseLearningPage/VerseLearningPage'));
 const PrayerDetailsPage = lazy(() => import('../../pages/PrayerDetailsPage/PrayerDetailsPage'));
-const PrayerVersePage = lazy(() => import('../../pages/PrayerVersePage/PrayerVersePage'));
 const PrayerLearningPage = lazy(() => import('../../pages/PrayerLearningPage/PrayerLearningPage'));
 const CalendarPage = lazy(() => import('../../pages/CalendarPage/CalendarPage'));
 const StatisticsPage = lazy(() => import('../../pages/StatisticsPage/StatisticsPage'));
@@ -49,6 +47,25 @@ function RouteFallback() {
       <span />
       <p>Загрузка практики...</p>
     </div>
+  );
+}
+
+function VerseLearningRedirect() {
+  const { verseId } = useParams();
+
+  return <Navigate to={verseId ? `/verses/${verseId}/learn` : '/verses'} replace />;
+}
+
+function PrayerLearningRedirect() {
+  const { prayerSlug, prayerVerseId } = useParams();
+
+  return (
+    <Navigate
+      to={prayerSlug && prayerVerseId
+        ? `/verses/prayers/${prayerSlug}/${prayerVerseId}/learn`
+        : '/verses?section=prayers'}
+      replace
+    />
   );
 }
 
@@ -173,10 +190,10 @@ function RoutedContent() {
           <Route path="/verses/bhakti-shastri" element={<BhaktiShastriCatalogPage />} />
           <Route path="/verses/new" element={<CreateVersePage />} />
           <Route path="/verses/prayers/:prayerSlug" element={<PrayerDetailsPage />} />
-          <Route path="/verses/prayers/:prayerSlug/:prayerVerseId" element={<PrayerVersePage />} />
+          <Route path="/verses/prayers/:prayerSlug/:prayerVerseId" element={<PrayerLearningRedirect />} />
           <Route path="/verses/prayers/:prayerSlug/:prayerVerseId/learn" element={<PrayerLearningPage />} />
           <Route path="/verses/:verseId/edit" element={<EditVersePage />} />
-          <Route path="/verses/:verseId" element={<VerseDetailsPage />} />
+          <Route path="/verses/:verseId" element={<VerseLearningRedirect />} />
           <Route path="/verses/:verseId/learn" element={<VerseLearningPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />

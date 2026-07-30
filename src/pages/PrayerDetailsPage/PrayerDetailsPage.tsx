@@ -136,8 +136,8 @@ export default function PrayerDetailsPage() {
               <Card className={styles.verseCard} key={verse.id}>
                 <Link
                   className={styles.verseMainLink}
-                  to={`/verses/prayers/${prayer.slug}/${verse.id}`}
-                  aria-label={`Открыть строфу ${verse.order}: санскрит и переводы`}
+                  to={`/verses/prayers/${prayer.slug}/${verse.id}/learn`}
+                  aria-label={`Начать изучение строфы ${verse.order}`}
                 >
                   <div className={styles.verseNumber}>{verse.order}</div>
                   <div>

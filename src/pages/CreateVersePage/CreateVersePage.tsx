@@ -20,7 +20,7 @@ export default function CreateVersePage() {
     createVerse(values)
       .then((verse) => {
         setMessage('Стих добавлен');
-        window.setTimeout(() => navigate(`/verses/${verse.id}`), 450);
+        window.setTimeout(() => navigate(`/verses/${verse.id}/learn`), 450);
       })
       .catch(() => setMessage('Не удалось сохранить стих. Попробуй ещё раз.'))
       .finally(() => setIsSubmitting(false));

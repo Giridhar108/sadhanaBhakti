@@ -159,7 +159,6 @@ export default function PrayerLearningPage() {
     translationLines.length,
   );
   const memorizationPercent = Math.round((sanskritPercent + translationPercent) / 2);
-  const versePath = `/verses/prayers/${prayer.slug}/${prayerVerse.id}`;
   const prayerPath = `/verses/prayers/${prayer.slug}`;
   const orderedPrayerVerses = [...prayer.verses]
     .sort((first, second) => first.order - second.order);
@@ -308,7 +307,7 @@ export default function PrayerLearningPage() {
       return;
     }
 
-    navigate(versePath);
+    navigate(prayerPath);
   };
 
   return (
@@ -327,7 +326,7 @@ export default function PrayerLearningPage() {
             memorizationPercent={memorizationPercent}
           />
         </div>
-        <Link className={pageStyles.iconButton} to={versePath} aria-label="Закрыть обучение">
+        <Link className={pageStyles.iconButton} to={prayerPath} aria-label="Закрыть обучение">
           ×
         </Link>
       </header>

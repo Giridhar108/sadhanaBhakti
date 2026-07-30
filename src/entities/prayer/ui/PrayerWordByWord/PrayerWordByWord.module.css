@@ -1,3 +1,49 @@
+.interlinear {
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  margin: 2px 0 34px;
+  padding: 12px 6px 18px;
+}
+
+.interlinearLine {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  gap: 10px;
+}
+
+.interlinearPair {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.interlinearPair strong {
+  color: var(--text);
+  font-family: Nunito, sans-serif;
+  font-size: clamp(25px, 3vw, 39px);
+  font-weight: 650;
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.interlinearPair span {
+  width: 100%;
+  max-width: 160px;
+  color: var(--muted);
+  font-size: clamp(10px, 1.1vw, 14px);
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
 .words {
   min-width: 0;
   display: grid;
@@ -52,6 +98,27 @@
 }
 
 @media (max-width: 520px) {
+  .interlinear {
+    justify-items: stretch;
+    gap: 22px;
+    margin-bottom: 22px;
+    padding: 8px 0 14px;
+  }
+
+  .interlinearLine {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .interlinearPair strong {
+    font-size: 23px;
+  }
+
+  .interlinearPair span {
+    max-width: 120px;
+    font-size: 9px;
+  }
+
   .word dt,
   .word dd {
     min-height: 68px;

@@ -46,7 +46,7 @@ export default function EditVersePage() {
       <Card className={styles.state}>
         <h1>Редактирование недоступно</h1>
         <p>Изменять общий стих может только пользователь, который его добавил.</p>
-        <Link to={`/verses/${verse.id}`}>Вернуться к стиху</Link>
+        <Link to={`/verses/${verse.id}/learn`}>Вернуться к изучению</Link>
       </Card>
     );
   }
@@ -57,7 +57,7 @@ export default function EditVersePage() {
     updateVerse(verse.id, values)
       .then(() => {
         setMessage('Изменения сохранены');
-        window.setTimeout(() => navigate(`/verses/${verse.id}`), 450);
+        window.setTimeout(() => navigate(`/verses/${verse.id}/learn`), 450);
       })
       .catch(() => setMessage('Не удалось сохранить изменения.'))
       .finally(() => setIsSubmitting(false));
@@ -65,9 +65,9 @@ export default function EditVersePage() {
 
   return (
     <section className={styles.page}>
-      <Link className={styles.backLink} to={`/verses/${verse.id}`}>
+      <Link className={styles.backLink} to={`/verses/${verse.id}/learn`}>
         <Icon name="back" />
-        Назад к стиху
+        Назад к изучению
       </Link>
       <header>
         <span>Общая коллекция</span>
@@ -81,7 +81,7 @@ export default function EditVersePage() {
         mode="edit"
         initialValues={initialValues}
         onSubmit={saveVerse}
-        onCancel={() => navigate(`/verses/${verse.id}`)}
+        onCancel={() => navigate(`/verses/${verse.id}/learn`)}
         isSubmitting={isSubmitting}
       />
     </section>

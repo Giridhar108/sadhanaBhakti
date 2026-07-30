@@ -58,7 +58,7 @@ export function VerseCard({ verse, onToggleFavorite, onRemoveFromLearning }: Ver
         </div>
       </header>
 
-      <Link className={styles.bodyLink} to={`/verses/${verse.id}`}>
+      <Link className={styles.bodyLink} to={`/verses/${verse.id}/learn`}>
         <p className={styles.sanskrit}>
           {lines.slice(0, 2).map((line) => (
             <span key={line}>{line}</span>
