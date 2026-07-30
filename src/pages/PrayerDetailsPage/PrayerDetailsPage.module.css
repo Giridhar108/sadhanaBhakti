@@ -367,6 +367,36 @@
   font-weight: 900;
 }
 
+@media (max-width: 1024px) {
+  .fullTextVerse {
+    display: block;
+  }
+
+  .fullTextVerse > div:last-child {
+    position: relative;
+    z-index: 1;
+  }
+
+  .fullTextNumber {
+    position: absolute;
+    z-index: 0;
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: auto;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    color: rgba(103, 67, 157, 0.075);
+    background: transparent;
+    box-shadow: none;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(92px, 16vw, 140px);
+    line-height: 0.8;
+    pointer-events: none;
+  }
+}
+
 @media (max-width: 760px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
@@ -422,32 +452,7 @@
   }
 
   .fullTextVerse {
-    display: block;
-    padding: 18px 16px;
-  }
-
-  .fullTextVerse > div:last-child {
-    position: relative;
-    z-index: 1;
-  }
-
-  .fullTextNumber {
-    position: absolute;
-    z-index: 0;
-    top: auto;
-    right: 12px;
-    bottom: 12px;
-    left: auto;
-    width: auto;
-    height: auto;
-    border-radius: 0;
-    color: rgba(103, 67, 157, 0.075);
-    background: transparent;
-    box-shadow: none;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: clamp(92px, 28vw, 120px);
-    line-height: 0.8;
-    pointer-events: none;
+    padding: 16px 12px;
   }
 
 }

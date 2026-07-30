@@ -21,7 +21,7 @@ export default function PrayerDetailsPage() {
   const { data: prayers, isPending } = usePrayers();
   const prayerProgress = useVerseStore((state) => state.prayerProgress);
   const prayer = getPrayerBySlug(prayers ?? [], prayerSlug);
-  const showFullText = searchParams.get('view') === 'text';
+  const showFullText = searchParams.get('view') !== 'verses';
 
   useDocumentTitle(prayer ? `${prayer.title} — Садхана Бхакти` : 'Молитва — Садхана Бхакти');
 
@@ -97,7 +97,7 @@ export default function PrayerDetailsPage() {
               <span>Молитва целиком</span>
               <h2 id="prayer-full-text-title">Санскрит и перевод</h2>
             </div>
-            <Link to={`/verses/prayers/${prayer.slug}`}>К списку строф</Link>
+            <Link to={`/verses/prayers/${prayer.slug}?view=verses`}>К списку строф</Link>
           </div>
           <div className={styles.fullTextVerses}>
             {orderedVerses.map((verse) => (

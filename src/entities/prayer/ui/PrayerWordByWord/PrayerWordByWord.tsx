@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { PrayerVerse } from '../../model/prayer.types';
 import styles from './PrayerWordByWord.module.css';
 
@@ -75,34 +76,68 @@ function getInterlinearLines(verse: PrayerVerse) {
 export function PrayerWordByWord({ verse }: PrayerWordByWordProps) {
   const sanskritPhrases = verse.russianPronunciation.split('\n').filter(Boolean);
   const interlinearLines = getInterlinearLines(verse);
+  const [showInterlinear, setShowInterlinear] = useState(true);
+  const [showPhrases, setShowPhrases] = useState(false);
 
   if (sanskritPhrases.length === 0) return null;
 
   return (
     <>
       {verse.words.length > 0 ? (
-        <div className={styles.interlinear} aria-label="Пословный перевод">
-          {interlinearLines.map((line, lineIndex) => (
-            <div className={styles.interlinearLine} key={`${verse.id}-interlinear-${lineIndex + 1}`}>
-              {line.words.map((word) => (
-                <div className={styles.interlinearPair} key={word.id}>
-                  <strong>{word.pronunciation}</strong>
-                  <span key={word.id}>{word.translation}</span>
+        <section className={styles.collapsibleBlock}>
+          <button
+            className={styles.toggleButton}
+            type="button"
+            aria-expanded={showInterlinear}
+            onClick={() => setShowInterlinear((isVisible) => !isVisible)}
+          >
+            <span>Пословный перевод</span>
+            <span
+              className={`${styles.toggleIcon} ${showInterlinear ? styles.toggleIconOpen : ''}`}
+              aria-hidden="true"
+            />
+          </button>
+          {showInterlinear ? (
+            <div className={styles.interlinear}>
+              {interlinearLines.map((line, lineIndex) => (
+                <div className={styles.interlinearLine} key={`${verse.id}-interlinear-${lineIndex + 1}`}>
+                  {line.words.map((word) => (
+                    <div className={styles.interlinearPair} key={word.id}>
+                      <strong>{word.pronunciation}</strong>
+                      <span>{word.translation}</span>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-          ))}
-        </div>
+          ) : null}
+        </section>
       ) : null}
 
-      <dl className={styles.words}>
-        {sanskritPhrases.map((sanskrit, phraseIndex) => (
-          <div className={styles.word} key={`${verse.id}-phrase-${phraseIndex + 1}`}>
-            <dt>{sanskrit}</dt>
-            <dd>{verse.phraseTranslations[phraseIndex]}</dd>
-          </div>
-        ))}
-      </dl>
+      <section className={styles.collapsibleBlock}>
+        <button
+          className={styles.toggleButton}
+          type="button"
+          aria-expanded={showPhrases}
+          onClick={() => setShowPhrases((isVisible) => !isVisible)}
+        >
+          <span>Построчный перевод</span>
+          <span
+            className={`${styles.toggleIcon} ${showPhrases ? styles.toggleIconOpen : ''}`}
+            aria-hidden="true"
+          />
+        </button>
+        {showPhrases ? (
+          <dl className={styles.words}>
+            {sanskritPhrases.map((sanskrit, phraseIndex) => (
+              <div className={styles.word} key={`${verse.id}-phrase-${phraseIndex + 1}`}>
+                <dt>{sanskrit}</dt>
+                <dd>{verse.phraseTranslations[phraseIndex]}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+      </section>
     </>
   );
 }

@@ -21,15 +21,38 @@ const filters: { id: PrayerFilter; label: string }[] = [
   })),
 ];
 
+const morningProgramPrayerSlugs = [
+  'gurvastakam',
+  'guru-vandana',
+  'narasimha-pranama',
+  'tulasi-arati',
+];
+
+const morningProgramOrder = new Map(
+  morningProgramPrayerSlugs.map((slug, index) => [slug, index]),
+);
+
 export function PrayerCatalog() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<PrayerFilter>('all');
   const { data: prayers, isPending, isError, refetch } = usePrayers();
   const prayerProgress = useVerseStore((state) => state.prayerProgress);
-  const filteredPrayers = useMemo(
-    () => (prayers ?? []).filter((prayer) => filter === 'all' || prayer.category === filter),
-    [filter, prayers],
-  );
+  const filteredPrayers = useMemo(() => {
+    if (filter === 'all') return prayers ?? [];
+
+    if (filter === 'morning-program') {
+      return (prayers ?? [])
+        .filter((prayer) => (
+          prayer.category === filter || morningProgramOrder.has(prayer.slug)
+        ))
+        .sort((firstPrayer, secondPrayer) => (
+          (morningProgramOrder.get(firstPrayer.slug) ?? Number.MAX_SAFE_INTEGER)
+          - (morningProgramOrder.get(secondPrayer.slug) ?? Number.MAX_SAFE_INTEGER)
+        ));
+    }
+
+    return (prayers ?? []).filter((prayer) => prayer.category === filter);
+  }, [filter, prayers]);
 
   if (isPending) {
     return (

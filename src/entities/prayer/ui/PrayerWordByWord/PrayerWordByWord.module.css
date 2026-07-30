@@ -1,3 +1,62 @@
+.collapsibleBlock {
+  min-width: 0;
+}
+
+.collapsibleBlock + .collapsibleBlock {
+  margin-top: 14px;
+}
+
+.toggleButton {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(159, 114, 215, 0.13);
+  border-radius: 0;
+  padding: 2px 2px 8px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.toggleButton:hover {
+  color: var(--violet-dark);
+  border-bottom-color: rgba(159, 114, 215, 0.28);
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid rgba(159, 114, 215, 0.22);
+  outline-offset: 2px;
+}
+
+.toggleIcon {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px 3px 0;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--violet-dark);
+  transform: rotate(45deg);
+  transform-origin: center;
+  transition: transform 160ms ease;
+}
+
+.toggleIconOpen {
+  margin-top: 4px;
+  margin-bottom: 0;
+  transform: rotate(225deg);
+}
+
 .interlinear {
   min-width: 0;
   display: grid;
@@ -28,7 +87,7 @@
 .interlinearPair strong {
   color: var(--text);
   font-family: Nunito, sans-serif;
-  font-size: clamp(25px, 3vw, 39px);
+  font-size: clamp(21px, 2.3vw, 31px);
   font-weight: 650;
   line-height: 1.08;
   white-space: nowrap;
@@ -97,25 +156,41 @@
   text-align: left;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 760px) {
+  .toggleButton {
+    min-height: 30px;
+    padding: 2px 1px 7px;
+    font-size: 9px;
+  }
+
   .interlinear {
     justify-items: stretch;
-    gap: 22px;
+    gap: 14px;
     margin-bottom: 22px;
     padding: 8px 0 14px;
   }
 
   .interlinearLine {
-    justify-content: flex-start;
-    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px 10px;
+  }
+
+  .interlinearLine:not(:last-child) {
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(159, 114, 215, 0.14);
+  }
+
+  .interlinearPair {
+    max-width: 100%;
   }
 
   .interlinearPair strong {
-    font-size: 23px;
+    font-size: clamp(17px, 5.2vw, 20px);
   }
 
   .interlinearPair span {
-    max-width: 120px;
+    max-width: 110px;
     font-size: 9px;
   }
 
